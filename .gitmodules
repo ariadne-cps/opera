@@ -1,0 +1,3 @@
+[submodule "dependencies/conclog"]
+	path = dependencies/conclog
+	url = git@github.com:ariadne-cps/conclog

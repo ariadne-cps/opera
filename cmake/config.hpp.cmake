@@ -1,0 +1,7 @@
+#ifndef OPERA_CONFIG_HPP
+#define OPERA_CONFIG_HPP
+
+#cmakedefine RESOURCES_PATH "@RESOURCES_PATH@"
+#cmakedefine MQTT_HOST "@MQTT_HOST@"
+
+#endif /* OPERA_CONFIG_HPP */

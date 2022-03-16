@@ -1,0 +1,21 @@
+{
+  "human": {
+    "bodyId" : "h0",
+    "segmentId" : 0
+  },
+  "robot": {
+    "bodyId" : "r0",
+    "segmentId" : 3
+  },
+  "currentTime" : 32890592300,
+  "collisionDistance" : {
+    "lower" : 72,
+    "upper" : 123
+  },
+  "collisionMode": {
+    "origin" : "3",
+    "destination" : "2",
+    "phase" : "pre"
+  },
+  "likelihood" : 0.5
+}
