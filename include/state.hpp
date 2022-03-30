@@ -194,7 +194,7 @@ class RobotStateHistorySnapshot {
   public:
 
     //! \brief The mode trace
-    //! \details A more ends up here only after a sample from the next mode has been acquired, so that
+    //! \details A mode ends up here only after a sample from the next mode has been acquired, so that
     //! at least one next mode always exists from the trace
     ModeTrace const& mode_trace() const;
 
