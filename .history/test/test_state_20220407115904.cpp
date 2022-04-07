@@ -311,8 +311,6 @@ public:
             OPERA_TEST_EQUALS(history.most_recent_occurrence(second), 700000000);
             OPERA_TEST_EQUALS(history.most_recent_occurrence(second, 700000000), 1200000000);
         }
-
-        std::cout << history.most_recent_occurrence(first) << std::endl;
     }
 
     // #~#^

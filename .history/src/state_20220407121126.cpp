@@ -185,7 +185,7 @@ TimestampType const& RobotStateHistory::most_recent_occurrence(Mode const& mode)
 
     for (auto const& p : _mode_presences){
         if (!(p.mode().is_empty()) && p.mode() == mode){
-            std::cout << "\t#~# Occurrence found at " << p.from() << std::endl;
+            std::cout << "Occurrence found at " << p.from() << std::endl;
             result = &p;
             found = true;
         }
@@ -204,7 +204,7 @@ TimestampType const& RobotStateHistory::most_recent_occurrence(Mode const& mode,
 
     for (auto const&p : _mode_presences){
         if (!(p.mode().is_empty()) && p.mode() == mode && p.from() < timestamp){
-            std::cout << "\t#~# Occurrence found at " << p.from() << std::endl;
+            std::cout << "Occurrence found at " << p.from() << std::endl;
             result = &p;
             found = true;
         }

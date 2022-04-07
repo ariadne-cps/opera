@@ -188,6 +188,7 @@ class RobotStateHistory {
 
     List<Pair<TimestampType,ModeTrace>> _mode_traces;
 
+
   protected:
     Robot const _robot;
 };

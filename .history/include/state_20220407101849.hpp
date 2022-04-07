@@ -158,7 +158,7 @@ class RobotStateHistory {
 
     // #~#v
     //! \brief Most recent occurrence of the given mode
-    TimestampType const& most_recent_occurrence(Mode const& mode);
+    TimestampType const& most_recent_occurrence(Mode const& mode) const;
 
     //! \brief Most recent occurrence of the given mode before the given time
     TimestampType const& most_recent_occurrence(Mode const& mode, TimestampType const& timestamp);

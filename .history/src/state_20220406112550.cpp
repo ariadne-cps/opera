@@ -174,48 +174,6 @@ Mode const& RobotStateHistory::mode_at(TimestampType const& time) const {
     return _latest_mode;
 }
 
-// #~#v
-
-TimestampType const& RobotStateHistory::most_recent_occurrence(Mode const& mode){
-
-    void const *result;
-    bool found = false;
-
-    std::cout << std::endl << "\t#~# Searching mro of " << mode << std::endl;
-
-    for (auto const& p : _mode_presences){
-        if (!(p.mode().is_empty()) && p.mode() == mode){
-            std::cout << "\t#~# Occurrence found at " << p.from() << std::endl;
-            result = &p;
-            found = true;
-        }
-    }
-    if (found)
-        return ((const RobotModePresence *) result) -> from();
-
-    return _latest_time;
-}
-
-TimestampType const& RobotStateHistory::most_recent_occurrence(Mode const& mode, TimestampType const& timestamp){
-    void const *result;
-    bool found = false;
-
-    std::cout << std::endl << "\t#~# Searching mro of " << mode << std::endl;
-
-    for (auto const&p : _mode_presences){
-        if (!(p.mode().is_empty()) && p.mode() == mode && p.from() < timestamp){
-            std::cout << "\t#~# Occurrence found at " << p.from() << std::endl;
-            result = &p;
-            found = true;
-        }
-    }
-    if (found)
-        return ((const RobotModePresence *) result) -> from();
-    return _latest_time;
-}
-
-//#~#^
-
 void RobotStateHistory::acquire(Mode const& mode, List<List<Point>> const& points, TimestampType const& timestamp) {
     /*
      * 1) If the mode is different from the current one (including the first mode inserted)

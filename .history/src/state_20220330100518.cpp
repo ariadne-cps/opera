@@ -125,8 +125,6 @@ std::ostream& operator<<(std::ostream& os, RobotModePresence const& p) {
     return os << "(within '" << p.mode() << "' in [" << p.from() << "," << p.to() << "), exiting to '" << p.exit_destination() << "')";
 }
 
-
-
 auto SamplesHistory::at(TimestampType const& timestamp) const -> BodySamplesType const& {
     OPERA_PRECONDITION(not _entries.empty())
     SizeType i=0;
@@ -173,48 +171,6 @@ Mode const& RobotStateHistory::mode_at(TimestampType const& time) const {
             return p.mode();
     return _latest_mode;
 }
-
-// #~#v
-
-TimestampType const& RobotStateHistory::most_recent_occurrence(Mode const& mode){
-
-    void const *result;
-    bool found = false;
-
-    std::cout << std::endl << "\t#~# Searching mro of " << mode << std::endl;
-
-    for (auto const& p : _mode_presences){
-        if (!(p.mode().is_empty()) && p.mode() == mode){
-            std::cout << "\t#~# Occurrence found at " << p.from() << std::endl;
-            result = &p;
-            found = true;
-        }
-    }
-    if (found)
-        return ((const RobotModePresence *) result) -> from();
-
-    return _latest_time;
-}
-
-TimestampType const& RobotStateHistory::most_recent_occurrence(Mode const& mode, TimestampType const& timestamp){
-    void const *result;
-    bool found = false;
-
-    std::cout << std::endl << "\t#~# Searching mro of " << mode << std::endl;
-
-    for (auto const&p : _mode_presences){
-        if (!(p.mode().is_empty()) && p.mode() == mode && p.from() < timestamp){
-            std::cout << "\t#~# Occurrence found at " << p.from() << std::endl;
-            result = &p;
-            found = true;
-        }
-    }
-    if (found)
-        return ((const RobotModePresence *) result) -> from();
-    return _latest_time;
-}
-
-//#~#^
 
 void RobotStateHistory::acquire(Mode const& mode, List<List<Point>> const& points, TimestampType const& timestamp) {
     /*
@@ -411,16 +367,5 @@ SizeType RobotStateHistorySnapshot::checked_sample_index(Mode const& mode, Times
     OPERA_ASSERT_MSG(result < maximum_number_of_samples(mode), "The sample index must be lower than the number of states in the given mode, instead " << result << " >= " << maximum_number_of_samples(mode) << ".")
     return result;
 }
-
-// #~#v
-
-RobotPredictTiming::RobotPredictTiming(RobotStateHistory const* history) :
-_history(history){}
-
-std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
-    return os << "test_print\nlatest mode: " << p._history -> latest_mode();
-}
-
-// #~#^
 
 }

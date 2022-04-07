@@ -40,7 +40,7 @@ public:
         OPERA_TEST_CALL(test_robot_state_history_basics())
         OPERA_TEST_CALL(test_robot_state_history_analytics())
         OPERA_TEST_CALL(test_robot_state_history_can_look_ahead())
-        OPERA_TEST_CALL(test_robot_predict_timing())
+        OPERA_TEST_CALL(test_robot_predict_timing()) // #~#
     }
 
     void test_human_state_instance() {
@@ -77,7 +77,7 @@ public:
         OPERA_TEST_EQUALS(history.instance_number(3000000000),2)
     }
 
-    void test_robot_state_history_basics() {
+    RobotStateHistory* test_robot_state_history_basics() { // #~#
         String robot("robot");
         Robot r("r0", 10, {{3, 2},{1, 0}}, {1.0, 0.5});
         RobotStateHistory history(r);
@@ -161,6 +161,7 @@ public:
             auto expected_trace = ModeTrace().push_back(first, 1.0).push_back(second, 1.0).push_back(first, 1.0);
             OPERA_TEST_EQUALS(history_trace, expected_trace)
         }
+        return &history; //#~#
     }
 
     void test_robot_state_history_analytics() {
@@ -287,36 +288,13 @@ public:
             OPERA_TEST_ASSERT(not snapshot.can_look_ahead(ts))
         }
     }
-
     // #~#v
+    void test_robot_predict_timing()
+    {
 
-    void test_robot_predict_timing(){
-        String robot("robot");
-        Robot r("r0", 10, {{3, 2},{1, 0}}, {1.0, 0.5});
-        RobotStateHistory history(r);
-        Mode empty_mode, first({robot, "first"}), second({robot, "second"});
-
-        history.acquire(first,{{Point(0,0,0)},{Point(4,4,4)},{Point( 0,2,0)},{Point(1,0,3)}},500000000);
-        history.acquire(first,{{Point(0,0,1)},{Point(4,4,5)},{Point(0,3,0)},{Point(1,1,3)}},600000000);
-        history.acquire(second,{{Point(0,0,1.5)},{Point(4,4,5.5)},{Point(0,3.5,0)},{Point(1,1.5,3)}},700000000);
-        history.acquire(first,{{Point(0,0,2),Point(0,0.1,2)},{Point(4,4,6)},{Point(0,4,0)},{Point(1,2,3),Point(1.1,2,3)}},800000000);
-        history.acquire(first,{{Point(1,0,2)},{Point(5,4,6)},{Point(1,4,0)},{Point(2,2,3)}},1100000000);
-        history.acquire(second,{{Point(1,0,1.5)},{Point(5,4,5.5)},{Point(1,3.5,0)},{Point(2,1.5,3)}},1200000000);
-
-        {
-            //OPERA_TEST_EQUALS(history.most_recent_occurrence(first), 1100000000);
-            //OPERA_TEST_EQUALS(history.most_recent_occurrence(first, 500000000), 1100000000);
-            //OPERA_TEST_EQUALS(history.most_recent_occurrence(first, 600000000), 500000000);
-
-            OPERA_TEST_EQUALS(history.most_recent_occurrence(second), 700000000);
-            OPERA_TEST_EQUALS(history.most_recent_occurrence(second, 700000000), 1200000000);
-        }
-
-        std::cout << history.most_recent_occurrence(first) << std::endl;
     }
 
     // #~#^
-
 };
 
 

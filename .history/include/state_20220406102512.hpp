@@ -114,6 +114,20 @@ class RobotModePresence {
     TimestampType const _to;
 };
 
+// Edit starting point #~#
+
+class RobotPredictTiming {
+    public:
+    //! \brief Construct from a \a state_history
+    RobotPredictTiming(RobotStateHistory* history);
+
+    //! \brief Print to the standard output
+    friend std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p);
+    private:
+        RobotStateHistory const* _history;
+};
+
+// Edit end point
 
 //! \brief Holds the continuous history for a given mode
 class SamplesHistory {
@@ -155,14 +169,6 @@ class RobotStateHistory {
 
     //! \brief The most recent mode according to the latest time
     Mode const& latest_mode() const;
-
-    // #~#v
-    //! \brief Most recent occurrence of the given mode
-    TimestampType const& most_recent_occurrence(Mode const& mode);
-
-    //! \brief Most recent occurrence of the given mode before the given time
-    TimestampType const& most_recent_occurrence(Mode const& mode, TimestampType const& timestamp);
-    // #~#^
 
     //! \brief Acquire the \a state to be ultimately held into the hystory
     //! \details Hystory will not be effectively updated till the mode changes
@@ -251,21 +257,6 @@ class RobotStateHistorySnapshot {
     RobotStateHistory const& _history;
     TimestampType _snapshot_time;
 };
-
-// #~#v
-
-class RobotPredictTiming {
-    public:
-    //! \brief Construct from a \a state_history
-    RobotPredictTiming(RobotStateHistory const* history);
-
-    //! \brief Print to the standard output
-    friend std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p);
-    private:
-        RobotStateHistory const* _history;
-};
-
-// #~#^
 
 }
 

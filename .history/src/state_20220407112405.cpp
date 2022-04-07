@@ -175,17 +175,14 @@ Mode const& RobotStateHistory::mode_at(TimestampType const& time) const {
 }
 
 // #~#v
-
 TimestampType const& RobotStateHistory::most_recent_occurrence(Mode const& mode){
 
     void const *result;
+    void const *last;
     bool found = false;
-
-    std::cout << std::endl << "\t#~# Searching mro of " << mode << std::endl;
-
+    TimestampType const& zero_timestamp = 0;
     for (auto const& p : _mode_presences){
-        if (!(p.mode().is_empty()) && p.mode() == mode){
-            std::cout << "\t#~# Occurrence found at " << p.from() << std::endl;
+        if (p.mode() == mode){
             result = &p;
             found = true;
         }
@@ -193,25 +190,22 @@ TimestampType const& RobotStateHistory::most_recent_occurrence(Mode const& mode)
     if (found)
         return ((const RobotModePresence *) result) -> from();
 
-    return _latest_time;
+    return zero_timestamp;
 }
 
 TimestampType const& RobotStateHistory::most_recent_occurrence(Mode const& mode, TimestampType const& timestamp){
     void const *result;
+    TimestampType const& zero_timestamp = 0;
     bool found = false;
-
-    std::cout << std::endl << "\t#~# Searching mro of " << mode << std::endl;
-
     for (auto const&p : _mode_presences){
-        if (!(p.mode().is_empty()) && p.mode() == mode && p.from() < timestamp){
-            std::cout << "\t#~# Occurrence found at " << p.from() << std::endl;
+        if (p.mode() == mode && p.from() < timestamp){
             result = &p;
             found = true;
         }
     }
     if (found)
         return ((const RobotModePresence *) result) -> from();
-    return _latest_time;
+    return zero_timestamp;
 }
 
 //#~#^

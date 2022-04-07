@@ -304,15 +304,10 @@ public:
         history.acquire(second,{{Point(1,0,1.5)},{Point(5,4,5.5)},{Point(1,3.5,0)},{Point(2,1.5,3)}},1200000000);
 
         {
-            //OPERA_TEST_EQUALS(history.most_recent_occurrence(first), 1100000000);
-            //OPERA_TEST_EQUALS(history.most_recent_occurrence(first, 500000000), 1100000000);
-            //OPERA_TEST_EQUALS(history.most_recent_occurrence(first, 600000000), 500000000);
-
-            OPERA_TEST_EQUALS(history.most_recent_occurrence(second), 700000000);
-            OPERA_TEST_EQUALS(history.most_recent_occurrence(second, 700000000), 1200000000);
+            OPERA_ASSERT_EQUAL(history.most_recent_occurrence(second), 700000000);
+            OPERA_ASSERT_EQUAL(history.most_recent_occurrence(second, 700000000), 1200000000);
         }
-
-        std::cout << history.most_recent_occurrence(first) << std::endl;
+        std::cout << history.most_recent_occurrence(second, 1200000000) << std::endl;
     }
 
     // #~#^

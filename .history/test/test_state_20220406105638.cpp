@@ -296,23 +296,86 @@ public:
         RobotStateHistory history(r);
         Mode empty_mode, first({robot, "first"}), second({robot, "second"});
 
+        {
+            auto snapshot = history.snapshot_at(0);
+            OPERA_TEST_EQUALS(snapshot.mode_trace().size(),0)
+            OPERA_TEST_ASSERT(snapshot.presences_in(empty_mode).empty())
+            OPERA_TEST_ASSERT(snapshot.presences_exiting_into(empty_mode).empty())
+            OPERA_TEST_FAIL(snapshot.samples(empty_mode))
+            OPERA_TEST_ASSERT(snapshot.modes_with_samples().empty())
+        }
+
         history.acquire(first,{{Point(0,0,0)},{Point(4,4,4)},{Point( 0,2,0)},{Point(1,0,3)}},500000000);
+
+        {
+            auto snapshot = history.snapshot_at(500000000);
+            OPERA_TEST_FAIL(snapshot.samples(first))
+            OPERA_TEST_ASSERT(snapshot.modes_with_samples().empty())
+            OPERA_TEST_ASSERT(not snapshot.can_look_ahead(500000000))
+            OPERA_TEST_EQUALS(snapshot.mode_trace().size(),0)
+            auto entrances = snapshot.presences_exiting_into(first);
+            OPERA_TEST_EQUAL(entrances.size(),1)
+            OPERA_TEST_ASSERT(entrances.back().mode().is_empty())
+            OPERA_TEST_EQUALS(entrances.back().to(),500000000)
+        }
+
         history.acquire(first,{{Point(0,0,1)},{Point(4,4,5)},{Point(0,3,0)},{Point(1,1,3)}},600000000);
         history.acquire(second,{{Point(0,0,1.5)},{Point(4,4,5.5)},{Point(0,3.5,0)},{Point(1,1.5,3)}},700000000);
+
+        {
+            auto snapshot = history.snapshot_at(700000000);
+            OPERA_TEST_EQUALS(snapshot.mode_trace().ending_mode(),first)
+            OPERA_TEST_EQUALS(snapshot.modes_with_samples().size(), 1)
+            OPERA_TEST_ASSERT(not snapshot.can_look_ahead(700000000))
+            OPERA_TEST_EQUALS(snapshot.presences_in(first).size(), 1)
+            OPERA_TEST_EQUALS(snapshot.presences_exiting_into(second).size(), 1)
+            OPERA_TEST_EQUALS(snapshot.presences_exiting_into(second).back().mode(), first)
+            OPERA_TEST_EQUALS(snapshot.presences_exiting_into(second).back().from(), 500000000)
+            OPERA_TEST_EQUALS(snapshot.presences_exiting_into(second).back().to(), 700000000)
+            OPERA_TEST_EQUALS(snapshot.range_of_num_samples_in(first), Interval<SizeType>(2u))
+            OPERA_TEST_EQUALS(snapshot.samples(first).at(0).at(0).error(),0)
+        }
+
         history.acquire(first,{{Point(0,0,2),Point(0,0.1,2)},{Point(4,4,6)},{Point(0,4,0)},{Point(1,2,3),Point(1.1,2,3)}},800000000);
+
+        {
+            auto snapshot = history.snapshot_at(800000000);
+            OPERA_TEST_EQUALS(snapshot.mode_trace().ending_mode(), second)
+            OPERA_TEST_ASSERT(not snapshot.can_look_ahead(500000000))
+            OPERA_TEST_ASSERT(snapshot.can_look_ahead(800000000))
+            OPERA_TEST_ASSERT(not snapshot.can_look_ahead(800000001))
+            OPERA_TEST_EQUALS(snapshot.samples(first).size(), 2)
+            OPERA_TEST_PRINT(snapshot.samples(first))
+            OPERA_TEST_EQUALS(snapshot.samples(first).at(0).at(0).error(), 0)
+            OPERA_TEST_PRINT(snapshot.presences_exiting_into(first))
+            OPERA_TEST_EQUALS(snapshot.presences_in(second).size(), 1)
+            OPERA_TEST_EQUALS(snapshot.presences_exiting_into(first).size(), 2)
+            OPERA_TEST_EQUALS(snapshot.presences_exiting_into(first).back().mode(), second)
+            OPERA_TEST_EQUALS(snapshot.samples(first).at(0).size(), 2)
+            OPERA_TEST_EQUALS(snapshot.samples(second).at(0).size(), 1)
+            OPERA_TEST_PRINT(snapshot.samples(second))
+        }
+
         history.acquire(first,{{Point(1,0,2)},{Point(5,4,6)},{Point(1,4,0)},{Point(2,2,3)}},1100000000);
         history.acquire(second,{{Point(1,0,1.5)},{Point(5,4,5.5)},{Point(1,3.5,0)},{Point(2,1.5,3)}},1200000000);
 
         {
-            //OPERA_TEST_EQUALS(history.most_recent_occurrence(first), 1100000000);
-            //OPERA_TEST_EQUALS(history.most_recent_occurrence(first, 500000000), 1100000000);
-            //OPERA_TEST_EQUALS(history.most_recent_occurrence(first, 600000000), 500000000);
-
-            OPERA_TEST_EQUALS(history.most_recent_occurrence(second), 700000000);
-            OPERA_TEST_EQUALS(history.most_recent_occurrence(second, 700000000), 1200000000);
+            auto snapshot = history.snapshot_at(1200000000);
+            OPERA_TEST_EQUALS(snapshot.samples(first).at(0).size(), 4)
+            OPERA_TEST_EQUALS(snapshot.samples(first).at(0).at(1).error(),snapshot.samples(first).at(0).at(2).error())
+            OPERA_TEST_EQUALS(snapshot.presences_in(first).size(), 2)
+            OPERA_TEST_EQUALS(snapshot.presences_exiting_into(second).size(), 2)
+            OPERA_TEST_PRINT(snapshot.samples(first))
+            OPERA_TEST_ASSERT(snapshot.samples(first).at(0).at(0).error() > 0)
+            auto modes = snapshot.modes_with_samples();
+            OPERA_TEST_EQUALS(modes.size(), 2)
+            auto history_trace = snapshot.mode_trace();
+            OPERA_TEST_PRINT(history_trace)
+            auto expected_trace = ModeTrace().push_back(first, 1.0).push_back(second, 1.0).push_back(first, 1.0);
+            OPERA_TEST_EQUALS(history_trace, expected_trace)
         }
 
-        std::cout << history.most_recent_occurrence(first) << std::endl;
+        RobotPredictTiming rpt = RobotPredictTiming(&history);
     }
 
     // #~#^
