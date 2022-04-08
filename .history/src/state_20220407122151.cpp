@@ -210,8 +210,6 @@ TimestampType const& RobotStateHistory::most_recent_occurrence(Mode const& mode,
     return _latest_time;
 }
 
-
-
 //#~#^
 
 void RobotStateHistory::acquire(Mode const& mode, List<List<Point>> const& points, TimestampType const& timestamp) {
