@@ -176,41 +176,24 @@ Mode const& RobotStateHistory::mode_at(TimestampType const& time) const {
 
 // #~#v
 
-TimestampType const& RobotStateHistory::most_recent_occurrence(Mode const& mode){
-
-    void const *result;
-    bool found = false;
-
-
-    for (auto const& p : _mode_presences){
-        if (!(p.mode().is_empty()) && p.mode() == mode){
-            result = &p;
-            found = true;
-        }
+RobotPredictTiming::RobotPredictTiming(RobotStateHistorySnapshot const& snapshot):
+    _snapshot(snapshot){
+        _extract_mode_trace();
     }
-    if (found)
-        return ((const RobotModePresence *) result) -> from();
 
-    return _latest_time;
+
+RobotPredictTiming::RobotPredictTiming(RobotStateHistory const& history):
+    _snapshot(history.snapshot_at(history.latest_time())){
+        _extract_mode_trace();
+    }
+
+void RobotPredictTiming::_extract_mode_trace(){
+    _mode_trace = _snapshot.mode_trace();
 }
 
-TimestampType const& RobotStateHistory::most_recent_occurrence(Mode const& mode, TimestampType const& timestamp){
-    void const *result;
-    bool found = false;
-
-
-    for (auto const&p : _mode_presences){
-        if (!(p.mode().is_empty()) && p.mode() == mode && p.from() < timestamp){
-            result = &p;
-            found = true;
-        }
-    }
-    if (found)
-        return ((const RobotModePresence *) result) -> from();
-    return _latest_time;
+void RobotPredictTiming::_test(){
+    _next_mode = _mode_trace.starting_mode();
 }
-
-
 
 //#~#^
 
@@ -412,11 +395,11 @@ SizeType RobotStateHistorySnapshot::checked_sample_index(Mode const& mode, Times
 
 // #~#v
 
-RobotPredictTiming::RobotPredictTiming(RobotStateHistory const* history) :
-_history(history){}
 
 std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
-    return os << "test_print\nlatest mode: " << p._history -> latest_mode();
+    //return os << "test_print\nlatest mode: " << p._history -> latest_mode();
+
+    return os << "test_print\nlatest mode: " << p._mode_trace;
 }
 
 // #~#^

@@ -156,14 +156,6 @@ class RobotStateHistory {
     //! \brief The most recent mode according to the latest time
     Mode const& latest_mode() const;
 
-    // #~#v
-    //! \brief Most recent occurrence of the given mode
-    TimestampType const& most_recent_occurrence(Mode const& mode);
-
-    //! \brief Most recent occurrence of the given mode before the given time
-    TimestampType const& most_recent_occurrence(Mode const& mode, TimestampType const& timestamp);
-    // #~#^
-
     //! \brief Acquire the \a state to be ultimately held into the hystory
     //! \details Hystory will not be effectively updated till the mode changes
     void acquire(Mode const& mode, List<List<Point>> const& points, TimestampType const& timestamp);
@@ -256,13 +248,22 @@ class RobotStateHistorySnapshot {
 
 class RobotPredictTiming {
     public:
-    //! \brief Construct from a \a state_history
-    RobotPredictTiming(RobotStateHistory const* history);
-
+    //! \brief construct from \a robotstatehistorysnapshot
+        RobotPredictTiming(RobotStateHistorySnapshot const& snapshot);
+    //! \brief constuct from \a robotstatehisotry
+        RobotPredictTiming(RobotStateHistory const& history);
     //! \brief Print to the standard output
     friend std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p);
     private:
-        RobotStateHistory const* _history;
+            // must be called in every constructor
+        void _extract_mode_trace();
+
+        void _test();
+
+        RobotStateHistorySnapshot _snapshot;
+        ModeTrace _mode_trace;
+
+        Mode _next_mode;
 };
 
 // #~#^
