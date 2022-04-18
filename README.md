@@ -1,6 +1,6 @@
 
 
-# Opera
+# Opera <img align="right" src="https://github.com/ariadne-cps/opera/blob/main/resources/img/opera_logo_original.png" alt="Opera" width="80"/>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT) [![Unix Status](https://github.com/ariadne-cps/opera/workflows/Unix/badge.svg)](https://github.com/ariadne-cps/opera/actions/workflows/unix.yml)
  [![Windows Status](https://github.com/ariadne-cps/opera/workflows/Windows/badge.svg)](https://github.com/ariadne-cps/opera/actions/workflows/windows.yml)
