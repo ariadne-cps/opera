@@ -347,8 +347,7 @@ public:
 
         ts+= 100000000;
         history.acquire(third,{{Point(4,5,3)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(second,{{Point(4,6,3)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(fourth,{{Point(4,6,3)},{Point(5,4,4)}},ts);
+        history.acquire(second,{{Point(4,6,3)},{Point(4,4,4)}},ts);
 
         {
             auto snapshot = history.snapshot_at(ts);
@@ -358,7 +357,7 @@ public:
 
 
 
-        RobotPredictTiming rpt = RobotPredictTiming(history.snapshot_at(ts+1), first);
+        RobotPredictTiming rpt = RobotPredictTiming(history.snapshot_at(ts));
         std::cout << rpt << std::endl;
     }
 

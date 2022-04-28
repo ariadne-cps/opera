@@ -176,48 +176,22 @@ Mode const& RobotStateHistory::mode_at(TimestampType const& time) const {
 
 // #~#v
 
-Robot const& RobotStateHistory::get_robot() const{
+Robot const& RobotStateHistory::_get_robot() const{
     return _robot;
 }
 
-Mode const& RobotStateHistory::get_latest_mode() const{
-    return _latest_mode;
-}
-
-RobotPredictTiming::RobotPredictTiming(RobotStateHistorySnapshot const& snapshot, Mode const&target):
-    _snapshot(snapshot), _robot(_snapshot.get_robot()), _target(target), _present_mode(_snapshot.get_latest_mode()){
-        _common_constructor();
+RobotPredictTiming::RobotPredictTiming(RobotStateHistorySnapshot const& snapshot):
+    _snapshot(snapshot), _robot(_snapshot._get_robot()){
+        _extract_mode_trace();
+        _index_present_mode = _mode_trace.size();
     }
 
 
-RobotPredictTiming::RobotPredictTiming(RobotStateHistory const& history, Mode const& target):
-    _snapshot(history.snapshot_at(history.latest_time())), _robot(_snapshot.get_robot()), _target(target), _present_mode(_snapshot.get_latest_mode()){
-        _common_constructor();
-}
-
-void RobotPredictTiming::_common_constructor(){
-    _extract_mode_trace();
-    _index_present_mode = _mode_trace.size();
-
-    std::cout << "pre-update: mode with highest index on the trace: " << _mode_trace.at(_mode_trace.size()-1).mode << std::endl;
-    _mode_trace.push_back(_present_mode);
-    std::cout << "post-update: mode with highest index on the trace: " << _mode_trace.at(_mode_trace.size()-1).mode << std::endl;
-
-
-    //_augment_trace();
-    //_test_augment_trace();
-
-}
-
-void RobotPredictTiming::_augment_trace(){
-    std::cout << "instance trace before augmentation: " << _mode_trace << std::endl;
-
-    for (int i = 0; i < 100; i ++){
-        _mode_trace.push_back(_target);
+RobotPredictTiming::RobotPredictTiming(RobotStateHistory const& history):
+    _snapshot(history.snapshot_at(history.latest_time())), _robot(_snapshot._get_robot()){
+        _extract_mode_trace();
+        _index_present_mode = _mode_trace.size();
     }
-    std::cout << "instance trace after augmentation: " << _mode_trace << std::endl;
-
-}
 
 auto RobotPredictTiming::get_to_print() const{
     /*auto n_samples = _snapshot.range_of_num_samples_in(_next_mode);
@@ -240,7 +214,6 @@ auto RobotPredictTiming::get_to_print() const{
         _mode_trace.push_back(mode_to_add, probability);
     }
    return "";*/
-   return true;
 }
 
 void RobotPredictTiming::_extract_mode_trace(){
@@ -248,28 +221,7 @@ void RobotPredictTiming::_extract_mode_trace(){
 }
 
 void RobotPredictTiming::_test_augment_trace(){
-    //std::cout << "current trace: " << _mode_trace << std::endl;
 
-
-    std::cout << "Number of branches available: " << _mode_trace.next_modes().size() <<  std::endl;
-
-
-    Mode mode_to_add;
-    PositiveFloatType probability;
-
-    for (int i=0; i < 100; i++){
-        int count = 0;
-        for (auto entry : _mode_trace.next_modes()){
-            count ++;
-            mode_to_add = entry.first;
-            probability = entry.second;
-            if (count > 1)
-                std::cout << "more than one branch available" << std::endl;
-        }
-        //std::cout << "pushing mode " << mode_to_add << " with probability " << probability << " on the trace" << std::endl;
-        _mode_storage[i] = Mode(mode_to_add.values());
-        _mode_trace = _mode_trace.push_back(_mode_storage[i], probability);
-    }
 }
 
 void RobotPredictTiming::_test(){
@@ -487,23 +439,15 @@ SizeType RobotStateHistorySnapshot::checked_sample_index(Mode const& mode, Times
 
 // #~#v
 
-Robot const& RobotStateHistorySnapshot::get_robot() const{
-    return _history.get_robot();
-}
-
-Mode const& RobotStateHistorySnapshot::get_latest_mode() const{
-    return _history.get_latest_mode();
+Robot const& RobotStateHistorySnapshot::_get_robot() const{
+    return _history._get_robot();
 }
 
 std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
     //return os << "test_print\nlatest mode: " << p._history -> latest_mode();
 
     //return os << p.get_to_print();
-    //return os << p._mode_trace;
-    if (p.get_to_print()){
-        return os << p._mode_trace;
-    }
-    return os << "";
+    return os << p._mode_trace;
 }
 
 // #~#^

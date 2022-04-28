@@ -184,8 +184,7 @@ class RobotStateHistory {
     Robot const _robot;
 
     // #~#v
-    Robot const& get_robot() const;
-    Mode const& get_latest_mode() const;
+    Robot const& _get_robot() const;
     // #~#^
 };
 
@@ -241,8 +240,7 @@ class RobotStateHistorySnapshot {
     SizeType checked_sample_index(Mode const& mode, TimestampType const& timestamp) const;
 
     // #~#v
-    Robot const& get_robot() const;
-    Mode const& get_latest_mode() const;
+    Robot const& _get_robot() const;
     // #~#^
 
   private:
@@ -262,22 +260,20 @@ class RobotPredictTiming {
     friend class RobotStateHistorySnapshot;
     public:
     //! \brief construct from \a robotstatehistorysnapshot
-        RobotPredictTiming(RobotStateHistorySnapshot const& snapshot, Mode const& target);
+        RobotPredictTiming(RobotStateHistorySnapshot const& snapshot);
     //! \brief constuct from \a robotstatehisotry
-        RobotPredictTiming(RobotStateHistory const& history, Mode const& target);
+        RobotPredictTiming(RobotStateHistory const& history);
     //! \brief Print to the standard output
     friend std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p);
 
     auto get_to_print() const;
 
-
     private:
             // must be called in every constructor
-        void _common_constructor();
         void _extract_mode_trace();
-        void _augment_trace();
 
         void _test_augment_trace();
+        void _test_find_branches();
         void _test();
 
         int _index_present_mode;
@@ -287,8 +283,13 @@ class RobotPredictTiming {
 
         ModeTrace _mode_trace;
         Robot const _robot;
-        Mode const& _target;
-        Mode _present_mode;
+
+
+        String _robot("robot");
+
+        Mode _mode_1({_robot, "first"});
+        Mode _mode_2({_robot, "second"});
+        Mode _mode_3({_robot, "third"});
 };
 
 // #~#^

@@ -185,7 +185,6 @@ class RobotStateHistory {
 
     // #~#v
     Robot const& get_robot() const;
-    Mode const& get_latest_mode() const;
     // #~#^
 };
 
@@ -242,7 +241,7 @@ class RobotStateHistorySnapshot {
 
     // #~#v
     Robot const& get_robot() const;
-    Mode const& get_latest_mode() const;
+    Mode get_latest_mode();
     // #~#^
 
   private:
@@ -288,7 +287,6 @@ class RobotPredictTiming {
         ModeTrace _mode_trace;
         Robot const _robot;
         Mode const& _target;
-        Mode _present_mode;
 };
 
 // #~#^

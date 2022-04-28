@@ -176,37 +176,26 @@ Mode const& RobotStateHistory::mode_at(TimestampType const& time) const {
 
 // #~#v
 
-Robot const& RobotStateHistory::get_robot() const{
+Robot const& RobotStateHistory::_get_robot() const{
     return _robot;
 }
 
-Mode const& RobotStateHistory::get_latest_mode() const{
-    return _latest_mode;
-}
-
 RobotPredictTiming::RobotPredictTiming(RobotStateHistorySnapshot const& snapshot, Mode const&target):
-    _snapshot(snapshot), _robot(_snapshot.get_robot()), _target(target), _present_mode(_snapshot.get_latest_mode()){
+    _snapshot(snapshot), _robot(_snapshot._get_robot()), _target(target){
         _common_constructor();
     }
 
 
 RobotPredictTiming::RobotPredictTiming(RobotStateHistory const& history, Mode const& target):
-    _snapshot(history.snapshot_at(history.latest_time())), _robot(_snapshot.get_robot()), _target(target), _present_mode(_snapshot.get_latest_mode()){
+    _snapshot(history.snapshot_at(history.latest_time())), _robot(_snapshot._get_robot()), _target(target){
         _common_constructor();
-}
+    }
 
 void RobotPredictTiming::_common_constructor(){
     _extract_mode_trace();
     _index_present_mode = _mode_trace.size();
-
-    std::cout << "pre-update: mode with highest index on the trace: " << _mode_trace.at(_mode_trace.size()-1).mode << std::endl;
-    _mode_trace.push_back(_present_mode);
-    std::cout << "post-update: mode with highest index on the trace: " << _mode_trace.at(_mode_trace.size()-1).mode << std::endl;
-
-
-    //_augment_trace();
+    _augment_trace();
     //_test_augment_trace();
-
 }
 
 void RobotPredictTiming::_augment_trace(){
@@ -240,7 +229,7 @@ auto RobotPredictTiming::get_to_print() const{
         _mode_trace.push_back(mode_to_add, probability);
     }
    return "";*/
-   return true;
+   return false;
 }
 
 void RobotPredictTiming::_extract_mode_trace(){
@@ -487,12 +476,8 @@ SizeType RobotStateHistorySnapshot::checked_sample_index(Mode const& mode, Times
 
 // #~#v
 
-Robot const& RobotStateHistorySnapshot::get_robot() const{
-    return _history.get_robot();
-}
-
-Mode const& RobotStateHistorySnapshot::get_latest_mode() const{
-    return _history.get_latest_mode();
+Robot const& RobotStateHistorySnapshot::_get_robot() const{
+    return _history._get_robot();
 }
 
 std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {

@@ -288,7 +288,7 @@ class RobotPredictTiming {
         ModeTrace _mode_trace;
         Robot const _robot;
         Mode const& _target;
-        Mode _present_mode;
+        Mode const& _present_mode;
 };
 
 // #~#^

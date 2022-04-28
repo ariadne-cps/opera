@@ -197,8 +197,8 @@ RobotPredictTiming::RobotPredictTiming(RobotStateHistory const& history, Mode co
 
 void RobotPredictTiming::_common_constructor(){
     _extract_mode_trace();
-    _index_present_mode = _mode_trace.size();
-
+    _index_present_mode = (int) _mode_trace.size();
+    _index_present_mode--;
     std::cout << "pre-update: mode with highest index on the trace: " << _mode_trace.at(_mode_trace.size()-1).mode << std::endl;
     _mode_trace.push_back(_present_mode);
     std::cout << "post-update: mode with highest index on the trace: " << _mode_trace.at(_mode_trace.size()-1).mode << std::endl;

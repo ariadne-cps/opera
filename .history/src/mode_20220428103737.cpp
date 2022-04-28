@@ -108,7 +108,7 @@ ModeTrace& ModeTrace::push_front(Mode const& mode) {
     return *this;
 }
 
-ModeTrace& ModeTrace::push_back(Mode const& mode, PositiveFloatType const& l){
+ModeTrace& ModeTrace::push_back(Mode const& mode, PositiveFloatType const& l) const{
     _entries.push_back({mode,likelihood()*l});
     _next_modes.clear();
     return *this;

@@ -184,8 +184,7 @@ class RobotStateHistory {
     Robot const _robot;
 
     // #~#v
-    Robot const& get_robot() const;
-    Mode const& get_latest_mode() const;
+    Robot const& _get_robot() const;
     // #~#^
 };
 
@@ -241,8 +240,7 @@ class RobotStateHistorySnapshot {
     SizeType checked_sample_index(Mode const& mode, TimestampType const& timestamp) const;
 
     // #~#v
-    Robot const& get_robot() const;
-    Mode const& get_latest_mode() const;
+    Robot const& _get_robot() const;
     // #~#^
 
   private:
@@ -270,14 +268,13 @@ class RobotPredictTiming {
 
     auto get_to_print() const;
 
-
     private:
             // must be called in every constructor
         void _common_constructor();
         void _extract_mode_trace();
-        void _augment_trace();
 
         void _test_augment_trace();
+        void _test_find_branches();
         void _test();
 
         int _index_present_mode;
@@ -288,7 +285,9 @@ class RobotPredictTiming {
         ModeTrace _mode_trace;
         Robot const _robot;
         Mode const& _target;
-        Mode _present_mode;
+
+
+
 };
 
 // #~#^
