@@ -200,14 +200,9 @@ auto RobotPredictTiming::get_to_print() const{
     Interval<long unsigned int> interval = Interval<long unsigned int>(lower, upper);
     return interval; // convert to nanoseconds
     */
-    std::cout << "stampo 3 set di modi futuri" << std::endl;
-    Mode mode_to_add;
-    for (int i=0; i < 3; i++){
-        for (auto entry : _mode_trace.next_modes()){
-            mode_to_add = entry.first;
-            std::cout << mode_to_add << std::endl;
-        }
-        _mode_trace.push_back(mode_to_add, 1.0);
+    std::cout << "stampo i modi futuri" << std::endl;
+    for (auto i : _mode_trace.next_modes()){
+       std::cout << i.first << std::endl;
     }
    return "";
 }
@@ -440,7 +435,7 @@ Robot const& RobotStateHistorySnapshot::_get_robot() const{
 std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
     //return os << "test_print\nlatest mode: " << p._history -> latest_mode();
 
-    return os << p.get_to_print();
+    return os << "next mode: " << p.get_to_print();
 }
 
 // #~#^

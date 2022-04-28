@@ -358,8 +358,8 @@ public:
 
 
 
-        RobotPredictTiming rpt = RobotPredictTiming(history.snapshot_at(ts));
-        std::cout << rpt << std::endl;
+        RobotPredictTiming rpt = RobotPredictTiming(history.snapshot_at(history.latest_time()));
+        //std::cout << rpt << std::endl;
     }
 
     // #~#^

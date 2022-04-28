@@ -201,13 +201,10 @@ auto RobotPredictTiming::get_to_print() const{
     return interval; // convert to nanoseconds
     */
     std::cout << "stampo 3 set di modi futuri" << std::endl;
-    Mode mode_to_add;
     for (int i=0; i < 3; i++){
         for (auto entry : _mode_trace.next_modes()){
-            mode_to_add = entry.first;
-            std::cout << mode_to_add << std::endl;
+            std::cout << entry.first << std::endl;
         }
-        _mode_trace.push_back(mode_to_add, 1.0);
     }
    return "";
 }

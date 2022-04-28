@@ -181,35 +181,18 @@ Robot const& RobotStateHistory::_get_robot() const{
 }
 
 RobotPredictTiming::RobotPredictTiming(RobotStateHistorySnapshot const& snapshot):
-    _snapshot(snapshot), _robot(_snapshot._get_robot()){
+    _snapshot(snapshot), _robot(_snapshot._get_robot())){
         _extract_mode_trace();
     }
 
 
 RobotPredictTiming::RobotPredictTiming(RobotStateHistory const& history):
-    _snapshot(history.snapshot_at(history.latest_time())), _robot(_snapshot._get_robot()){
+    _snapshot(history.snapshot_at(history.latest_time())){
         _extract_mode_trace();
     }
 
 auto RobotPredictTiming::get_to_print() const{
-    /*auto n_samples = _snapshot.range_of_num_samples_in(_next_mode);
-    long unsigned int conversion_factor = 1000000000;
-
-    long unsigned int upper = _robot.message_frequency() * n_samples.upper() * conversion_factor;
-    long unsigned int lower = _robot.message_frequency() * n_samples.lower() * conversion_factor;
-    Interval<long unsigned int> interval = Interval<long unsigned int>(lower, upper);
-    return interval; // convert to nanoseconds
-    */
-    std::cout << "stampo 3 set di modi futuri" << std::endl;
-    Mode mode_to_add;
-    for (int i=0; i < 3; i++){
-        for (auto entry : _mode_trace.next_modes()){
-            mode_to_add = entry.first;
-            std::cout << mode_to_add << std::endl;
-        }
-        _mode_trace.push_back(mode_to_add, 1.0);
-    }
-   return "";
+    return _snapshot.range_of_num_samples_in(_next_mode);
 }
 
 void RobotPredictTiming::_extract_mode_trace(){
@@ -219,16 +202,7 @@ void RobotPredictTiming::_extract_mode_trace(){
 
 void RobotPredictTiming::_test(){
     _next_mode = _mode_trace.starting_mode();
-    ModeTraceEntry tmp1 = _mode_trace.at(1);
-    ModeTraceEntry tmp2 = _mode_trace.at(2);
-
-    //0,1 = 2
-    //1,2 = 3
-    //0,2 = 3
-    auto n_samples = _snapshot.range_of_num_samples_in(tmp1.mode, tmp2.mode);
-
-    std::cout << "n_samples primi due modi: " << n_samples << std::endl;
-
+    _snapshot._get_robot();
     // obtain number of samples from range_of_num_samples_in
     //_n_samples = _snapshot.range_of_num_samples_in(_next_mode);
 }
@@ -440,7 +414,7 @@ Robot const& RobotStateHistorySnapshot::_get_robot() const{
 std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
     //return os << "test_print\nlatest mode: " << p._history -> latest_mode();
 
-    return os << p.get_to_print();
+    return os << "next mode: " << p.get_to_print();
 }
 
 // #~#^

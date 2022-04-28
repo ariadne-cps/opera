@@ -275,7 +275,7 @@ class RobotPredictTiming {
         void _test();
 
         RobotStateHistorySnapshot _snapshot;
-        ModeTrace const& _mode_trace;
+        ModeTrace _mode_trace;
         Mode _next_mode;
         Robot const _robot;
 };

@@ -184,7 +184,7 @@ class RobotStateHistory {
     Robot const _robot;
 
     // #~#v
-    Robot const& _get_robot() const;
+    Robot const& get_robot() const;
     // #~#^
 };
 
@@ -239,10 +239,6 @@ class RobotStateHistorySnapshot {
     //! \details The index can not be greater or equal than the current number of samples
     SizeType checked_sample_index(Mode const& mode, TimestampType const& timestamp) const;
 
-    // #~#v
-    Robot const& _get_robot() const;
-    // #~#^
-
   private:
     //! \brief The range of number of samples within a list of \a presences
     Interval<SizeType> _range_of_num_samples_within(List<RobotModePresence> const& presences) const;
@@ -251,7 +247,9 @@ class RobotStateHistorySnapshot {
     RobotStateHistory const& _history;
     TimestampType _snapshot_time;
 
-
+    // #~#v
+    Robot const& get_robot() const;
+    // #~#^
 };
 
 // #~#v
@@ -275,9 +273,8 @@ class RobotPredictTiming {
         void _test();
 
         RobotStateHistorySnapshot _snapshot;
-        ModeTrace const& _mode_trace;
+        ModeTrace _mode_trace;
         Mode _next_mode;
-        Robot const _robot;
 };
 
 // #~#^

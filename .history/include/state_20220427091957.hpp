@@ -182,10 +182,6 @@ class RobotStateHistory {
 
   protected:
     Robot const _robot;
-
-    // #~#v
-    Robot const& _get_robot() const;
-    // #~#^
 };
 
 //! \brief A wrapper class for a snapshot of the history at a given time
@@ -239,10 +235,6 @@ class RobotStateHistorySnapshot {
     //! \details The index can not be greater or equal than the current number of samples
     SizeType checked_sample_index(Mode const& mode, TimestampType const& timestamp) const;
 
-    // #~#v
-    Robot const& _get_robot() const;
-    // #~#^
-
   private:
     //! \brief The range of number of samples within a list of \a presences
     Interval<SizeType> _range_of_num_samples_within(List<RobotModePresence> const& presences) const;
@@ -250,14 +242,11 @@ class RobotStateHistorySnapshot {
   private:
     RobotStateHistory const& _history;
     TimestampType _snapshot_time;
-
-
 };
 
 // #~#v
 
 class RobotPredictTiming {
-    friend class RobotStateHistorySnapshot;
     public:
     //! \brief construct from \a robotstatehistorysnapshot
         RobotPredictTiming(RobotStateHistorySnapshot const& snapshot);
@@ -266,7 +255,7 @@ class RobotPredictTiming {
     //! \brief Print to the standard output
     friend std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p);
 
-    auto get_to_print() const;
+    Mode const& get_next_mode() const;
 
     private:
             // must be called in every constructor
@@ -275,9 +264,9 @@ class RobotPredictTiming {
         void _test();
 
         RobotStateHistorySnapshot _snapshot;
-        ModeTrace const& _mode_trace;
+        ModeTrace _mode_trace;
+
         Mode _next_mode;
-        Robot const _robot;
 };
 
 // #~#^
