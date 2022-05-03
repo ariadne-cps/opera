@@ -125,6 +125,8 @@ std::ostream& operator<<(std::ostream& os, RobotModePresence const& p) {
     return os << "(within '" << p.mode() << "' in [" << p.from() << "," << p.to() << "), exiting to '" << p.exit_destination() << "')";
 }
 
+
+
 auto SamplesHistory::at(TimestampType const& timestamp) const -> BodySamplesType const& {
     OPERA_PRECONDITION(not _entries.empty())
     SizeType i=0;
@@ -171,6 +173,121 @@ Mode const& RobotStateHistory::mode_at(TimestampType const& time) const {
             return p.mode();
     return _latest_mode;
 }
+
+// #~#v
+
+Robot const& RobotStateHistory::get_robot() const{
+    return _robot;
+}
+
+Mode const& RobotStateHistory::get_latest_mode() const{
+    return _latest_mode;
+}
+
+RobotPredictTiming::RobotPredictTiming(RobotStateHistorySnapshot const& snapshot, Mode const&target):
+    _snapshot(snapshot), _robot(_snapshot.get_robot()), _target(target), _present_mode(_snapshot.get_latest_mode()){
+        _common_constructor();
+    }
+
+
+RobotPredictTiming::RobotPredictTiming(RobotStateHistory const& history, Mode const& target):
+    _snapshot(history.snapshot_at(history.latest_time())), _robot(_snapshot.get_robot()), _target(target), _present_mode(_snapshot.get_latest_mode()){
+        _common_constructor();
+}
+
+void RobotPredictTiming::_common_constructor(){
+    _extract_mode_trace();
+    _index_present_mode = _mode_trace.size();
+
+    std::cout << "pre-update: mode with highest index on the trace: " << _mode_trace.at(_mode_trace.size()-1).mode << std::endl;
+    _mode_trace.push_back(_present_mode);
+    std::cout << "post-update: mode with highest index on the trace: " << _mode_trace.at(_mode_trace.size()-1).mode << std::endl;
+
+
+    //_augment_trace();
+    //_test_augment_trace();
+
+}
+
+void RobotPredictTiming::_augment_trace(){
+    std::cout << "instance trace before augmentation: " << _mode_trace << std::endl;
+
+    for (int i = 0; i < 100; i ++){
+        _mode_trace.push_back(_target);
+    }
+    std::cout << "instance trace after augmentation: " << _mode_trace << std::endl;
+
+}
+
+auto RobotPredictTiming::get_to_print() const{
+    /*auto n_samples = _snapshot.range_of_num_samples_in(_next_mode);
+    long unsigned int conversion_factor = 1000000000;
+
+    long unsigned int upper = _robot.message_frequency() * n_samples.upper() * conversion_factor;
+    long unsigned int lower = _robot.message_frequency() * n_samples.lower() * conversion_factor;
+    Interval<long unsigned int> interval = Interval<long unsigned int>(lower, upper);
+    return interval; // convert to nanoseconds
+    *//*
+    std::cout << "stampo 3 set di modi futuri" << std::endl;
+    Mode mode_to_add;
+    PositiveFloatType probability;
+    for (int i=0; i < 3; i++){
+        for (auto entry : _mode_trace.next_modes()){
+            mode_to_add = entry.first;
+            probability = entry.second;
+            std::cout << mode_to_add << std::endl;
+        }
+        _mode_trace.push_back(mode_to_add, probability);
+    }
+   return "";*/
+   return true;
+}
+
+void RobotPredictTiming::_extract_mode_trace(){
+    _mode_trace = _snapshot.mode_trace();
+}
+
+void RobotPredictTiming::_test_augment_trace(){
+    //std::cout << "current trace: " << _mode_trace << std::endl;
+
+
+    std::cout << "Number of branches available: " << _mode_trace.next_modes().size() <<  std::endl;
+
+
+    Mode mode_to_add;
+    PositiveFloatType probability;
+
+    for (int i=0; i < 100; i++){
+        int count = 0;
+        for (auto entry : _mode_trace.next_modes()){
+            count ++;
+            mode_to_add = entry.first;
+            probability = entry.second;
+            if (count > 1)
+                std::cout << "more than one branch available" << std::endl;
+        }
+        //std::cout << "pushing mode " << mode_to_add << " with probability " << probability << " on the trace" << std::endl;
+        _mode_storage[i] = Mode(mode_to_add.values());
+        _mode_trace = _mode_trace.push_back(_mode_storage[i], probability);
+    }
+}
+
+void RobotPredictTiming::_test(){
+    ModeTraceEntry tmp1 = _mode_trace.at(1);
+    ModeTraceEntry tmp2 = _mode_trace.at(2);
+
+    //0,1 = 2
+    //1,2 = 3
+    //0,2 = 3
+    auto n_samples = _snapshot.range_of_num_samples_in(tmp1.mode, tmp2.mode);
+
+    std::cout << "n_samples primi due modi: " << n_samples << std::endl;
+
+    // obtain number of samples from range_of_num_samples_in
+    //_n_samples = _snapshot.range_of_num_samples_in(_next_mode);
+}
+
+//#~#^
 
 void RobotStateHistory::acquire(Mode const& mode, List<List<Point>> const& points, TimestampType const& timestamp) {
     /*
@@ -367,5 +484,28 @@ SizeType RobotStateHistorySnapshot::checked_sample_index(Mode const& mode, Times
     OPERA_ASSERT_MSG(result < maximum_number_of_samples(mode), "The sample index must be lower than the number of states in the given mode, instead " << result << " >= " << maximum_number_of_samples(mode) << ".")
     return result;
 }
+
+// #~#v
+
+Robot const& RobotStateHistorySnapshot::get_robot() const{
+    return _history.get_robot();
+}
+
+Mode const& RobotStateHistorySnapshot::get_latest_mode() const{
+    return _history.get_latest_mode();
+}
+
+std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
+    //return os << "test_print\nlatest mode: " << p._history -> latest_mode();
+
+    //return os << p.get_to_print();
+    //return os << p._mode_trace;
+    if (p.get_to_print()){
+        return os << p._mode_trace;
+    }
+    return os << "";
+}
+
+// #~#^
 
 }

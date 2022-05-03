@@ -280,7 +280,7 @@ class RobotPredictTiming {
         void _test_augment_trace();
         void _test();
 
-        int _index_present_mode;
+        SizeType _index_present_mode;
         RobotStateHistorySnapshot _snapshot;
 
         Mode _mode_storage [100];

@@ -114,6 +114,7 @@ class RobotModePresence {
     TimestampType const _to;
 };
 
+
 //! \brief Holds the continuous history for a given mode
 class SamplesHistory {
     typedef List<BodySegmentSample> SegmentTemporalSamplesType;
@@ -181,6 +182,11 @@ class RobotStateHistory {
 
   protected:
     Robot const _robot;
+
+    // #~#v
+    Robot const& get_robot() const;
+    Mode const& get_latest_mode() const;
+    // #~#^
 };
 
 //! \brief A wrapper class for a snapshot of the history at a given time
@@ -194,7 +200,7 @@ class RobotStateHistorySnapshot {
   public:
 
     //! \brief The mode trace
-    //! \details A more ends up here only after a sample from the next mode has been acquired, so that
+    //! \details A mode ends up here only after a sample from the next mode has been acquired, so that
     //! at least one next mode always exists from the trace
     ModeTrace const& mode_trace() const;
 
@@ -234,6 +240,11 @@ class RobotStateHistorySnapshot {
     //! \details The index can not be greater or equal than the current number of samples
     SizeType checked_sample_index(Mode const& mode, TimestampType const& timestamp) const;
 
+    // #~#v
+    Robot const& get_robot() const;
+    Mode const& get_latest_mode() const;
+    // #~#^
+
   private:
     //! \brief The range of number of samples within a list of \a presences
     Interval<SizeType> _range_of_num_samples_within(List<RobotModePresence> const& presences) const;
@@ -241,7 +252,46 @@ class RobotStateHistorySnapshot {
   private:
     RobotStateHistory const& _history;
     TimestampType _snapshot_time;
+
+
 };
+
+// #~#v
+
+class RobotPredictTiming {
+    friend class RobotStateHistorySnapshot;
+    public:
+    //! \brief construct from \a robotstatehistorysnapshot
+        RobotPredictTiming(RobotStateHistorySnapshot const& snapshot, Mode const& target);
+    //! \brief constuct from \a robotstatehisotry
+        RobotPredictTiming(RobotStateHistory const& history, Mode const& target);
+    //! \brief Print to the standard output
+    friend std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p);
+
+    auto get_to_print() const;
+
+
+    private:
+            // must be called in every constructor
+        void _common_constructor();
+        void _extract_mode_trace();
+        void _augment_trace();
+
+        void _test_augment_trace();
+        void _test();
+
+        SizeType _index_present_mode;
+        RobotStateHistorySnapshot _snapshot;
+
+        Mode _mode_storage [100];
+
+        ModeTrace _mode_trace;
+        Robot const _robot;
+        Mode const& _target;
+        Mode _present_mode;
+};
+
+// #~#^
 
 }
 
