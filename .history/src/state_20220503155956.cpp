@@ -246,7 +246,7 @@ ModeTrace RobotPredictTiming::_compute_branch_path(ModeTrace trace){
                     std::cout << "\tflag sigdev 2" <<std::endl;
                     ModeTrace clone = trace.clone();
                     clone.push_back(iterator->first, iterator->second);
-                    _branch_paths.push_back(_compute_branch_path(clone));
+                    //_branch_paths.push_back(_compute_branch_path(clone));
                 }
             }
         }

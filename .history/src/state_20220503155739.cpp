@@ -233,20 +233,21 @@ ModeTrace RobotPredictTiming::_compute_branch_path(ModeTrace trace){
 
             auto next_modes = trace.next_modes();
 
-            for (auto iterator = next_modes.begin(); iterator != next_modes.end(); iterator++){
+            for (auto iterator = next_modes.begin(); iterator < next_modes.end(); i++){
+                ModeTraceEntry entry = *iterator;
                 debug_count ++;
                 std::cout << "debug count " << debug_count << "\n";
-                if (!iterator->first.is_empty() && first){
+                if (!entry.mode.is_empty() && first){
                     std::cout << "\tflag sigdev 1" <<std::endl;
-                    Mode mode_to_add = iterator->first;
-                    PositiveFloatType probability_to_add = iterator->second;
+                    Mode mode_to_add = entry.mode;
+                    PositiveFloatType probability_to_add = entry.likelihood;
                     trace.push_back(mode_to_add, probability_to_add);
                     first = false;
-                }else if(! iterator->first.is_empty()){
+                }else if(! entry.mode.is_empty()){
                     std::cout << "\tflag sigdev 2" <<std::endl;
                     ModeTrace clone = trace.clone();
-                    clone.push_back(iterator->first, iterator->second);
-                    _branch_paths.push_back(_compute_branch_path(clone));
+                    clone.push_back(entry.mode, entry.likelihood);
+                    //_branch_paths.push_back(_compute_branch_path(clone));
                 }
             }
         }

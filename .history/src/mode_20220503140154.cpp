@@ -172,12 +172,11 @@ ModeTraceEntry const& ModeTrace::at(SizeType const& idx) const {
 }
 
 //#~#v
-ModeTrace ModeTrace::clone(){
-    ModeTrace result = ModeTrace();
-    for (ModeTraceEntry entry : this->_entries){
-        result.push_back(entry.mode, entry.likelihood);
-    }
-    return result;
+void ModeTrace::clone(SizeType const& idx){
+    OPERA_PRECONDITION(idx < _entries.size())
+    OPERA_PRECONDITION(idx > 0)
+
+    _entries.erase(_entries.begin() + (int) idx);
 }
 //#~#^
 

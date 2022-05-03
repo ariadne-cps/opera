@@ -119,7 +119,7 @@ class ModeTrace {
     //! \brief Reduce the trace to be between a \a lower and \a upper indices
     void reduce_between(SizeType const& lower, SizeType const& upper);
 
-    ModeTrace clone(); //#~#
+    void remove_at(SizeType const& idx); //#~#
 
     //! \brief The number of modes
     SizeType size() const;

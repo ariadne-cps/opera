@@ -233,7 +233,7 @@ ModeTrace RobotPredictTiming::_compute_branch_path(ModeTrace trace){
 
             auto next_modes = trace.next_modes();
 
-            for (auto iterator = next_modes.begin(); iterator != next_modes.end(); iterator++){
+            for (auto iterator = next_modes.begin(); iterator < next_modes.end(); iterator++){
                 debug_count ++;
                 std::cout << "debug count " << debug_count << "\n";
                 if (!iterator->first.is_empty() && first){
@@ -246,7 +246,7 @@ ModeTrace RobotPredictTiming::_compute_branch_path(ModeTrace trace){
                     std::cout << "\tflag sigdev 2" <<std::endl;
                     ModeTrace clone = trace.clone();
                     clone.push_back(iterator->first, iterator->second);
-                    _branch_paths.push_back(_compute_branch_path(clone));
+                    //_branch_paths.push_back(_compute_branch_path(clone));
                 }
             }
         }

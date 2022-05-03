@@ -276,12 +276,10 @@ class RobotPredictTiming {
         void _common_constructor();
         void _extract_mode_trace();
         void _augment_trace();
-        void _augment_trace_2();
 
         void _test_augment_trace();
+        void _test_augment_trace_2();
         void _test();
-
-        ModeTrace _compute_branch_path(ModeTrace trace);
 
         SizeType _index_present_mode;
         RobotStateHistorySnapshot _snapshot;
@@ -289,13 +287,10 @@ class RobotPredictTiming {
         //Mode _mode_storage [100];
         Map<SizeType, int> _branch_tracking;
         int _max_depth_search = 0;
-        int _path_max_depth = 10;
         ModeTrace _mode_trace;
         Robot const _robot;
         Mode const& _target;
         Mode _present_mode;
-
-        List<ModeTrace> _branch_paths;
 };
 
 // #~#^

@@ -295,7 +295,7 @@ class RobotPredictTiming {
         Mode const& _target;
         Mode _present_mode;
 
-        List<ModeTrace> _branch_paths;
+        List<ModeTrace const&> _branch_paths;
 };
 
 // #~#^

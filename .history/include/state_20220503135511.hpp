@@ -290,7 +290,7 @@ class RobotPredictTiming {
         Map<SizeType, int> _branch_tracking;
         int _max_depth_search = 0;
         int _path_max_depth = 10;
-        ModeTrace _mode_trace;
+        ModeTrace const _mode_trace;
         Robot const _robot;
         Mode const& _target;
         Mode _present_mode;

@@ -276,9 +276,9 @@ class RobotPredictTiming {
         void _common_constructor();
         void _extract_mode_trace();
         void _augment_trace();
-        void _augment_trace_2();
 
         void _test_augment_trace();
+        void _test_augment_trace_2();
         void _test();
 
         ModeTrace _compute_branch_path(ModeTrace trace);

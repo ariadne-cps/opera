@@ -205,61 +205,6 @@ void RobotPredictTiming::_common_constructor(){
 }
 
 void RobotPredictTiming::_augment_trace(){
-    //_branch_paths.insert(_compute_branch_path(_mode_trace.clone()).clone());
-    _branch_paths.push_back(_compute_branch_path(_mode_trace.clone()));
-
-    std::cout << "Paths found: " << std::endl;
-
-    for (auto branch_path : _branch_paths){
-        std::cout << "PATH: " << branch_path << std::endl << std::endl;
-    }
-}
-
-ModeTrace RobotPredictTiming::_compute_branch_path(ModeTrace trace){
-    int current_depth = (int) (trace.size() - 1 - _index_present_mode);
-    std::cout << "flag 1 " << trace.at(trace.size()-1).mode << std::endl;
-    while (trace.at(trace.size()-1).mode != _target && current_depth <= _path_max_depth)
-    {
-        current_depth = (int) (trace.size() - 1 - _index_present_mode);
-        if (trace.next_modes().size() == 1){
-            trace.push_back(trace.next_modes().begin()->first, trace.next_modes().begin()->second);
-        }
-        else{
-            std::cout << "branch found!"<< std::endl;
-            bool first = true;
-            auto next_mode_size = trace.next_modes().size();
-            int debug_count = 0;
-            std::cout << "next mode size: " << next_mode_size << std::endl;
-
-            auto next_modes = trace.next_modes();
-
-            for (auto iterator = next_modes.begin(); iterator != next_modes.end(); iterator++){
-                debug_count ++;
-                std::cout << "debug count " << debug_count << "\n";
-                if (!iterator->first.is_empty() && first){
-                    std::cout << "\tflag sigdev 1" <<std::endl;
-                    Mode mode_to_add = iterator->first;
-                    PositiveFloatType probability_to_add = iterator->second;
-                    trace.push_back(mode_to_add, probability_to_add);
-                    first = false;
-                }else if(! iterator->first.is_empty()){
-                    std::cout << "\tflag sigdev 2" <<std::endl;
-                    ModeTrace clone = trace.clone();
-                    clone.push_back(iterator->first, iterator->second);
-                    _branch_paths.push_back(_compute_branch_path(clone));
-                }
-            }
-        }
-
-    }
-    //std::cout << "flag 2 " << trace.at(trace.size()-1).mode << std::endl;
-    /*if (trace.at(trace.size()-1).mode != _target){
-        std::cout << "Max path depth reached" << std::endl;
-    }*/
-    return trace;
-}
-
-void RobotPredictTiming::_augment_trace_2(){
     /*
         construct trace while making predictions to find the first
         occurrence of the target mode in the future. If a branch is detected
@@ -270,7 +215,7 @@ void RobotPredictTiming::_augment_trace_2(){
         deleted from the index of the last branch and the cycle
         restarts from that index, since that index is going to be present
         in the _branch tracking map, the next path is taken and the map is updated
-
+    */
     int depth_count = 0;
     int branch_to_take = 0;
     SizeType trace_index;
@@ -280,11 +225,7 @@ void RobotPredictTiming::_augment_trace_2(){
         depth_count = trace_index - _index_present_mode;
         std::cout << "Current depth: " << depth_count << std::endl;
         if (_mode_trace.next_modes().size() != 1){
-                std::cout << "Branch found! trace index: " << trace_index << " branch traking: ";
-                for (auto entry : _branch_tracking){
-                    std::cout << "{" << entry.first << ", " << entry.second << "} ";
-            }
-            std::cout<<std::endl;
+            std::cout << "Branch found! trace index: " << trace_index << std::endl;
             if(_branch_tracking.has_key(trace_index)){
                 std::cout << "fetching path to take" << std::endl;
                 branch_to_take = _branch_tracking.find(_mode_trace.size()-1)->second + 1;
@@ -313,10 +254,10 @@ void RobotPredictTiming::_augment_trace_2(){
         }
         _mode_trace.push_back(entry_to_add, probability_to_add);
         if ((_mode_trace.at(_mode_trace.size()-1).mode != _target) && depth_count > _max_depth_search){
-            //_branch_tracking.erase(_branch_tracking.rbegin()->first);
+            _branch_tracking.erase(_branch_tracking.rbegin()->first);
             SizeType branch_index = _branch_tracking.rbegin()->first;
             std::cout << "trace index: " << trace_index << " branch index: " << branch_index << std::endl;
-            for (SizeType i = trace_index; i >= branch_index; i--){
+            for (SizeType i = trace_index; i > branch_index; i--){
                 _mode_trace.remove_at(i);
                 std::cout << "removing trace entry " << i << std::endl;
             }
@@ -325,10 +266,15 @@ void RobotPredictTiming::_augment_trace_2(){
                 break;
             }
         }
+        std::cout << "branch tracking: ";
+        for (auto entry : _branch_tracking){
+            std::cout << "{" << entry.first << ", " << entry.second << "} ";
+        }
+        std::cout<<std::endl;
     }
 
     std::cout << "Trace after augmentation: " << _mode_trace << std::endl;
-*/
+
 }
 
 auto RobotPredictTiming::get_to_print() const{

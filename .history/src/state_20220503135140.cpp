@@ -205,58 +205,17 @@ void RobotPredictTiming::_common_constructor(){
 }
 
 void RobotPredictTiming::_augment_trace(){
-    //_branch_paths.insert(_compute_branch_path(_mode_trace.clone()).clone());
-    _branch_paths.push_back(_compute_branch_path(_mode_trace.clone()));
-
-    std::cout << "Paths found: " << std::endl;
-
-    for (auto branch_path : _branch_paths){
-        std::cout << "PATH: " << branch_path << std::endl << std::endl;
-    }
+    _branch_paths.insert(_compute_branch_path(_mode_trace));
 }
 
 ModeTrace RobotPredictTiming::_compute_branch_path(ModeTrace trace){
     int current_depth = (int) (trace.size() - 1 - _index_present_mode);
-    std::cout << "flag 1 " << trace.at(trace.size()-1).mode << std::endl;
-    while (trace.at(trace.size()-1).mode != _target && current_depth <= _path_max_depth)
+    while (trace.starting_mode() != _target && current_depth <= _path_max_depth)
     {
-        current_depth = (int) (trace.size() - 1 - _index_present_mode);
         if (trace.next_modes().size() == 1){
-            trace.push_back(trace.next_modes().begin()->first, trace.next_modes().begin()->second);
+
         }
-        else{
-            std::cout << "branch found!"<< std::endl;
-            bool first = true;
-            auto next_mode_size = trace.next_modes().size();
-            int debug_count = 0;
-            std::cout << "next mode size: " << next_mode_size << std::endl;
-
-            auto next_modes = trace.next_modes();
-
-            for (auto iterator = next_modes.begin(); iterator != next_modes.end(); iterator++){
-                debug_count ++;
-                std::cout << "debug count " << debug_count << "\n";
-                if (!iterator->first.is_empty() && first){
-                    std::cout << "\tflag sigdev 1" <<std::endl;
-                    Mode mode_to_add = iterator->first;
-                    PositiveFloatType probability_to_add = iterator->second;
-                    trace.push_back(mode_to_add, probability_to_add);
-                    first = false;
-                }else if(! iterator->first.is_empty()){
-                    std::cout << "\tflag sigdev 2" <<std::endl;
-                    ModeTrace clone = trace.clone();
-                    clone.push_back(iterator->first, iterator->second);
-                    _branch_paths.push_back(_compute_branch_path(clone));
-                }
-            }
-        }
-
     }
-    //std::cout << "flag 2 " << trace.at(trace.size()-1).mode << std::endl;
-    /*if (trace.at(trace.size()-1).mode != _target){
-        std::cout << "Max path depth reached" << std::endl;
-    }*/
-    return trace;
 }
 
 void RobotPredictTiming::_augment_trace_2(){
