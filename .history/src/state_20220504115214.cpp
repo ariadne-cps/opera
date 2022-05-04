@@ -344,6 +344,10 @@ void RobotPredictTiming::_augment_trace(){
 */
 }
 
+auto RobotPredictTiming::get_to_print() const{
+   return false;
+}
+
 void RobotPredictTiming::_extract_mode_trace(){
     _mode_trace = _snapshot.mode_trace();
 }
@@ -557,7 +561,14 @@ Mode const& RobotStateHistorySnapshot::get_latest_mode() const{
 }
 
 std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
-    return os << p.nanoseconds_to_mode;
+    //return os << "test_print\nlatest mode: " << p._history -> latest_mode();
+
+    //return os << p.get_to_print();
+    //return os << p._mode_trace;
+    if (p.get_to_print()){
+        return os << p._mode_trace;
+    }
+    return os << "";
 }
 
 // #~#^

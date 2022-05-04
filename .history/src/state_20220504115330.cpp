@@ -344,6 +344,10 @@ void RobotPredictTiming::_augment_trace(){
 */
 }
 
+auto RobotPredictTiming::get_to_print() const{
+   return false;
+}
+
 void RobotPredictTiming::_extract_mode_trace(){
     _mode_trace = _snapshot.mode_trace();
 }

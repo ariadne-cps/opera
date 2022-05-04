@@ -198,19 +198,24 @@ RobotPredictTiming::RobotPredictTiming(RobotStateHistory const& history, Mode co
 void RobotPredictTiming::_common_constructor(){
     _extract_mode_trace();
     _index_present_mode = _mode_trace.size()-1;
-    _branch_paths.push_back(_find_paths(_mode_trace.clone()));
-    if (_set_best_path() < 0){
-        std::cout << "No prediction found for the given target mode" << std::endl;
-        impossible_prediction_flag = true;
-        return;
-    }
 
-
-
+    _find_paths();
+    //_test_augment_trace();
 
 }
 
-ModeTrace RobotPredictTiming::_find_paths(ModeTrace trace){
+void RobotPredictTiming::_find_paths(){
+    //_branch_paths.insert(_compute_branch_path(_mode_trace.clone()).clone());
+    _branch_paths.push_back(_compute_branch_path(_mode_trace.clone()));
+
+    std::cout << "Paths found: " << std::endl;
+
+    for (auto branch_path : _branch_paths){
+        std::cout << "PATH: " << branch_path << std::endl << std::endl;
+    }
+}
+
+ModeTrace RobotPredictTiming::_compute_branch_path(ModeTrace trace){
     int current_depth = (int) (trace.size() - 1 - _index_present_mode);
     while (trace.at(trace.size()-1).mode != _target && current_depth <= _path_max_depth)
     {
@@ -231,7 +236,7 @@ ModeTrace RobotPredictTiming::_find_paths(ModeTrace trace){
                 }else if(! iterator->first.is_empty()){
                     ModeTrace clone = trace.clone();
                     clone.push_back(iterator->first, iterator->second);
-                    _branch_paths.push_back(_find_paths(clone));
+                    _branch_paths.push_back(_compute_branch_path(clone));
                 }
             }
         }
@@ -241,35 +246,6 @@ ModeTrace RobotPredictTiming::_find_paths(ModeTrace trace){
         std::cout << "Max path depth reached" << std::endl;
     }
     return trace;
-}
-
-int RobotPredictTiming::_set_best_path(){
-    PositiveFloatType best_likelihood = 0;
-    for (ModeTrace path : _branch_paths){
-        if (path.ending_mode() == _target && path.likelihood() > best_likelihood){
-            _best_path = path;
-            best_likelihood = path.likelihood();
-        }
-    }
-    if (best_likelihood == 0)
-        return -1;
-    return 0;
-}
-
-void RobotPredictTiming::_predict_timing(){
-    long unsigned int conversion_factor = 1000000000;
-    long unsigned int n_samples = 0;
-    long unsigned int frequency = _robot.message_frequency();
-
-    for (SizeType i = _index_present_mode; i < _best_path.size()-1; i ++){
-        auto range_of_n_samples_in = _snapshot.range_of_num_samples_in(_best_path.at(i).mode, _best_path.at(i+1).mode);
-        auto upper_bound = range_of_n_samples_in.upper();
-        auto lower_bound = range_of_n_samples_in.lower();
-        OPERA_ASSERT_EQUAL(upper_bound, lower_bound);
-        n_samples +=  upper_bound;
-    }
-
-    nanoseconds_to_mode = n_samples * frequency * conversion_factor;
 }
 
 void RobotPredictTiming::_augment_trace(){
@@ -344,8 +320,72 @@ void RobotPredictTiming::_augment_trace(){
 */
 }
 
+auto RobotPredictTiming::get_to_print() const{
+    /*auto n_samples = _snapshot.range_of_num_samples_in(_next_mode);
+    long unsigned int conversion_factor = 1000000000;
+
+    long unsigned int upper = _robot.message_frequency() * n_samples.upper() * conversion_factor;
+    long unsigned int lower = _robot.message_frequency() * n_samples.lower() * conversion_factor;
+    Interval<long unsigned int> interval = Interval<long unsigned int>(lower, upper);
+    return interval; // convert to nanoseconds
+    *//*
+    std::cout << "stampo 3 set di modi futuri" << std::endl;
+    Mode mode_to_add;
+    PositiveFloatType probability;
+    for (int i=0; i < 3; i++){
+        for (auto entry : _mode_trace.next_modes()){
+            mode_to_add = entry.first;
+            probability = entry.second;
+            std::cout << mode_to_add << std::endl;
+        }
+        _mode_trace.push_back(mode_to_add, probability);
+    }
+   return "";*/
+   return false;
+}
+
 void RobotPredictTiming::_extract_mode_trace(){
     _mode_trace = _snapshot.mode_trace();
+}
+
+void RobotPredictTiming::_test_augment_trace(){
+    //std::cout << "current trace: " << _mode_trace << std::endl;
+/*
+
+    std::cout << "Number of branches available: " << _mode_trace.next_modes().size() <<  std::endl;
+
+
+    Mode mode_to_add;
+    PositiveFloatType probability;
+
+    for (int i=0; i < 100; i++){
+        int count = 0;
+        for (auto entry : _mode_trace.next_modes()){
+            count ++;
+            mode_to_add = entry.first;
+            probability = entry.second;
+            if (count > 1)
+                std::cout << "more than one branch available" << std::endl;
+        }
+        std::cout << "pushing mode " << mode_to_add << " with probability " << probability << " on the trace" << std::endl;
+        _mode_storage[i] = Mode(mode_to_add.values());
+        _mode_trace = _mode_trace.push_back(_mode_storage[i], probability);
+    }*/
+}
+
+void RobotPredictTiming::_test(){
+    ModeTraceEntry tmp1 = _mode_trace.at(1);
+    ModeTraceEntry tmp2 = _mode_trace.at(2);
+
+    //0,1 = 2
+    //1,2 = 3
+    //0,2 = 3
+    auto n_samples = _snapshot.range_of_num_samples_in(tmp1.mode, tmp2.mode);
+
+    std::cout << "n_samples primi due modi: " << n_samples << std::endl;
+
+    // obtain number of samples from range_of_num_samples_in
+    //_n_samples = _snapshot.range_of_num_samples_in(_next_mode);
 }
 
 //#~#^
@@ -557,7 +597,14 @@ Mode const& RobotStateHistorySnapshot::get_latest_mode() const{
 }
 
 std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
-    return os << p.nanoseconds_to_mode;
+    //return os << "test_print\nlatest mode: " << p._history -> latest_mode();
+
+    //return os << p.get_to_print();
+    //return os << p._mode_trace;
+    if (p.get_to_print()){
+        return os << p._mode_trace;
+    }
+    return os << "";
 }
 
 // #~#^

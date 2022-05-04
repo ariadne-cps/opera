@@ -199,15 +199,10 @@ void RobotPredictTiming::_common_constructor(){
     _extract_mode_trace();
     _index_present_mode = _mode_trace.size()-1;
     _branch_paths.push_back(_find_paths(_mode_trace.clone()));
-    if (_set_best_path() < 0){
-        std::cout << "No prediction found for the given target mode" << std::endl;
-        impossible_prediction_flag = true;
-        return;
+
+    for (auto path : _branch_paths){
+        std::cout << "PATH: " << path << std::endl << std::endl;
     }
-
-
-
-
 }
 
 ModeTrace RobotPredictTiming::_find_paths(ModeTrace trace){
@@ -241,35 +236,6 @@ ModeTrace RobotPredictTiming::_find_paths(ModeTrace trace){
         std::cout << "Max path depth reached" << std::endl;
     }
     return trace;
-}
-
-int RobotPredictTiming::_set_best_path(){
-    PositiveFloatType best_likelihood = 0;
-    for (ModeTrace path : _branch_paths){
-        if (path.ending_mode() == _target && path.likelihood() > best_likelihood){
-            _best_path = path;
-            best_likelihood = path.likelihood();
-        }
-    }
-    if (best_likelihood == 0)
-        return -1;
-    return 0;
-}
-
-void RobotPredictTiming::_predict_timing(){
-    long unsigned int conversion_factor = 1000000000;
-    long unsigned int n_samples = 0;
-    long unsigned int frequency = _robot.message_frequency();
-
-    for (SizeType i = _index_present_mode; i < _best_path.size()-1; i ++){
-        auto range_of_n_samples_in = _snapshot.range_of_num_samples_in(_best_path.at(i).mode, _best_path.at(i+1).mode);
-        auto upper_bound = range_of_n_samples_in.upper();
-        auto lower_bound = range_of_n_samples_in.lower();
-        OPERA_ASSERT_EQUAL(upper_bound, lower_bound);
-        n_samples +=  upper_bound;
-    }
-
-    nanoseconds_to_mode = n_samples * frequency * conversion_factor;
 }
 
 void RobotPredictTiming::_augment_trace(){
@@ -342,6 +308,10 @@ void RobotPredictTiming::_augment_trace(){
 
     std::cout << "Trace after augmentation: " << _mode_trace << std::endl;
 */
+}
+
+auto RobotPredictTiming::get_to_print() const{
+   return false;
 }
 
 void RobotPredictTiming::_extract_mode_trace(){
@@ -557,7 +527,14 @@ Mode const& RobotStateHistorySnapshot::get_latest_mode() const{
 }
 
 std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
-    return os << p.nanoseconds_to_mode;
+    //return os << "test_print\nlatest mode: " << p._history -> latest_mode();
+
+    //return os << p.get_to_print();
+    //return os << p._mode_trace;
+    if (p.get_to_print()){
+        return os << p._mode_trace;
+    }
+    return os << "";
 }
 
 // #~#^

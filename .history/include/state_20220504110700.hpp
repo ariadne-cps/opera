@@ -268,8 +268,7 @@ class RobotPredictTiming {
     //! \brief Print to the standard output
     friend std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p);
 
-    bool impossible_prediction_flag = false;
-    long unsigned int nanoseconds_to_mode;
+    auto get_to_print() const;
 
 
     private:
@@ -277,11 +276,8 @@ class RobotPredictTiming {
         void _common_constructor();
         void _extract_mode_trace();
         ModeTrace _find_paths(ModeTrace trace);
-        int _set_best_path();
         // legacy function to get a trace predicting the target mode, uses less memory than the _compute_branch_path method
         void _augment_trace();
-
-        void _predict_timing();
 
         void _test_augment_trace();
         void _test();
@@ -297,7 +293,6 @@ class RobotPredictTiming {
         Robot const _robot;
         Mode const& _target;
         Mode _present_mode;
-        ModeTrace _best_path;
 
         List<ModeTrace> _branch_paths;
 };
