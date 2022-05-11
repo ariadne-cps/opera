@@ -91,3 +91,6 @@ if(COVERAGE)
     endif()
     target_link_libraries(opera coverage_config)
 endif()
+
+install(TARGETS opera DESTINATION lib)
+install(DIRECTORY include/ DESTINATION include/opera FILES_MATCHING PATTERN "*.hpp")
