@@ -253,13 +253,14 @@ void RobotPredictTiming::_predict_timing(){
     long unsigned int n_samples = 0;
     long unsigned int frequency = (long unsigned int) _robot.message_frequency();
 
-    for (SizeType i = _index_present_mode; i < _best_path.size()-1; i ++){
+    for (SizeType i = _index_present_mode; i < _best_path.size()-1; ++i){
         auto range_of_n_samples_in = _snapshot.range_of_num_samples_in(_best_path.at(i).mode, _best_path.at(i+1).mode);
         auto upper_bound = range_of_n_samples_in.upper();
         auto lower_bound = range_of_n_samples_in.lower();
-        auto samples_mean = (long unsigned int)(upper_bound + lower_bound) / 2;
+        auto samples_mean = (long unsigned int)((upper_bound + lower_bound) / 2);
         n_samples +=  samples_mean;
     }
+    std::cout << "DEBUG, n_samples: " << n_samples << "\tfrequency: "<<frequency<<std::endl;
     nanoseconds_to_mode = n_samples * frequency * conversion_factor;
 }
 
