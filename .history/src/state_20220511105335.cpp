@@ -180,10 +180,6 @@ Robot const& RobotStateHistory::get_robot() const{
     return _robot;
 }
 
-Mode const& RobotStateHistory::get_latest_mode() const{
-    return _latest_mode;
-}
-
 RobotPredictTiming::RobotPredictTiming(RobotStateHistorySnapshot const& snapshot, Mode const&target):
     _snapshot(snapshot), _robot(_snapshot.get_robot()), _target(target), _present_mode(_snapshot.get_latest_mode()){
         _common_constructor();
@@ -248,7 +244,8 @@ int RobotPredictTiming::_set_best_path(){
             best_likelihood = path.likelihood();
         }
     }
-    OPERA_ASSERT(best_likelihood != 0);
+    if (best_likelihood == 0)
+        return -1;
     return 0;
 }
 
@@ -552,7 +549,7 @@ Mode const& RobotStateHistorySnapshot::get_latest_mode() const{
 }
 
 std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
-    return os << "(Predicted reaching mode '" << p._target << "' in [ " << p.nanoseconds_to_mode << " ] nanoseconds)";
+    return os << p.nanoseconds_to_mode;
 }
 
 // #~#^

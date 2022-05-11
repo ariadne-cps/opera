@@ -401,7 +401,6 @@ public:
             auto second_timing_prediction = RobotPredictTiming(history, first);
             OPERA_TEST_EQUALS(timing_prediction.nanoseconds_to_mode, 100000000000);
             OPERA_TEST_EQUAL(timing_prediction.nanoseconds_to_mode, second_timing_prediction.nanoseconds_to_mode);
-            std::cout << timing_prediction << std::endl;
         }
     }
 

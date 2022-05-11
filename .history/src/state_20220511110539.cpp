@@ -552,7 +552,7 @@ Mode const& RobotStateHistorySnapshot::get_latest_mode() const{
 }
 
 std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
-    return os << "(Predicted reaching mode '" << p._target << "' in [ " << p.nanoseconds_to_mode << " ] nanoseconds)";
+    return os << p.nanoseconds_to_mode;
 }
 
 // #~#^
