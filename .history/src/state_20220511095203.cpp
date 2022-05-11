@@ -265,6 +265,7 @@ void RobotPredictTiming::_predict_timing(){
         auto samples_mean = (long unsigned int)(upper_bound + lower_bound) / 2;
         n_samples +=  samples_mean;
     }
+    std::cout << "n_samples: " << n_samples << "\tfrequency: "<< frequency << "\tconversion factor: " << conversion_factor << std::endl;
     nanoseconds_to_mode = n_samples * frequency * conversion_factor;
 }
 

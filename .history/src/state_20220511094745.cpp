@@ -262,9 +262,10 @@ void RobotPredictTiming::_predict_timing(){
         auto range_of_n_samples_in = _snapshot.range_of_num_samples_in(_best_path.at(i).mode, _best_path.at(i+1).mode);
         auto upper_bound = range_of_n_samples_in.upper();
         auto lower_bound = range_of_n_samples_in.lower();
-        auto samples_mean = (long unsigned int)(upper_bound + lower_bound) / 2;
-        n_samples +=  samples_mean;
+        OPERA_ASSERT_EQUAL(upper_bound, lower_bound);
+        n_samples +=  upper_bound;
     }
+    std::cout << "n_samples: " << n_samples << "\tfrequency: "<< frequency << "\tconversion factor: " << conversion_factor << std::endl;
     nanoseconds_to_mode = n_samples * frequency * conversion_factor;
 }
 

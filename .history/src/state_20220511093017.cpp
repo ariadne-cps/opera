@@ -204,7 +204,10 @@ void RobotPredictTiming::_common_constructor(){
         impossible_prediction_flag = true;
         return;
     }
-    _predict_timing();
+
+
+
+
 }
 
 ModeTrace RobotPredictTiming::_find_paths(ModeTrace trace){
@@ -262,15 +265,16 @@ void RobotPredictTiming::_predict_timing(){
         auto range_of_n_samples_in = _snapshot.range_of_num_samples_in(_best_path.at(i).mode, _best_path.at(i+1).mode);
         auto upper_bound = range_of_n_samples_in.upper();
         auto lower_bound = range_of_n_samples_in.lower();
-        auto samples_mean = (long unsigned int)(upper_bound + lower_bound) / 2;
-        n_samples +=  samples_mean;
+        OPERA_ASSERT_EQUAL(upper_bound, lower_bound);
+        n_samples +=  upper_bound;
     }
+
     nanoseconds_to_mode = n_samples * frequency * conversion_factor;
 }
 
 /*void RobotPredictTiming::_augment_trace(){
 
-        construct trace while making predictions to find the first
+        /*construct trace while making predictions to find the first
         occurrence of the target mode in the future. If a branch is detected
         in the prediction, takes the first path and adds the position of the
         branch and the path taken o the _branch_tracking map.
@@ -279,7 +283,7 @@ void RobotPredictTiming::_predict_timing(){
         deleted from the index of the last branch and the cycle
         restarts from that index, since that index is going to be present
         in the _branch tracking map, the next path is taken and the map is updated
-
+        */
     int depth_count = 0;
     int branch_to_take = 0;
     SizeType trace_index;

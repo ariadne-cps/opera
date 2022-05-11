@@ -204,7 +204,10 @@ void RobotPredictTiming::_common_constructor(){
         impossible_prediction_flag = true;
         return;
     }
-    _predict_timing();
+
+
+
+
 }
 
 ModeTrace RobotPredictTiming::_find_paths(ModeTrace trace){
@@ -262,83 +265,14 @@ void RobotPredictTiming::_predict_timing(){
         auto range_of_n_samples_in = _snapshot.range_of_num_samples_in(_best_path.at(i).mode, _best_path.at(i+1).mode);
         auto upper_bound = range_of_n_samples_in.upper();
         auto lower_bound = range_of_n_samples_in.lower();
-        auto samples_mean = (long unsigned int)(upper_bound + lower_bound) / 2;
-        n_samples +=  samples_mean;
+        OPERA_ASSERT_EQUAL(upper_bound, lower_bound);
+        n_samples +=  upper_bound;
     }
+
     nanoseconds_to_mode = n_samples * frequency * conversion_factor;
 }
 
-/*void RobotPredictTiming::_augment_trace(){
 
-        construct trace while making predictions to find the first
-        occurrence of the target mode in the future. If a branch is detected
-        in the prediction, takes the first path and adds the position of the
-        branch and the path taken o the _branch_tracking map.
-        If the target mode is not found in the current path when
-        the counter reaches the max_depth variable, the trace gets
-        deleted from the index of the last branch and the cycle
-        restarts from that index, since that index is going to be present
-        in the _branch tracking map, the next path is taken and the map is updated
-
-    int depth_count = 0;
-    int branch_to_take = 0;
-    SizeType trace_index;
-    std::cout << "Trace before augmentation: " << _mode_trace << std::endl;
-    while (_mode_trace.at(_mode_trace.size()-1).mode != _target){
-        trace_index = _mode_trace.size()-1;
-        depth_count = trace_index - _index_present_mode;
-        std::cout << "Current depth: " << depth_count << std::endl;
-        if (_mode_trace.next_modes().size() != 1){
-                std::cout << "Branch found! trace index: " << trace_index << " branch traking: ";
-                for (auto entry : _branch_tracking){
-                    std::cout << "{" << entry.first << ", " << entry.second << "} ";
-            }
-            std::cout<<std::endl;
-            if(_branch_tracking.has_key(trace_index)){
-                std::cout << "fetching path to take" << std::endl;
-                branch_to_take = _branch_tracking.find(_mode_trace.size()-1)->second + 1;
-                _branch_tracking.erase(trace_index);
-            }else{
-                branch_to_take = 0;
-            }
-            if ((int)_mode_trace.next_modes().size() > branch_to_take + 1){
-                _branch_tracking.insert({trace_index, branch_to_take});
-            }
-
-        }else{
-            branch_to_take = 0;
-        }
-        int branch_tmp_count = 0;
-        Mode entry_to_add;
-        PositiveFloatType probability_to_add;
-        for (auto entry : _mode_trace.next_modes()){
-            if (branch_tmp_count == branch_to_take){
-                std::cout << "Taking branch " << branch_tmp_count << std::endl;
-                entry_to_add = entry.first;
-                probability_to_add = entry.second;
-                break;
-            }
-            branch_tmp_count++;
-        }
-        _mode_trace.push_back(entry_to_add, probability_to_add);
-        if ((_mode_trace.at(_mode_trace.size()-1).mode != _target) && depth_count > _max_depth_search){
-            //_branch_tracking.erase(_branch_tracking.rbegin()->first);
-            SizeType branch_index = _branch_tracking.rbegin()->first;
-            std::cout << "trace index: " << trace_index << " branch index: " << branch_index << std::endl;
-            for (SizeType i = trace_index; i >= branch_index; i--){
-                _mode_trace.remove_at(i);
-                std::cout << "removing trace entry " << i << std::endl;
-            }
-            if (_branch_tracking.size() == 0 && depth_count == _max_depth_search){
-                std::cout << "Max depth reached while predicting the next occurrence of the target mode" << std::endl;
-                break;
-            }
-        }
-    }
-
-    std::cout << "Trace after augmentation: " << _mode_trace << std::endl;
-
-}*/
 
 void RobotPredictTiming::_extract_mode_trace(){
     _mode_trace = _snapshot.mode_trace();

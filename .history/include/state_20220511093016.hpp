@@ -269,7 +269,7 @@ class RobotPredictTiming {
     friend std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p);
 
     bool impossible_prediction_flag = false;
-    long unsigned int nanoseconds_to_mode = 0;
+    long unsigned int nanoseconds_to_mode;
 
 
     private:

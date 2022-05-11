@@ -269,7 +269,7 @@ class RobotPredictTiming {
     friend std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p);
 
     bool impossible_prediction_flag = false;
-    long unsigned int nanoseconds_to_mode = 0;
+    long unsigned int nanoseconds_to_mode;
 
 
     private:
@@ -287,6 +287,8 @@ class RobotPredictTiming {
         SizeType _index_present_mode;
         RobotStateHistorySnapshot _snapshot;
 
+        //Map<SizeType, int> _branch_tracking;
+        //int _max_depth_search = 0;
         int _path_max_depth = 10;
         ModeTrace _mode_trace;
         Robot const _robot;

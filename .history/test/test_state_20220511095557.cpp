@@ -395,6 +395,7 @@ public:
         history.acquire(fourth,{{Point(4,6,3)},{Point(5,4,4)}},ts); ts+= 100000000;
         history.acquire(second,{{Point(4,5,3)},{Point(4,4,4)}},ts); ts+= 100000000;
         history.acquire(third,{{Point(4,6,3)},{Point(4,4,4)}},ts);
+        //94555109508280
 
         {
             auto timing_prediction = RobotPredictTiming(history.snapshot_at(ts+1), first);
