@@ -8,6 +8,17 @@
 
 Opera is a tool for run-time verification of human-robot interaction, aimed at identifying future collisions based on the dynamically stored history of robots behavior.
 
+### Dependencies
+
+The dependencies are for MQTT using the Mosquitto library, and for JSON processing using rapidjson.
+
+Ubuntu (APT) packages: `mosquitto`, `libmosquitto-dev`, `rapidjson-dev`
+
+macOS (Homebrew) packages: `mosquitto`, `rapidjson`
+
+Windows (VCPKG) packages: `mosquitto:x64-windows`, `rapidjson:x64-windows`
+
+
 ### Building
 
 To build the library from sources in a clean way, it is preferable that you set up a build subdirectory, say:
