@@ -549,10 +549,10 @@ Mode const& RobotStateHistorySnapshot::latest_mode() const{
 
 std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
     if (p.impossible_prediction_flag){
-        return os << "Predicted reaching mode '" << p._target << "' not reachable";
-    }else{
-        return os << "Predicted reaching mode '" << p._target << "' in [ " << p.nanoseconds_to_mode << " ] nanoseconds";
+        return os << "(Predicted reaching mode '" << p._target << "' not reachable";
     }
+
+    return os << "(Predicted reaching mode '" << p._target << "' in [ " << p.nanoseconds_to_mode << " ] nanoseconds)";
 }
 
 // #~#^

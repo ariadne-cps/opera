@@ -182,7 +182,7 @@ Robot const& RobotStateHistory::get_robot() const{
 
 
 RobotPredictTiming::RobotPredictTiming(RobotStateHistorySnapshot const& snapshot, Mode const&target):
-    _snapshot(snapshot), _robot(_snapshot.get_robot()), _target(target), _present_mode(_snapshot.latest_mode()){
+    _snapshot(snapshot), _robot(_snapshot.get_robot()), _target(target), _present_mode(_snapshot.get_latest_mode()){
         _common_constructor();
     }
 
@@ -197,6 +197,7 @@ void RobotPredictTiming::_common_constructor(){
     _index_present_mode = _mode_trace.size()-1;
     _branch_paths.push_back(_find_paths(_mode_trace.clone()));
     if (_set_best_path() < 0){
+        std::cout << "No prediction found for the given target mode" << std::endl;
         impossible_prediction_flag = true;
         return;
     }
@@ -230,6 +231,9 @@ ModeTrace RobotPredictTiming::_find_paths(ModeTrace trace){
         }
 
     }
+    if (trace.at(trace.size()-1).mode != _target){
+        std::cout << "Max path depth reached" << std::endl;
+    }
     return trace;
 }
 
@@ -241,10 +245,7 @@ int RobotPredictTiming::_set_best_path(){
             best_likelihood = path.likelihood();
         }
     }
-    if (best_likelihood == 0){
-        impossible_prediction_flag = true;
-        return -1;
-    }
+    OPERA_ASSERT(best_likelihood != 0);
     return 0;
 }
 
@@ -543,16 +544,12 @@ Robot const& RobotStateHistorySnapshot::get_robot() const{
     return _history.get_robot();
 }
 
-Mode const& RobotStateHistorySnapshot::latest_mode() const{
-    return _history.latest_mode();
+Mode const& RobotStateHistorySnapshot::get_latest_mode() const{
+    return _history.get_latest_mode();
 }
 
 std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
-    if (p.impossible_prediction_flag){
-        return os << "Predicted reaching mode '" << p._target << "' not reachable";
-    }else{
-        return os << "Predicted reaching mode '" << p._target << "' in [ " << p.nanoseconds_to_mode << " ] nanoseconds";
-    }
+    return os << "(Predicted reaching mode '" << p._target << "' in [ " << p.nanoseconds_to_mode << " ] nanoseconds)";
 }
 
 // #~#^

@@ -406,8 +406,8 @@ public:
         {
             Mode sixth = Mode({robot, "sixth"});
             auto third_timing_prediction = RobotPredictTiming(history.snapshot_at(ts+1), sixth);
+
             OPERA_ASSERT(third_timing_prediction.impossible_prediction_flag);
-            std::cout << third_timing_prediction << std::endl;
         }
     }
 

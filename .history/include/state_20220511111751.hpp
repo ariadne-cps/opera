@@ -241,7 +241,7 @@ class RobotStateHistorySnapshot {
 
     // #~#v
     Robot const& get_robot() const;
-    Mode const& latest_mode() const;
+    Mode const& get_latest_mode() const;
     // #~#^
 
   private:
