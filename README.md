@@ -18,6 +18,11 @@ macOS (Homebrew) packages: `mosquitto`, `rapidjson`
 
 Windows (VCPKG) packages: `mosquitto:x64-windows`, `rapidjson:x64-windows`
 
+Additionally, the Git repository has submodules. In order to clone the submodules, it is necessary to issue
+
+```
+$ git submodule update --init --recursive
+```
 
 ### Building
 
