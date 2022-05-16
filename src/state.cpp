@@ -249,20 +249,21 @@ int RobotPredictTiming::_set_best_path(){
 }
 
 void RobotPredictTiming::_predict_timing(){
-    long unsigned int conversion_factor = 1000000000;
-    long unsigned int n_samples = 0;
-    long unsigned int frequency = (long unsigned int) _robot.message_frequency();
+    SizeType conversion_factor = 1000000000;
+    SizeType n_samples = 0;
+    SizeType frequency = _robot.message_frequency();
 
     for (SizeType i = _index_present_mode; i < _best_path.size()-1; ++i){
         auto range_of_n_samples_in = _snapshot.range_of_num_samples_in(_best_path.at(i).mode, _best_path.at(i+1).mode);
         auto upper_bound = range_of_n_samples_in.upper();
         auto lower_bound = range_of_n_samples_in.lower();
-        auto samples_mean = (long unsigned int)((upper_bound + lower_bound) / 2);
+        auto samples_mean = (upper_bound + lower_bound) / 2;
         n_samples +=  samples_mean;
     }
     std::cout << "DEBUG, n_samples: " << n_samples << "\tfrequency: "<<frequency<< "\tconversion_factor: " << conversion_factor << std::endl;
     nanoseconds_to_mode = (long unsigned int) (((long unsigned int) n_samples) * frequency * conversion_factor);
     std::cout << "DEBUG, nanoseconds_to_mode: " << nanoseconds_to_mode << std::endl;
+    std::cout << "DEBUG, not casted multiplication: " << n_samples * frequency * conversion_factor << std::endl;
 }
 
 /*void RobotPredictTiming::_augment_trace(){
