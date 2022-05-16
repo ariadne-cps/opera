@@ -156,14 +156,6 @@ class RobotStateHistory {
     //! \brief The most recent mode according to the latest time
     Mode const& latest_mode() const;
 
-    // #~#v
-    //! \brief Most recent occurrence of the given mode
-    TimestampType const& most_recent_occurrence(Mode const& mode);
-
-    //! \brief Most recent occurrence of the given mode before the given time
-    TimestampType const& most_recent_occurrence(Mode const& mode, TimestampType const& timestamp);
-    // #~#^
-
     //! \brief Acquire the \a state to be ultimately held into the hystory
     //! \details Hystory will not be effectively updated till the mode changes
     void acquire(Mode const& mode, List<List<Point>> const& points, TimestampType const& timestamp);
@@ -190,6 +182,10 @@ class RobotStateHistory {
 
   protected:
     Robot const _robot;
+
+    // #~#v
+    Robot const& get_robot() const;
+    // #~#^
 };
 
 //! \brief A wrapper class for a snapshot of the history at a given time
@@ -243,6 +239,11 @@ class RobotStateHistorySnapshot {
     //! \details The index can not be greater or equal than the current number of samples
     SizeType checked_sample_index(Mode const& mode, TimestampType const& timestamp) const;
 
+    // #~#v
+    Robot const& get_robot() const;
+    Mode const& latest_mode() const;
+    // #~#^
+
   private:
     //! \brief The range of number of samples within a list of \a presences
     Interval<SizeType> _range_of_num_samples_within(List<RobotModePresence> const& presences) const;
@@ -250,19 +251,49 @@ class RobotStateHistorySnapshot {
   private:
     RobotStateHistory const& _history;
     TimestampType _snapshot_time;
+
+
 };
 
 // #~#v
 
 class RobotPredictTiming {
+    friend class RobotStateHistorySnapshot;
     public:
-    //! \brief Construct from a \a state_history
-    RobotPredictTiming(RobotStateHistory const* history);
-
+    //! \brief construct from \a robotstatehistorysnapshot
+        RobotPredictTiming(RobotStateHistorySnapshot const& snapshot, Mode const& target);
+    //! \brief constuct from \a robotstatehisotry
+        RobotPredictTiming(RobotStateHistory const& history, Mode const& target);
     //! \brief Print to the standard output
     friend std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p);
-    private:
 
+    bool impossible_prediction_flag = false;
+    SizeType nanoseconds_to_mode = 0;
+
+
+    private:
+            // must be called in every constructor
+
+        void _common_constructor();
+        void _extract_mode_trace();
+        ModeTrace _find_paths(ModeTrace trace);
+        int _set_best_path();
+        // legacy function to get a trace predicting the target mode, uses less memory than the _compute_branch_path method
+        //void _augment_trace();
+
+        void _predict_timing();
+
+        SizeType _index_present_mode;
+        RobotStateHistorySnapshot _snapshot;
+
+        int _path_max_depth = 10;
+        ModeTrace _mode_trace;
+        Robot const _robot;
+        Mode const& _target;
+        Mode _present_mode;
+        ModeTrace _best_path;
+
+        List<ModeTrace> _branch_paths;
 };
 
 // #~#^
