@@ -275,11 +275,7 @@ class HumanRobotDistance{
     typedef List<SegmentTemporalSamplesType> BodySamplesType;
     public:
         HumanRobotDistance(HumanStateHistory const& human_history, RobotStateHistorySnapshot const& robot_snapshot, IdType const& human_segment_id, IdType const& robot_segment_id, TimestampType const& lower_timestamp, TimestampType const& higher_timestamp);
-        Interval<FloatType> get_min_max_distances() const;
-        //! \brief Print to the standard output
-        friend std::ostream& operator<<(std::ostream& os, HumanRobotDistance const& p);
-
-
+        Interval<FloatType> get_min_max_distances();
     private:
 
         void _compute_distances();

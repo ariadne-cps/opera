@@ -453,7 +453,7 @@ HumanRobotDistance::HumanRobotDistance(HumanStateHistory const& human_history, R
 _human_history(human_history), _robot_snapshot(robot_snapshot), _human_segment_id(human_segment_id), _robot_segment_id(robot_segment_id), _lower_timestamp(lower_timestamp), _higher_timestamp(higher_timestamp), _minimum_distances(List<FloatType>()){
     _set_human_instances();
     _compute_distances();
-    _compute_min_max();
+    //_compute_min_max();
 }
 
 Interval<FloatType> HumanRobotDistance::get_min_max_distances() const{
@@ -520,12 +520,12 @@ void HumanRobotDistance::_compute_distances(){
              }
         }
 
-        if (!(initialized_robot && initialized_human)){
+        if (robot_head == nullptr || human_head == nullptr){
             continue;
         }
 
-        FloatType segments_distance = distance(human_head, human_tail, robot_head, robot_tail);
-        segments_distance = segments_distance - human_segment_thickness - robot_segment_thickness;
+        FloatType segments_distance = distance(*human_head, *human_tail, *robot_head, *robot_tail);
+        segments_distance = segments_distance - *human_segment_thickness - *robot_segment_thickness;
         _minimum_distances.push_back(segments_distance);
     }
 }
@@ -708,7 +708,7 @@ std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
 
 std::ostream& operator<<(std::ostream& os, HumanRobotDistance const& p) {
     Interval<FloatType> min_max = p.get_min_max_distances();
-    return os << "Interval of minimum distances, lower: " << min_max.lower() << "\tupper: " << min_max.upper();
+    return os << "Interval of minimum distances, lower: '" << min_max.lower() << " - upper: " << min_max.upper();
 }
 
 // #~#^

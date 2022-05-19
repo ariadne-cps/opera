@@ -408,69 +408,12 @@ public:
             Mode sixth = Mode({robot, "sixth"});
             auto third_timing_prediction = RobotPredictTiming(history.snapshot_at(ts+1), sixth);
             OPERA_ASSERT(third_timing_prediction.impossible_prediction_flag);
-            std::cout << third_timing_prediction << std::endl << std::endl;
+            std::cout << third_timing_prediction << std::endl;
         }
     }
 
     void test_human_robot_distance(){
-        String robot("robot");
-        Robot r("r0", 10, {{0,1}}, {1.0});
-        RobotStateHistory robot_history(r);
-        Human h("h0", {{3,2},{1,0}}, {0.5,1.0});
-        HumanStateHistory human_history(h);
 
-        Mode first({robot, "first"}), second({robot, "second"}), third({robot, "third"}), fourth({robot, "fourth"}), fifth({robot, "fifth"});
-
-        TimestampType ts = 0;
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(first,{{Point(0,0,0)},{Point(4,4,4)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(first,{{Point(1,0,0)},{Point(4,4,4)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(second,{{Point(1,1,0)},{Point(4,4,4)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(second,{{Point(1,2,0)},{Point(4,4,4)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(second,{{Point(1,3,0)},{Point(4,4,4)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(third,{{Point(1,3,1)},{Point(4,4,4)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(third,{{Point(1,3,2)},{Point(4,4,4)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(second,{{Point(1,4,2)},{Point(4,4,4)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(second,{{Point(1,5,2)},{Point(4,4,4)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(first,{{Point(2,5,2)},{Point(4,4,4)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(first,{{Point(3,5,2)},{Point(4,4,4)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(first,{{Point(4,5,2)},{Point(4,4,4)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(third,{{Point(4,5,3)},{Point(4,4,4)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(second,{{Point(4,6,3)},{Point(4,4,4)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
-        robot_history.acquire(fourth,{{Point(4,6,3)},{Point(5,4,4)}},ts); ts+= 100000000;
-
-        RobotStateHistorySnapshot robot_snapshot = robot_history.snapshot_at(ts);
-
-        HumanRobotDistance hrd = HumanRobotDistance(human_history, robot_snapshot, 0, 0, 700000000, ts);
-        std::cout << hrd << std::endl;
     }
 
     // #~#^

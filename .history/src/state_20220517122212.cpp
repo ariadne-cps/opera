@@ -708,7 +708,7 @@ std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
 
 std::ostream& operator<<(std::ostream& os, HumanRobotDistance const& p) {
     Interval<FloatType> min_max = p.get_min_max_distances();
-    return os << "Interval of minimum distances, lower: " << min_max.lower() << "\tupper: " << min_max.upper();
+    return os << "Interval of minimum distances, lower: " << min_max.lower() << " - upper: " << min_max.upper();
 }
 
 // #~#^

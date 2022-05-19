@@ -467,10 +467,10 @@ public:
         human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},ts);
         robot_history.acquire(fourth,{{Point(4,6,3)},{Point(5,4,4)}},ts); ts+= 100000000;
 
-        RobotStateHistorySnapshot robot_snapshot = robot_history.snapshot_at(ts);
+        auto robot_snapshot = robot_history.snapshot_at(ts);
 
-        HumanRobotDistance hrd = HumanRobotDistance(human_history, robot_snapshot, 0, 0, 700000000, ts);
-        std::cout << hrd << std::endl;
+        HumanRobotDistance hrd = HumanRobotDistance(human_history, robot_snapshot, 0, 0, 0, ts)
+
     }
 
     // #~#^

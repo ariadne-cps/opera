@@ -469,8 +469,8 @@ public:
 
         RobotStateHistorySnapshot robot_snapshot = robot_history.snapshot_at(ts);
 
-        HumanRobotDistance hrd = HumanRobotDistance(human_history, robot_snapshot, 0, 0, 700000000, ts);
-        std::cout << hrd << std::endl;
+        HumanRobotDistance hrd = HumanRobotDistance(human_history, robot_history, 0, 0, 700000000, ts);
+        hrd.test();
     }
 
     // #~#^

@@ -169,7 +169,7 @@ class RobotStateHistory {
 
     //! \brief If there is a mode at the given \a timestamp
     bool has_mode_at(TimestampType const& timestamp) const; //#~#
-    SamplesHistory samples_history(Mode const& mode) const; //#~#
+
     //! \brief Return a snapshot at the given \a timestamp
     RobotStateHistorySnapshot snapshot_at(TimestampType const& timestamp) const;
 
@@ -253,8 +253,6 @@ class RobotStateHistorySnapshot {
     //! \brief If there is a mode at the given \a timestamp
     bool has_mode_at(TimestampType const& timestamp) const;
 
-    SamplesHistory samples_history(Mode const& mode) const; //#~#
-
     Robot const& get_robot() const;
     Mode const& latest_mode() const;
     // #~#^
@@ -271,20 +269,13 @@ class RobotStateHistorySnapshot {
 };
 
 class HumanRobotDistance{
-    typedef List<BodySegmentSample> SegmentTemporalSamplesType;
-    typedef List<SegmentTemporalSamplesType> BodySamplesType;
     public:
         HumanRobotDistance(HumanStateHistory const& human_history, RobotStateHistorySnapshot const& robot_snapshot, IdType const& human_segment_id, IdType const& robot_segment_id, TimestampType const& lower_timestamp, TimestampType const& higher_timestamp);
-        Interval<FloatType> get_min_max_distances() const;
-        //! \brief Print to the standard output
-        friend std::ostream& operator<<(std::ostream& os, HumanRobotDistance const& p);
-
-
+        void test();
     private:
 
         void _compute_distances();
         void _set_human_instances();
-        void _compute_min_max();
 
         HumanStateHistory const& _human_history;
         RobotStateHistorySnapshot const& _robot_snapshot;
@@ -293,10 +284,9 @@ class HumanRobotDistance{
         TimestampType const& _lower_timestamp;
         TimestampType const& _higher_timestamp;
 
-        Interval<FloatType> *_min_max_distances;
-
         List <HumanStateInstance> _human_instances;
-        List<FloatType> _minimum_distances;
+
+        List<FloatType> _distances;
 };
 
 // #~#v

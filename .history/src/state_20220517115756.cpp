@@ -276,11 +276,10 @@ bool RobotStateHistory::has_mode_at(TimestampType const& time) const {
 }
 
 SamplesHistory RobotStateHistory::samples_history(Mode const& mode) const {
-    auto it = _mode_states.cbegin();
-
-    for (auto entry : _mode_states){
-        if (entry.first == mode){
-            return entry.second;
+    auto it = _mode_states.crbegin();
+    for (; it != _mode_states.crend(); it++){
+        if (it->first == mode){
+            return it->second;
         }
     }
     return it->second;
@@ -489,43 +488,35 @@ void HumanRobotDistance::_compute_distances(){
             continue;
         }
 
-        bool initialized_robot = false;
-        Point robot_head = Point(0,0,0);
-        Point robot_tail = Point(0,0,0);
-        FloatType robot_segment_thickness = 0;
+        Point *robot_head;
+        Point *robot_tail;
+        FloatType *robot_segment_thickness;
 
-        bool initialized_human = false;
-        Point human_head = Point(0,0,0);
-        Point human_tail = Point(0,0,0);
-        FloatType human_segment_thickness = 0;
+        Point *human_head;
+        Point *human_tail;
+        FloatType *human_segment_thickness;
 
         BodySamplesType robot_body_sample = robot_samples_history.at(timestamp);
         for (auto segment_temporal_samples : robot_body_sample){
             for (auto body_segment_sample : segment_temporal_samples){
                 if (body_segment_sample.segment_id() == _robot_segment_id){
-                    robot_head = body_segment_sample.head_centre();
-                    robot_tail = body_segment_sample.tail_centre();
-                    robot_segment_thickness = body_segment_sample.thickness();
-                    initialized_robot = true;
-                 }
+                    *robot_head = body_segment_sample.head_centre();
+                    *robot_tail = body_segment_sample.tail_centre();
+                    *robot_segment_thickness = body_segment_sample.thickness();
+                }
             }
         }
 
-        for ( BodySegmentSample body_segment_sample : instance.samples()){
+       for ( BodySegmentSample body_segment_sample : instance.samples()){
             if (body_segment_sample.segment_id() == _human_segment_id){
-                human_head = body_segment_sample.head_centre();
-                human_tail = body_segment_sample.tail_centre();
-                human_segment_thickness = body_segment_sample.thickness();
-                initialized_human = true;
-             }
-        }
+                *human_head = body_segment_sample.head_centre();
+                *human_tail = body_segment_sample.tail_centre();
+                *human_segment_thickness = body_segment_sample.thickness();
+            }
+       }
 
-        if (!(initialized_robot && initialized_human)){
-            continue;
-        }
-
-        FloatType segments_distance = distance(human_head, human_tail, robot_head, robot_tail);
-        segments_distance = segments_distance - human_segment_thickness - robot_segment_thickness;
+        FloatType segments_distance = distance(*human_head, *human_tail, *robot_head, *robot_tail);
+        segments_distance = segments_distance - *human_segment_thickness - *robot_segment_thickness;
         _minimum_distances.push_back(segments_distance);
     }
 }
@@ -708,7 +699,7 @@ std::ostream& operator<<(std::ostream& os, RobotPredictTiming const& p) {
 
 std::ostream& operator<<(std::ostream& os, HumanRobotDistance const& p) {
     Interval<FloatType> min_max = p.get_min_max_distances();
-    return os << "Interval of minimum distances, lower: " << min_max.lower() << "\tupper: " << min_max.upper();
+    return os << "Interval of minimum distances, lower: '" << min_max.lower() << " - upper: " << min_max.upper();
 }
 
 // #~#^
