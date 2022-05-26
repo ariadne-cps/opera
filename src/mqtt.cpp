@@ -30,38 +30,34 @@
 
 namespace Opera {
 
-const std::string MqttBrokerAccess::BODY_PRESENTATION_TOPIC = "opera/body-presentation";
-const std::string MqttBrokerAccess::BODY_STATE_TOPIC = "opera/body-state";
-const std::string MqttBrokerAccess::COLLISION_NOTIFICATION_TOPIC = "opera/collision-notification";
-
 MqttBrokerAccess::MqttBrokerAccess(std::string const& hostname, int port) : _hostname(hostname), _port(port) { }
 
 MqttBrokerAccess::~MqttBrokerAccess() {
     mosquitto_lib_cleanup();
 }
 
-PublisherInterface<BodyPresentationMessage>* MqttBrokerAccess::make_body_presentation_publisher() const {
-    return new MqttPublisher<BodyPresentationMessage>(BODY_PRESENTATION_TOPIC, _hostname, _port);
+PublisherInterface<BodyPresentationMessage>* MqttBrokerAccess::make_body_presentation_publisher(BodyPresentationTopic const& topic) const {
+    return new MqttPublisher<BodyPresentationMessage>(topic, _hostname, _port);
 }
 
-PublisherInterface<BodyStateMessage>* MqttBrokerAccess::make_body_state_publisher() const {
-    return new MqttPublisher<BodyStateMessage>(BODY_STATE_TOPIC, _hostname, _port);
+PublisherInterface<BodyStateMessage>* MqttBrokerAccess::make_body_state_publisher(BodyStateTopic const& topic) const {
+    return new MqttPublisher<BodyStateMessage>(topic, _hostname, _port);
 }
 
-PublisherInterface<CollisionNotificationMessage>* MqttBrokerAccess::make_collision_notification_publisher() const {
-    return new MqttPublisher<CollisionNotificationMessage>(COLLISION_NOTIFICATION_TOPIC, _hostname, _port);
+PublisherInterface<CollisionNotificationMessage>* MqttBrokerAccess::make_collision_notification_publisher(CollisionNotificationTopic const& topic) const {
+    return new MqttPublisher<CollisionNotificationMessage>(topic, _hostname, _port);
 }
 
-SubscriberInterface<BodyPresentationMessage>* MqttBrokerAccess::make_body_presentation_subscriber(CallbackFunction<BodyPresentationMessage> const& callback) const {
-    return new MqttSubscriber<BodyPresentationMessage>(BODY_PRESENTATION_TOPIC, _hostname, _port, callback);
+SubscriberInterface<BodyPresentationMessage>* MqttBrokerAccess::make_body_presentation_subscriber(CallbackFunction<BodyPresentationMessage> const& callback, BodyPresentationTopic const& topic) const {
+    return new MqttSubscriber<BodyPresentationMessage>(topic, _hostname, _port, callback);
 }
 
-SubscriberInterface<BodyStateMessage>* MqttBrokerAccess::make_body_state_subscriber(CallbackFunction<BodyStateMessage> const& callback) const {
-    return new MqttSubscriber<BodyStateMessage>(BODY_STATE_TOPIC, _hostname, _port, callback);
+SubscriberInterface<BodyStateMessage>* MqttBrokerAccess::make_body_state_subscriber(CallbackFunction<BodyStateMessage> const& callback, BodyStateTopic const& topic) const {
+    return new MqttSubscriber<BodyStateMessage>(topic, _hostname, _port, callback);
 }
 
-SubscriberInterface<CollisionNotificationMessage>* MqttBrokerAccess::make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback) const {
-    return new MqttSubscriber<CollisionNotificationMessage>(COLLISION_NOTIFICATION_TOPIC, _hostname, _port, callback);
+SubscriberInterface<CollisionNotificationMessage>* MqttBrokerAccess::make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback, CollisionNotificationTopic const& topic) const {
+    return new MqttSubscriber<CollisionNotificationMessage>(topic, _hostname, _port, callback);
 }
 
 }

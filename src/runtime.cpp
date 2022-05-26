@@ -43,11 +43,15 @@ String construct_thread_name(String prefix, SizeType number, SizeType max_number
 }
 
 Runtime::Runtime(BrokerAccess const& access, LookAheadJobFactory const& factory, SizeType const& concurrency) :
+    Runtime({access,BodyPresentationTopic::DEFAULT},{{access,BodyStateTopic::DEFAULT}},{access,CollisionNotificationTopic::DEFAULT},factory,concurrency) { }
+
+Runtime::Runtime(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, List<Pair<BrokerAccess,BodyStateTopic>> const& bs_subscribers, Pair<BrokerAccess,CollisionNotificationTopic> const& cn_publisher,
+                 LookAheadJobFactory const& factory, SizeType const& concurrency) :
     _waiting_jobs([&]{ _availability_condition.notify_one(); }),
     _sleeping_jobs([]{}),
     _stop(false),
-    _receiver(access,factory,_registry,_waiting_jobs, _sleeping_jobs),
-    _sender(access),
+    _receiver(bp_subscriber,bs_subscribers,factory,_registry,_waiting_jobs, _sleeping_jobs),
+    _sender(cn_publisher),
     _num_processing(0),
     _num_processed(0),
     _num_completed(0),

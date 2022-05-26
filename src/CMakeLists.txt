@@ -4,6 +4,7 @@ add_library(OPERA_SRC OBJECT
    geometry.cpp
    body.cpp
    body_registry.cpp
+   topic.cpp
    message.cpp
    state.cpp
    serialisation.cpp

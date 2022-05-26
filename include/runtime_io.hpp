@@ -55,10 +55,11 @@ class RuntimeReceiver {
         BodyIdType robot;
     };
   public:
-    //! \brief Create starting from a broker \a access and a \a registry to fill, along with \a waiting_jobs
+    //! \brief Create starting from subscribers and a \a registry to fill, along with \a waiting_jobs
     //! to populate as soon as the registry has history for the corresponding human-robot pair, and \a sleeping_jobs
     //! to move to waiting_jobs as soon as a new human state is received
-    RuntimeReceiver(BrokerAccess const& access, LookAheadJobFactory const& factory, BodyRegistry& registry,
+    RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, List<Pair<BrokerAccess,BodyStateTopic>> const& bs_subscribers,
+                    LookAheadJobFactory const& factory, BodyRegistry& registry,
                     SynchronisedQueue<LookAheadJob>& waiting_jobs, SynchronisedQueue<LookAheadJob>& sleeping_jobs);
 
     //! \brief The current number of created human-robot pairs, not yet put into the waiting jobs
@@ -67,10 +68,11 @@ class RuntimeReceiver {
     //! \brief Return the factory
     LookAheadJobFactory const& factory() const { return _factory; }
 
-    ~RuntimeReceiver() noexcept;
-
     //! \brief [TEST] Get the number of state messages received
     SizeType __num_state_messages_received() const { return _num_state_messages_received; }
+
+    //! \brief Destroys subscribers
+    ~RuntimeReceiver() noexcept;
 
   private:
     //! \brief Possibly move any human-robot pair into a mix of sleeping jobs (if the specific human sample is empty) or waiting jobs (otherwise)
@@ -84,8 +86,8 @@ class RuntimeReceiver {
 
     LookAheadJobFactory const& _factory;
 
-    SubscriberInterface<BodyPresentationMessage>* _bp_sub;
-    SubscriberInterface<BodyStateMessage>* _bs_sub;
+    SubscriberInterface<BodyPresentationMessage>* _bp_subscriber;
+    List<SubscriberInterface<BodyStateMessage>*> _bs_subscribers;
 
     std::atomic<SizeType> _num_state_messages_received = 0;
 };
@@ -94,8 +96,8 @@ class RuntimeReceiver {
 //! \details Currently only CollisionNotificationMessage is applicable
 class RuntimeSender {
   public:
-    //! \brief Create starting from a broker \a access
-    explicit RuntimeSender(BrokerAccess const& access);
+    //! \brief Create starting from a publisher
+    explicit RuntimeSender(Pair<BrokerAccess,CollisionNotificationTopic> const& publisher);
 
     //! \brief Put a message to be sent
     template<class T> void put(T const& msg) { _put(msg); _availability_condition.notify_one(); }
@@ -110,7 +112,7 @@ class RuntimeSender {
     SynchronisedQueue<CollisionNotificationMessage> _collision_notifications;
     std::condition_variable _availability_condition;
     std::mutex _availability_mutex;
-    PublisherInterface<CollisionNotificationMessage>* _cn_publisher;
+    PublisherInterface<CollisionNotificationMessage>* _publisher;
     bool _stop;
     Thread _thr;
 };

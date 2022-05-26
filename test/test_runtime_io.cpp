@@ -45,7 +45,7 @@ class TestRuntimeIO {
 
     void test_sender() {
         BrokerAccess access = MemoryBrokerAccess();
-        RuntimeSender sender(access);
+        RuntimeSender sender({access,CollisionNotificationTopic::DEFAULT});
         Mode mode({"phase","running"});
         CollisionNotificationMessage msg("h0", 0, "r0", 3, 32890592300, Interval<TimestampType>(72, 123), mode, 0.5);
         sender.put(msg);
@@ -59,7 +59,8 @@ class TestRuntimeIO {
         LookAheadJobFactory job_factory = DiscardLookAheadJobFactory();
         BodyRegistry registry;
         SynchronisedQueue<LookAheadJob> waiting_jobs, sleeping_jobs;
-        RuntimeReceiver receiver(access, job_factory, registry, waiting_jobs, sleeping_jobs);
+        RuntimeReceiver receiver({access,BodyPresentationTopic::DEFAULT},{{access,BodyStateTopic::DEFAULT}},
+                                 job_factory, registry, waiting_jobs, sleeping_jobs);
         String id = "h0";
         BodyPresentationMessage hp(id,{{0,1},{1,2}},{1.0,0.5});
         BodyStateMessage hs(id,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},300000000);
@@ -85,7 +86,8 @@ class TestRuntimeIO {
         LookAheadJobFactory job_factory = DiscardLookAheadJobFactory();
         BodyRegistry registry;
         SynchronisedQueue<LookAheadJob> waiting_jobs, sleeping_jobs;
-        RuntimeReceiver receiver(access, job_factory, registry, waiting_jobs, sleeping_jobs);
+        RuntimeReceiver receiver({access,BodyPresentationTopic::DEFAULT},{{access,BodyStateTopic::DEFAULT}},
+                                 job_factory, registry, waiting_jobs, sleeping_jobs);
         String id = "r0";
         Mode mode({"phase", "waiting"});
         BodyPresentationMessage rp(id,10,{{0,1},{1,2}},{1.0,0.5});
@@ -112,7 +114,8 @@ class TestRuntimeIO {
         LookAheadJobFactory job_factory = DiscardLookAheadJobFactory();
         BodyRegistry registry;
         SynchronisedQueue<LookAheadJob> waiting_jobs, sleeping_jobs;
-        RuntimeReceiver receiver(access, job_factory, registry, waiting_jobs, sleeping_jobs);
+        RuntimeReceiver receiver({access,BodyPresentationTopic::DEFAULT},{{access,BodyStateTopic::DEFAULT}},
+                                 job_factory, registry, waiting_jobs, sleeping_jobs);
         String rid = "r0";
         String hid = "h0";
         Mode waiting({"phase", "waiting"}), running({"phase","running"});

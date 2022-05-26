@@ -29,6 +29,7 @@
 #ifndef OPERA_RUNTIME_HPP
 #define OPERA_RUNTIME_HPP
 
+#include "topic.hpp"
 #include "runtime_io.hpp"
 #include "lookahead_job_factory.hpp"
 #include "synchronised_queue.hpp"
@@ -38,8 +39,11 @@ namespace Opera {
 //! \brief The runtime for performing collision detection
 class Runtime {
   public:
-    //! \brief Create using a specific broker \a access and a \a factory for job manipulation
+    //! \brief Create using a generic broker access and a \a factory for job manipulation
     Runtime(BrokerAccess const& access, LookAheadJobFactory const& factory, SizeType const& concurrency = std::thread::hardware_concurrency());
+    //! \brief Create using specific accesses/topics and a \a factory for job manipulation
+    Runtime(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, List<Pair<BrokerAccess,BodyStateTopic>> const& bs_subscribers, Pair<BrokerAccess,CollisionNotificationTopic> const& cn_publisher,
+            LookAheadJobFactory const& factory, SizeType const& concurrency = std::thread::hardware_concurrency());
 
     Runtime(Runtime const&) = delete;
     void operator=(Runtime const&) = delete;

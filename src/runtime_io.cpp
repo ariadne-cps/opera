@@ -33,17 +33,19 @@ using namespace ConcLog;
 
 namespace Opera {
 
-RuntimeReceiver::RuntimeReceiver(BrokerAccess const& access, LookAheadJobFactory const& factory, BodyRegistry& registry, SynchronisedQueue<LookAheadJob>& waiting_jobs, SynchronisedQueue<LookAheadJob>& sleeping_jobs) :
+RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, List<Pair<BrokerAccess,BodyStateTopic>> const& bs_subscribers,
+                                 LookAheadJobFactory const& factory, BodyRegistry& registry, SynchronisedQueue<LookAheadJob>& waiting_jobs, SynchronisedQueue<LookAheadJob>& sleeping_jobs) :
     _factory(factory),
-    _bp_sub(access.make_body_presentation_subscriber([&](auto const& msg){
+    _bp_subscriber(bp_subscriber.first.make_body_presentation_subscriber([&](auto const& msg){
         if (not registry.contains(msg.id())) {
             CONCLOG_PRINTLN_AT(2,"Registering body " << msg.id())
             if (msg.is_human()) for (auto const& rid : registry.robot_ids()) _pending_human_robot_pairs.push_back({msg.id(),rid});
             else for (auto const& hid : registry.human_ids()) _pending_human_robot_pairs.push_back({msg.id(),hid});
             registry.insert(msg);
         }
-    })),
-    _bs_sub(access.make_body_state_subscriber([&](auto const& msg){
+    },bp_subscriber.second))
+{
+    CallbackFunction<BodyStateMessage> state_callback([&](auto const& msg){
         if (registry.contains(msg.id())) {
             CONCLOG_PRINTLN_AT(2,"Received state message from " << msg.id() << " at " << msg.timestamp())
             registry.acquire_state(msg);
@@ -53,12 +55,15 @@ RuntimeReceiver::RuntimeReceiver(BrokerAccess const& access, LookAheadJobFactory
             CONCLOG_PRINTLN_AT(2,"Discarded state message from " << msg.id() << " since the body is not registered")
         }
         ++_num_state_messages_received;
-    }))
-{ }
+    });
+    for (auto const& p : bs_subscribers)
+        _bs_subscribers.push_back(p.first.make_body_state_subscriber(state_callback,p.second));
+}
 
 RuntimeReceiver::~RuntimeReceiver() noexcept {
-    delete _bp_sub;
-    delete _bs_sub;
+    delete _bp_subscriber;
+    for (SizeType i=0; i<_bs_subscribers.size(); ++i)
+        delete _bs_subscribers.at(i);
 }
 
 SizeType RuntimeReceiver::num_pending_human_robot_pairs() const {
@@ -118,9 +123,9 @@ void RuntimeReceiver::_move_sleeping_jobs_to_waiting_jobs(BodyRegistry const& re
     for (auto const& job : jobs_to_move) { waiting_jobs.enqueue(std::move(job)); }
 }
 
-RuntimeSender::RuntimeSender(BrokerAccess const& access) :
+RuntimeSender::RuntimeSender(Pair<BrokerAccess,CollisionNotificationTopic> const& publisher) :
     _collision_notifications(),
-    _cn_publisher(access.make_collision_notification_publisher()),
+    _publisher(publisher.first.make_collision_notification_publisher(publisher.second)),
     _stop(false),
     _thr([&]{
         while (true) {
@@ -128,14 +133,14 @@ RuntimeSender::RuntimeSender(BrokerAccess const& access) :
             _availability_condition.wait(lock, [=, this] { return _stop or _collision_notifications.size() > 0; });
             if (_stop) return;
             _collision_notifications.reserve();
-            _cn_publisher->put(_collision_notifications.dequeue());
+            _publisher->put(_collision_notifications.dequeue());
         }
     },"rt_send") { }
 
 RuntimeSender::~RuntimeSender() noexcept {
     _stop = true;
     _availability_condition.notify_one();
-    delete _cn_publisher;
+    delete _publisher;
 }
 
 }

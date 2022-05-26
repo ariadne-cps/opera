@@ -39,6 +39,7 @@
 
 #include "handle.hpp"
 #include "message.hpp"
+#include "topic.hpp"
 
 namespace Opera {
 
@@ -63,13 +64,13 @@ template<class T> class SubscriberInterface {
 //! \brief Interface for access to a communication broker
 class BrokerAccessInterface {
   public:
-    virtual PublisherInterface<BodyPresentationMessage>* make_body_presentation_publisher() const = 0;
-    virtual PublisherInterface<BodyStateMessage>* make_body_state_publisher() const = 0;
-    virtual PublisherInterface<CollisionNotificationMessage>* make_collision_notification_publisher() const = 0;
+    virtual PublisherInterface<BodyPresentationMessage>* make_body_presentation_publisher(BodyPresentationTopic const& topic) const = 0;
+    virtual PublisherInterface<BodyStateMessage>* make_body_state_publisher(BodyStateTopic const& topic) const = 0;
+    virtual PublisherInterface<CollisionNotificationMessage>* make_collision_notification_publisher(CollisionNotificationTopic const& topic) const = 0;
 
-    virtual SubscriberInterface<BodyPresentationMessage>* make_body_presentation_subscriber(CallbackFunction<BodyPresentationMessage> const& callback) const = 0;
-    virtual SubscriberInterface<BodyStateMessage>* make_body_state_subscriber(CallbackFunction<BodyStateMessage> const& callback) const = 0;
-    virtual SubscriberInterface<CollisionNotificationMessage>* make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback) const = 0;
+    virtual SubscriberInterface<BodyPresentationMessage>* make_body_presentation_subscriber(CallbackFunction<BodyPresentationMessage> const& callback, BodyPresentationTopic const& topic) const = 0;
+    virtual SubscriberInterface<BodyStateMessage>* make_body_state_subscriber(CallbackFunction<BodyStateMessage> const& callback, BodyStateTopic const& topic) const = 0;
+    virtual SubscriberInterface<CollisionNotificationMessage>* make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback, CollisionNotificationTopic const& topic) const = 0;
 
     //! \brief Default destructor to avoid destructor not being called on objects of this type
     virtual ~BrokerAccessInterface() = default;
@@ -79,12 +80,12 @@ class BrokerAccessInterface {
 class BrokerAccess : public Handle<BrokerAccessInterface> {
   public:
     using Handle<BrokerAccessInterface>::Handle;
-    PublisherInterface<BodyPresentationMessage>* make_body_presentation_publisher() const { return _ptr->make_body_presentation_publisher(); }
-    PublisherInterface<BodyStateMessage>* make_body_state_publisher() const { return _ptr->make_body_state_publisher(); }
-    PublisherInterface<CollisionNotificationMessage>* make_collision_notification_publisher() const { return _ptr->make_collision_notification_publisher(); }
-    SubscriberInterface<BodyPresentationMessage>* make_body_presentation_subscriber(CallbackFunction<BodyPresentationMessage> const& callback) const { return _ptr->make_body_presentation_subscriber(callback); }
-    SubscriberInterface<BodyStateMessage>* make_body_state_subscriber(CallbackFunction<BodyStateMessage> const& callback) const { return _ptr->make_body_state_subscriber(callback); }
-    SubscriberInterface<CollisionNotificationMessage>* make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback) const { return _ptr->make_collision_notification_subscriber(callback); }
+    PublisherInterface<BodyPresentationMessage>* make_body_presentation_publisher(BodyPresentationTopic const& topic = BodyPresentationTopic::DEFAULT) const { return _ptr->make_body_presentation_publisher(topic); }
+    PublisherInterface<BodyStateMessage>* make_body_state_publisher(BodyStateTopic const& topic = BodyStateTopic::DEFAULT) const { return _ptr->make_body_state_publisher(topic); }
+    PublisherInterface<CollisionNotificationMessage>* make_collision_notification_publisher(CollisionNotificationTopic const& topic = CollisionNotificationTopic::DEFAULT) const { return _ptr->make_collision_notification_publisher(topic); }
+    SubscriberInterface<BodyPresentationMessage>* make_body_presentation_subscriber(CallbackFunction<BodyPresentationMessage> const& callback, BodyPresentationTopic const& topic = BodyPresentationTopic::DEFAULT) const { return _ptr->make_body_presentation_subscriber(callback,topic); }
+    SubscriberInterface<BodyStateMessage>* make_body_state_subscriber(CallbackFunction<BodyStateMessage> const& callback, BodyStateTopic const& topic = BodyStateTopic::DEFAULT) const { return _ptr->make_body_state_subscriber(callback,topic); }
+    SubscriberInterface<CollisionNotificationMessage>* make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback, CollisionNotificationTopic const& topic = CollisionNotificationTopic::DEFAULT) const { return _ptr->make_collision_notification_subscriber(callback,topic); }
 };
 
 }

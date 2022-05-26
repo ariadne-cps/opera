@@ -159,17 +159,13 @@ template<class T> class MqttSubscriber : public SubscriberInterface<T> {
 //! \brief Access to a broker to handle Opera-specific messages using MQTT
 class MqttBrokerAccess : public BrokerAccessInterface {
   public:
-    static const std::string BODY_PRESENTATION_TOPIC;
-    static const std::string BODY_STATE_TOPIC;
-    static const std::string COLLISION_NOTIFICATION_TOPIC;
-  public:
     MqttBrokerAccess(std::string const& hostname, int port);
-    PublisherInterface<BodyPresentationMessage>* make_body_presentation_publisher() const override;
-    PublisherInterface<BodyStateMessage>* make_body_state_publisher() const override;
-    PublisherInterface<CollisionNotificationMessage>* make_collision_notification_publisher() const override;
-    SubscriberInterface<BodyPresentationMessage>* make_body_presentation_subscriber(CallbackFunction<BodyPresentationMessage> const& callback) const override;
-    SubscriberInterface<BodyStateMessage>* make_body_state_subscriber(CallbackFunction<BodyStateMessage> const& callback) const override;
-    SubscriberInterface<CollisionNotificationMessage>* make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback) const override;
+    PublisherInterface<BodyPresentationMessage>* make_body_presentation_publisher(BodyPresentationTopic const& topic = BodyPresentationTopic::DEFAULT) const override;
+    PublisherInterface<BodyStateMessage>* make_body_state_publisher(BodyStateTopic const& topic = BodyStateTopic::DEFAULT) const override;
+    PublisherInterface<CollisionNotificationMessage>* make_collision_notification_publisher(CollisionNotificationTopic const& topic = CollisionNotificationTopic::DEFAULT) const override;
+    SubscriberInterface<BodyPresentationMessage>* make_body_presentation_subscriber(CallbackFunction<BodyPresentationMessage> const& callback, BodyPresentationTopic const& topic = BodyPresentationTopic::DEFAULT) const override;
+    SubscriberInterface<BodyStateMessage>* make_body_state_subscriber(CallbackFunction<BodyStateMessage> const& callback, BodyStateTopic const& topic = BodyStateTopic::DEFAULT) const override;
+    SubscriberInterface<CollisionNotificationMessage>* make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback, CollisionNotificationTopic const& topic = CollisionNotificationTopic::DEFAULT) const override;
     ~MqttBrokerAccess();
 
   private:

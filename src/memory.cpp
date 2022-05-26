@@ -36,27 +36,27 @@ void MemoryBroker::clear() {
     _collision_notifications.clear();
 }
 
-PublisherInterface<BodyPresentationMessage>* MemoryBrokerAccess::make_body_presentation_publisher() const {
+PublisherInterface<BodyPresentationMessage>* MemoryBrokerAccess::make_body_presentation_publisher(BodyPresentationTopic const&) const {
     return new MemoryPublisher<BodyPresentationMessage>();
 }
 
-PublisherInterface<BodyStateMessage>* MemoryBrokerAccess::make_body_state_publisher() const {
+PublisherInterface<BodyStateMessage>* MemoryBrokerAccess::make_body_state_publisher(BodyStateTopic const&) const {
     return new MemoryPublisher<BodyStateMessage>();
 }
 
-PublisherInterface<CollisionNotificationMessage>* MemoryBrokerAccess::make_collision_notification_publisher() const {
+PublisherInterface<CollisionNotificationMessage>* MemoryBrokerAccess::make_collision_notification_publisher(CollisionNotificationTopic const&) const {
     return new MemoryPublisher<CollisionNotificationMessage>();
 }
 
-SubscriberInterface<BodyPresentationMessage>* MemoryBrokerAccess::make_body_presentation_subscriber(CallbackFunction<BodyPresentationMessage> const& callback) const {
+SubscriberInterface<BodyPresentationMessage>* MemoryBrokerAccess::make_body_presentation_subscriber(CallbackFunction<BodyPresentationMessage> const& callback, BodyPresentationTopic const&) const {
     return new MemorySubscriber<BodyPresentationMessage>(callback);
 }
 
-SubscriberInterface<BodyStateMessage>* MemoryBrokerAccess::make_body_state_subscriber(CallbackFunction<BodyStateMessage> const& callback) const {
+SubscriberInterface<BodyStateMessage>* MemoryBrokerAccess::make_body_state_subscriber(CallbackFunction<BodyStateMessage> const& callback, BodyStateTopic const&) const {
     return new MemorySubscriber<BodyStateMessage>(callback);
 }
 
-SubscriberInterface<CollisionNotificationMessage>* MemoryBrokerAccess::make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback) const {
+SubscriberInterface<CollisionNotificationMessage>* MemoryBrokerAccess::make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback, CollisionNotificationTopic const&) const {
     return new MemorySubscriber<CollisionNotificationMessage>(callback);
 }
 
