@@ -470,16 +470,9 @@ public:
         RobotStateHistorySnapshot robot_snapshot = robot_history.snapshot_at(ts);
 
         HumanRobotDistance hrd = HumanRobotDistance(human_history, robot_snapshot, 0, 0, 700000000, ts);
-        //std::cout << hrd.get_min_max_distances() << std::endl;
+        std::cout << hrd.get_min_max_distances() << std::endl;
         // lower: -0.190693
         // upper: 0.552873
-
-        Interval<FloatType> theoric_result = Interval<FloatType>(-0.190693, 0.552873);
-        Interval<FloatType> real_result = hrd.get_min_max_distances();
-
-        OPERA_TEST_ASSERT(abs(theoric_result.lower() - real_result.lower()) < 1e-6);
-        OPERA_TEST_ASSERT(abs(theoric_result.upper() - real_result.upper()) < 1e-6)
-
     }
 
     // #~#^

@@ -474,11 +474,33 @@ public:
         // lower: -0.190693
         // upper: 0.552873
 
-        Interval<FloatType> theoric_result = Interval<FloatType>(-0.190693, 0.552873);
+        //Interval<FloatType> theoric_result = Interval<FloatType>(-0.190693, 0.552873);
         Interval<FloatType> real_result = hrd.get_min_max_distances();
 
-        OPERA_TEST_ASSERT(abs(theoric_result.lower() - real_result.lower()) < 1e-6);
-        OPERA_TEST_ASSERT(abs(theoric_result.upper() - real_result.upper()) < 1e-6)
+        float real_upper = (float) real_result.upper(), real_lower = (float) real_result.lower();
+        float theoric_upper = (float) 0.552873, theoric_lower = (float) -0.190693;
+
+        std::cout << "difference: " << abs((float)0.552873 - real_upper) << std::endl;
+
+        //std::cout << "REAL\nupper: " << real_upper << "\t lower: " << real_lower << std::endl;
+
+        //std::cout << "THEORIC\nupper: " << theoric_upper << "\t lower: " << theoric_lower << std::endl;
+
+        //abs(a - b) < 1e-9
+        std::cout << "\n\nin-built equality: " << (abs((float)0.552873 - real_upper) < 1e-9) << std::endl<< std::endl;
+
+        OPERA_TEST_EQUALS(real_lower, theoric_lower);
+        OPERA_TEST_EQUALS(real_upper, theoric_upper);
+
+    /*
+ERROR: /home/thrawn/Documenti/uni/magistrale/integrazione_discreti/opera/test/test_state.cpp:478:
+void TestState::test_human_robot_distance():
+Equality `hrd.get_min_max_distances() == expected_result' failed;
+  hrd.get_min_max_distances()=[-0.190693:0.552873]
+  expected_result=[-0.190693:0.552873]
+
+    */
+
 
     }
 

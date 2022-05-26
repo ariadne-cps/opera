@@ -473,12 +473,28 @@ public:
         //std::cout << hrd.get_min_max_distances() << std::endl;
         // lower: -0.190693
         // upper: 0.552873
-
         Interval<FloatType> theoric_result = Interval<FloatType>(-0.190693, 0.552873);
         Interval<FloatType> real_result = hrd.get_min_max_distances();
 
-        OPERA_TEST_ASSERT(abs(theoric_result.lower() - real_result.lower()) < 1e-6);
-        OPERA_TEST_ASSERT(abs(theoric_result.upper() - real_result.upper()) < 1e-6)
+        FloatType real_upper = real_result.upper(), real_lower = real_result.lower();
+        FloatType theoric_upper = theoric_result.upper(), theoric_lower = theoric_result.lower();
+
+        std::cout << "REAL\nupper: " << real_upper << "\t lower: " << real_lower << std::endl;
+
+        std::cout << "THEORIC\nupper: " << theoric_upper << "\t lower: " << theoric_lower << std::endl;
+
+        OPERA_TEST_EQUALS(real_lower, theoric_lower);
+        OPERA_TEST_EQUALS(real_upper, theoric_upper);
+
+    /*
+ERROR: /home/thrawn/Documenti/uni/magistrale/integrazione_discreti/opera/test/test_state.cpp:478:
+void TestState::test_human_robot_distance():
+Equality `hrd.get_min_max_distances() == expected_result' failed;
+  hrd.get_min_max_distances()=[-0.190693:0.552873]
+  expected_result=[-0.190693:0.552873]
+
+    */
+
 
     }
 
