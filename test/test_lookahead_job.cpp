@@ -144,7 +144,7 @@ class TestLookAheadJob {
 
     void test_lookaheadjob_earliest_collision_index() {
         Human h0("h0", {{0,1}}, {0.1});
-        Robot r0("r0", 1000000000, {{0, 1},{1, 2}}, {0.1,0.1});
+        Robot r0("r0", 1000, {{0, 1},{1, 2}}, {0.1,0.1});
 
         Mode contract({{"s", "contract"}});
         Mode endup({{"s", "endup"}});

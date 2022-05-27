@@ -100,9 +100,9 @@ class TestLookAheadJobRegistry {
     }
 
     void test_lookaheadjob_registry_entry() {
-        LookAheadJobRegistryEntry entry(1000000000);
+        LookAheadJobRegistryEntry entry(1000);
         LookAheadJobIdentifier id({"h0",0,"r0",1});
-        OPERA_TEST_EQUALS(entry.timestamp(),1000000000)
+        OPERA_TEST_EQUALS(entry.timestamp(),1000)
         OPERA_TEST_ASSERT(entry.try_register(id,LookAheadJobPath().add(0,1)))
         OPERA_TEST_ASSERT(entry.has_registered(id, LookAheadJobPath().add(0, 1)))
         OPERA_TEST_ASSERT(not entry.try_register(id,LookAheadJobPath().add(0,2).add(0,3)))
@@ -113,19 +113,19 @@ class TestLookAheadJobRegistry {
         LookAheadJobRegistry registry;
         LookAheadJobIdentifier id1({"h0",0,"r0",1});
         LookAheadJobIdentifier id2({"h1",0,"r0",1});
-        OPERA_TEST_ASSERT(registry.try_register(1000000000,id1,LookAheadJobPath().add(0,1)))
-        OPERA_TEST_ASSERT(registry.has_registered(1000000000, id1, LookAheadJobPath().add(0, 1)))
-        OPERA_TEST_ASSERT(not registry.try_register(1000000000,id1,LookAheadJobPath().add(0,1)))
-        OPERA_TEST_ASSERT(registry.try_register(1000000000,id1,LookAheadJobPath().add(1,2).add(0,3)))
-        OPERA_TEST_ASSERT(registry.has_registered(1000000000, id1, LookAheadJobPath().add(1, 2).add(0, 3)))
-        OPERA_TEST_FAIL(registry.try_register(100000000,id1,LookAheadJobPath().add(0,1)))
-        OPERA_TEST_ASSERT(not registry.has_registered(100000000, id1, LookAheadJobPath().add(0, 1)))
-        OPERA_TEST_ASSERT(registry.try_register(2000000000,id1,LookAheadJobPath().add(0,1)))
-        OPERA_TEST_ASSERT(registry.has_registered(2000000000, id1, LookAheadJobPath().add(0, 1)))
-        OPERA_TEST_ASSERT(not registry.try_register(2000000000,id1,LookAheadJobPath().add(0,1).add(0,2)))
-        OPERA_TEST_ASSERT(not registry.has_registered(2000000000, id1, LookAheadJobPath().add(0, 1).add(0, 2)))
-        OPERA_TEST_ASSERT(registry.try_register(2000000000,id2,LookAheadJobPath().add(0,1).add(0,2)))
-        OPERA_TEST_ASSERT(registry.has_registered(2000000000, id2, LookAheadJobPath().add(0, 1).add(0, 2)))
+        OPERA_TEST_ASSERT(registry.try_register(1000,id1,LookAheadJobPath().add(0,1)))
+        OPERA_TEST_ASSERT(registry.has_registered(1000, id1, LookAheadJobPath().add(0, 1)))
+        OPERA_TEST_ASSERT(not registry.try_register(1000,id1,LookAheadJobPath().add(0,1)))
+        OPERA_TEST_ASSERT(registry.try_register(1000,id1,LookAheadJobPath().add(1,2).add(0,3)))
+        OPERA_TEST_ASSERT(registry.has_registered(1000, id1, LookAheadJobPath().add(1, 2).add(0, 3)))
+        OPERA_TEST_FAIL(registry.try_register(100,id1,LookAheadJobPath().add(0,1)))
+        OPERA_TEST_ASSERT(not registry.has_registered(100, id1, LookAheadJobPath().add(0, 1)))
+        OPERA_TEST_ASSERT(registry.try_register(2000,id1,LookAheadJobPath().add(0,1)))
+        OPERA_TEST_ASSERT(registry.has_registered(2000, id1, LookAheadJobPath().add(0, 1)))
+        OPERA_TEST_ASSERT(not registry.try_register(2000,id1,LookAheadJobPath().add(0,1).add(0,2)))
+        OPERA_TEST_ASSERT(not registry.has_registered(2000, id1, LookAheadJobPath().add(0, 1).add(0, 2)))
+        OPERA_TEST_ASSERT(registry.try_register(2000,id2,LookAheadJobPath().add(0,1).add(0,2)))
+        OPERA_TEST_ASSERT(registry.has_registered(2000, id2, LookAheadJobPath().add(0, 1).add(0, 2)))
     }
 };
 

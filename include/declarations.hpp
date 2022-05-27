@@ -45,7 +45,7 @@ template<class T> using Set = std::set<T>;
 
 using SizeType = size_t;
 template<class T> using SharedPointer = std::shared_ptr<T>;
-using TimestampType = long long unsigned int; // Expressed in nanoseconds
+using TimestampType = long unsigned int; // Expressed in milliseconds
 
 static const FloatType infinity = std::numeric_limits<FloatType>::infinity();
 

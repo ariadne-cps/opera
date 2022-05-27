@@ -60,7 +60,7 @@ class TestRuntime {
 
         SynchronisedQueue<CollisionNotificationMessage> notifications;
 
-        BodyPresentationMessage rp(rid, 1000000000, {{0, 1},{1, 2}}, {0.1,0.1});
+        BodyPresentationMessage rp(rid, 1000, {{0, 1},{1, 2}}, {0.1,0.1});
         BodyPresentationMessage hp(hid,{{0,1}},{0.1});
         auto bp_publisher = access.make_body_presentation_publisher();
         auto bs_publisher = access.make_body_state_publisher();
@@ -199,7 +199,7 @@ class TestRuntime {
 
         SynchronisedQueue<CollisionNotificationMessage> notifications;
 
-        BodyPresentationMessage rp(rid, 1000000000, {{0, 1},{1, 2}}, {0.1,0.1});
+        BodyPresentationMessage rp(rid, 1000, {{0, 1},{1, 2}}, {0.1,0.1});
         BodyPresentationMessage hp(hid,{{0,1}},{0.1});
         auto bp_publisher = access.make_body_presentation_publisher();
         auto bs_publisher = access.make_body_state_publisher();
@@ -319,7 +319,7 @@ class TestRuntime {
 
         SynchronisedQueue<CollisionNotificationMessage> notifications;
 
-        BodyPresentationMessage rp(rid, 1000000000, {{0, 1},{1, 2}}, {0.1,0.1});
+        BodyPresentationMessage rp(rid, 1000, {{0, 1},{1, 2}}, {0.1,0.1});
         BodyPresentationMessage hp(hid,{{0,1}},{0.1});
         auto bp_publisher = access.make_body_presentation_publisher();
         auto bs_publisher = access.make_body_state_publisher();
@@ -473,14 +473,14 @@ class TestRuntime {
         bp_publisher->put(hp);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-        BodyStateMessage rs(rid,mode,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3000000000);
+        BodyStateMessage rs(rid,mode,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3000);
         bs_publisher->put(rs);
-        BodyStateMessage hs(hid,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3200000000);
+        BodyStateMessage hs(hid,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3200);
         bs_publisher->put(hs);
 
-        BodyStateMessage rs2(rid,Mode({"phase","running"}),{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3100000000);
+        BodyStateMessage rs2(rid,Mode({"phase","running"}),{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3100);
         bs_publisher->put(rs2);
-        BodyStateMessage rs3(rid,Mode({"phase","waiting"}),{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3200000000);
+        BodyStateMessage rs3(rid,Mode({"phase","waiting"}),{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3200);
         bs_publisher->put(rs3);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
@@ -510,7 +510,7 @@ class TestRuntime {
 
         SynchronisedQueue<CollisionNotificationMessage> notifications;
 
-        BodyPresentationMessage rp(rid, 1000000000, {{0, 1},{1, 2}}, {0.1,0.1});
+        BodyPresentationMessage rp(rid, 1000, {{0, 1},{1, 2}}, {0.1,0.1});
         BodyPresentationMessage hp(hid,{{0,1}},{0.1});
         auto bp_publisher = access.make_body_presentation_publisher();
         auto bs_publisher = access.make_body_state_publisher();

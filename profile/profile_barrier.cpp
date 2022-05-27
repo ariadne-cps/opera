@@ -118,16 +118,16 @@ struct ProfileBarrier : public Profiler {
         auto section = SphereMinimumDistanceBarrierSequenceSection(hs);
         RobotStateHistory history(r);
         for (SizeType i=0; i<ns; ++i) {
-            history.acquire(first,{{Point(FloatType(i),0,0)},{Point(FloatType(i),2,0)}},static_cast<TimestampType>(i*100000000));
+            history.acquire(first,{{Point(FloatType(i),0,0)},{Point(FloatType(i),2,0)}},static_cast<TimestampType>(i*100));
         }
-        history.acquire(second,{{Point(FloatType(ns),0,0)},{Point(FloatType(ns),2,0)}},static_cast<TimestampType>(ns*100000000));
+        history.acquire(second,{{Point(FloatType(ns),0,0)},{Point(FloatType(ns),2,0)}},static_cast<TimestampType>(ns*100));
 
         List<BodySegmentSample> hss;
         for (SizeType i=ns; i>0; --i) {
             hss.push_back(h.segment(0).create_sample({Point(FloatType(ns+i),0,0)},{Point(FloatType(ns+i),2,0)}));
         }
 
-        auto const& samples = history.snapshot_at(ns*100000000).samples(first).at(0);
+        auto const& samples = history.snapshot_at(ns*100).samples(first).at(0);
 
         profile("Using resuming for segments intersection detection",[&](auto){
             SizeType reuse_idx = 0;

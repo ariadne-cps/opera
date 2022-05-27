@@ -56,9 +56,9 @@ class TestLookAheadJobFactory {
         Mode updated_mode({"phase","sleeping"});
         Mode final_mode({"phase","nothing"});
 
-        TimestampType original_time = 1000000000;
-        TimestampType updated_time = 2000000000;
-        TimestampType final_time = 3000000000;
+        TimestampType original_time = 1000;
+        TimestampType updated_time = 2000;
+        TimestampType final_time = 3000;
 
         history.acquire(original_mode,{{Point(0,0,0)},{Point(4,4,4)}},original_time);
         history.acquire(updated_mode,{{Point(0,0,0)},{Point(4,4,4)}},updated_time);
@@ -205,9 +205,9 @@ class TestLookAheadJobFactory {
 
         Human h("h0", {{0, 1}}, {1.0});
 
-        TimestampType original_time = 1000000000;
-        TimestampType updated_time = 2000000000;
-        TimestampType final_time = 3000000000;
+        TimestampType original_time = 1000;
+        TimestampType updated_time = 2000;
+        TimestampType final_time = 3000;
 
         history.acquire(original_mode,{{Point(0,0,0)},{Point(4,4,4)}},original_time);
         history.acquire(updated_mode,{{Point(0,0,0)},{Point(4,4,4)}},updated_time);
@@ -259,62 +259,62 @@ class TestLookAheadJobFactory {
         Human h("h0", {{0, 1}}, {1.0});
 
 
-        history.acquire(original_mode,{{Point(0,0,0)},{Point(4,4,4)}},1000000000);
-        history.acquire(updated_mode,{{Point(0,0,0)},{Point(4,4,4)}},2000000000);
-        history.acquire(final_mode,{{Point(0,0,0)},{Point(4,4,4)}},3000000000);
-        history.acquire(original_mode,{{Point(0,0,0)},{Point(4,4,4)}},4000000000);
-        history.acquire(updated_mode,{{Point(0,0,0)},{Point(4,4,4)}},5000000000);
-        history.acquire(final_mode,{{Point(0,0,0)},{Point(4,4,4)}},6000000000);
+        history.acquire(original_mode,{{Point(0,0,0)},{Point(4,4,4)}},1000);
+        history.acquire(updated_mode,{{Point(0,0,0)},{Point(4,4,4)}},2000);
+        history.acquire(final_mode,{{Point(0,0,0)},{Point(4,4,4)}},3000);
+        history.acquire(original_mode,{{Point(0,0,0)},{Point(4,4,4)}},4000);
+        history.acquire(updated_mode,{{Point(0,0,0)},{Point(4,4,4)}},5000);
+        history.acquire(final_mode,{{Point(0,0,0)},{Point(4,4,4)}},6000);
 
         LookAheadJobIdentifier id("h0",0,"r0",0);
         auto sample = h.segment(0).create_sample({{-0.5, 1.0, 1.25}},{{1.0,2.0,3.0}});
-        ReuseLookAheadJob job(id, 4000000000, 4000000000, sample, ModeTrace().push_back(original_mode), LookAheadJobPath(),
+        ReuseLookAheadJob job(id, 4000, 4000, sample, ModeTrace().push_back(original_mode), LookAheadJobPath(),
                               MinimumDistanceBarrierSequence(CapsuleMinimumDistanceBarrierSequenceSectionFactory(),KeepOneMinimumDistanceBarrierSequenceUpdatePolicy()));
         OPERA_TEST_EQUALS(job.id(),id)
-        OPERA_TEST_EQUALS(job.initial_time(),4000000000)
+        OPERA_TEST_EQUALS(job.initial_time(),4000)
         OPERA_TEST_EQUALS(job.prediction_trace().ending_mode(),original_mode)
         auto factory = ReuseLookAheadJobFactory(KeepOneMinimumDistanceBarrierSequenceUpdatePolicy(),ReuseEquivalence::STRONG);
-        auto woken = factory.awaken(job, 5000000000, sample, history);
+        auto woken = factory.awaken(job, 5000, sample, history);
         OPERA_TEST_EQUALS(woken.size(),1)
         OPERA_TEST_ASSERT(woken.at(0).second == JobAwakeningResult::DIFFERENT)
         auto const& wj = dynamic_cast<const ReuseLookAheadJob&>(*woken.at(0).first.ptr());
         OPERA_TEST_EQUALS(wj.id(),id)
-        OPERA_TEST_EQUALS(wj.initial_time(),5000000000)
-        OPERA_TEST_EQUALS(wj.snapshot_time(),5000000000)
+        OPERA_TEST_EQUALS(wj.initial_time(),5000)
+        OPERA_TEST_EQUALS(wj.snapshot_time(),5000)
         OPERA_TEST_EQUALS(wj.prediction_trace().ending_mode(),updated_mode)
 
         auto factory2 = ReuseLookAheadJobFactory(KeepOneMinimumDistanceBarrierSequenceUpdatePolicy(),ReuseEquivalence::STRONG);
-        ReuseLookAheadJob job2(id, 4000000000, 4000000000, sample, ModeTrace().push_back(original_mode).push_back(updated_mode), LookAheadJobPath().add(0, 1),
+        ReuseLookAheadJob job2(id, 4000, 4000, sample, ModeTrace().push_back(original_mode).push_back(updated_mode), LookAheadJobPath().add(0, 1),
                                MinimumDistanceBarrierSequence(CapsuleMinimumDistanceBarrierSequenceSectionFactory(),KeepOneMinimumDistanceBarrierSequenceUpdatePolicy()));
-        woken = factory2.awaken(job2, 5000000000, sample, history);
+        woken = factory2.awaken(job2, 5000, sample, history);
         OPERA_TEST_EQUALS(woken.size(),1)
         OPERA_TEST_ASSERT(woken.at(0).second == JobAwakeningResult::DIFFERENT)
 
         auto factory3 = ReuseLookAheadJobFactory(KeepOneMinimumDistanceBarrierSequenceUpdatePolicy(),ReuseEquivalence::STRONG);
-        ReuseLookAheadJob job3(id, 5000000000, 5000000000, sample, ModeTrace().push_back(updated_mode), LookAheadJobPath().add(0, 1),
+        ReuseLookAheadJob job3(id, 5000, 5000, sample, ModeTrace().push_back(updated_mode), LookAheadJobPath().add(0, 1),
                                MinimumDistanceBarrierSequence(CapsuleMinimumDistanceBarrierSequenceSectionFactory(),KeepOneMinimumDistanceBarrierSequenceUpdatePolicy()));
-        woken = factory3.awaken(job3, 5000000000, sample, history);
+        woken = factory3.awaken(job3, 5000, sample, history);
         OPERA_TEST_EQUALS(woken.size(),1)
         OPERA_TEST_ASSERT(woken.at(0).second == JobAwakeningResult::UNAFFECTED)
 
         auto factory4 = ReuseLookAheadJobFactory(KeepOneMinimumDistanceBarrierSequenceUpdatePolicy(),ReuseEquivalence::STRONG);
-        ReuseLookAheadJob job4(id, 4000000000, 4000000000, sample, ModeTrace().push_back(original_mode).push_back(updated_mode), LookAheadJobPath().add(1, 1),
+        ReuseLookAheadJob job4(id, 4000, 4000, sample, ModeTrace().push_back(original_mode).push_back(updated_mode), LookAheadJobPath().add(1, 1),
                                MinimumDistanceBarrierSequence(CapsuleMinimumDistanceBarrierSequenceSectionFactory(),KeepOneMinimumDistanceBarrierSequenceUpdatePolicy()));
-        woken = factory4.awaken(job4, 5000000000, sample, history);
+        woken = factory4.awaken(job4, 5000, sample, history);
         OPERA_TEST_EQUALS(woken.size(),1)
 
         auto factory5 = ReuseLookAheadJobFactory(KeepOneMinimumDistanceBarrierSequenceUpdatePolicy(),ReuseEquivalence::STRONG);
         auto sample2 = h.segment(0).create_sample({{-0.5, 1.0, 1.25}},{{}});
-        ReuseLookAheadJob job5(id, 5000000000, 5000000000, sample, ModeTrace().push_back(original_mode).push_back(updated_mode), LookAheadJobPath().add(0, 1),
+        ReuseLookAheadJob job5(id, 5000, 5000, sample, ModeTrace().push_back(original_mode).push_back(updated_mode), LookAheadJobPath().add(0, 1),
                                MinimumDistanceBarrierSequence(CapsuleMinimumDistanceBarrierSequenceSectionFactory(),KeepOneMinimumDistanceBarrierSequenceUpdatePolicy()));
-        woken = factory5.awaken(job5, 6000000000, sample2, history);
+        woken = factory5.awaken(job5, 6000, sample2, history);
         OPERA_TEST_EQUALS(woken.size(),1)
         OPERA_TEST_ASSERT(woken.at(0).second == JobAwakeningResult::UNCOMPUTABLE)
     }
 
     void test_reuse_wake_job_with_barriersequencesection() {
 
-        Robot r("r0", 1000000000, {{0, 1}}, {0.25});
+        Robot r("r0", 1000, {{0, 1}}, {0.25});
         RobotStateHistory history1(r);
         Mode one({"p","1"}), two({"p","2"}), three({"p","3"}), four({"p","4"}), five({"p","5"});
 

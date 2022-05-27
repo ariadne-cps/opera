@@ -108,16 +108,16 @@ class TestBodyRegistry {
         registry.insert(h);
         registry.insert(r);
 
-        registry.acquire_state({h.id(), {{Point(0, 0, 0)},{Point(4, 4, 4)},{Point(0, 2, 0)}}, 1000000000});
-        registry.acquire_state({h.id(), {{Point(0, 0, 0)},{Point(4, 4, 4)},{Point(0, 2, 0)}}, 2000000000});
-        registry.acquire_state({h.id(), {{Point(0, 0, 0)},{Point(4, 4, 4)},{Point(0, 2, 0)}}, 3000000000});
+        registry.acquire_state({h.id(), {{Point(0, 0, 0)},{Point(4, 4, 4)},{Point(0, 2, 0)}}, 1000});
+        registry.acquire_state({h.id(), {{Point(0, 0, 0)},{Point(4, 4, 4)},{Point(0, 2, 0)}}, 2000});
+        registry.acquire_state({h.id(), {{Point(0, 0, 0)},{Point(4, 4, 4)},{Point(0, 2, 0)}}, 3000});
 
-        OPERA_TEST_EQUALS(registry.instance_distance(h.id(),1000000000,3000000000),2)
-        OPERA_TEST_EQUALS(registry.instance_distance(h.id(),1000000000,2000000000),1)
-        OPERA_TEST_EQUALS(registry.instance_distance(h.id(),1000000000,1000000000),0)
-        OPERA_TEST_FAIL(registry.instance_distance(h.id(),2000000000,1000000000))
-        OPERA_TEST_FAIL(registry.instance_distance(h.id(),1000000000,1000000001))
-        OPERA_TEST_FAIL(registry.instance_distance(h.id(),1000000001,2000000000))
+        OPERA_TEST_EQUALS(registry.instance_distance(h.id(),1000,3000),2)
+        OPERA_TEST_EQUALS(registry.instance_distance(h.id(),1000,2000),1)
+        OPERA_TEST_EQUALS(registry.instance_distance(h.id(),1000,1000),0)
+        OPERA_TEST_FAIL(registry.instance_distance(h.id(),2000,1000))
+        OPERA_TEST_FAIL(registry.instance_distance(h.id(),1000,1001))
+        OPERA_TEST_FAIL(registry.instance_distance(h.id(),1001,2000))
     }
 };
 

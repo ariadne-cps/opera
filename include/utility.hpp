@@ -49,7 +49,7 @@ class Resources {
 template<class T> inline std::string to_string(const T& t) { std::stringstream ss; ss << t; return ss.str(); }
 
 inline std::string format(TimestampType const& timestamp, std::string fmt = "%d/%m/%y %T") {
-    time_t timestamp_t = static_cast<time_t>(timestamp/1e9);
+    time_t timestamp_t = static_cast<time_t>(timestamp/1000);
     char mbstr[100];
     #ifdef _WIN32
         struct tm _tm;

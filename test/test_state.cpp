@@ -44,10 +44,10 @@ public:
 
     void test_human_state_instance() {
         Human h("h0", {{3,2},{1,0}}, {0.5,1.0});
-        HumanStateInstance instance(h,{{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},500000000);
+        HumanStateInstance instance(h,{{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},500);
 
         OPERA_TEST_EQUALS(instance.samples().size(),2)
-        OPERA_TEST_EQUALS(instance.timestamp(),500000000)
+        OPERA_TEST_EQUALS(instance.timestamp(),500)
     }
 
     void test_human_state_history() {
@@ -55,25 +55,25 @@ public:
         HumanStateHistory history(h);
 
         OPERA_TEST_EQUALS(history.size(),0)
-        OPERA_TEST_FAIL(history.instance_distance(1000000000,4000000000))
-        history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},1000000000);
+        OPERA_TEST_FAIL(history.instance_distance(1000,4000))
+        history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},1000);
         OPERA_TEST_EQUALS(history.size(),1)
-        OPERA_TEST_EXECUTE(history.latest_within(1000000001))
-        OPERA_TEST_EXECUTE(history.latest_within(1000000000))
-        OPERA_TEST_FAIL(history.latest_within(999999999))
-        OPERA_TEST_EQUALS(history.instance_number(1000000000),0)
-        OPERA_TEST_FAIL(history.instance_number(1000000001))
-        history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},2000000000);
-        history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},3000000000);
+        OPERA_TEST_EXECUTE(history.latest_within(1001))
+        OPERA_TEST_EXECUTE(history.latest_within(1000))
+        OPERA_TEST_FAIL(history.latest_within(999))
+        OPERA_TEST_EQUALS(history.instance_number(1000),0)
+        OPERA_TEST_FAIL(history.instance_number(1001))
+        history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},2000);
+        history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},3000);
         OPERA_TEST_EQUALS(history.size(),3)
-        OPERA_TEST_FAIL(history.instance_distance(1000000000,4000000000))
-        OPERA_TEST_FAIL(history.instance_distance(10000000,3000000000))
-        OPERA_TEST_EQUALS(history.instance_distance(2000000000,2000000000),0)
-        OPERA_TEST_EQUALS(history.instance_distance(2000000000,3000000000),1)
-        OPERA_TEST_EQUALS(history.instance_distance(1000000000,2000000000),1)
-        OPERA_TEST_EQUALS(history.instance_distance(1000000000,3000000000),2)
-        OPERA_TEST_EQUALS(history.instance_number(2000000000),1)
-        OPERA_TEST_EQUALS(history.instance_number(3000000000),2)
+        OPERA_TEST_FAIL(history.instance_distance(1000,4000))
+        OPERA_TEST_FAIL(history.instance_distance(10000000,3000))
+        OPERA_TEST_EQUALS(history.instance_distance(2000,2000),0)
+        OPERA_TEST_EQUALS(history.instance_distance(2000,3000),1)
+        OPERA_TEST_EQUALS(history.instance_distance(1000,2000),1)
+        OPERA_TEST_EQUALS(history.instance_distance(1000,3000),2)
+        OPERA_TEST_EQUALS(history.instance_number(2000),1)
+        OPERA_TEST_EQUALS(history.instance_number(3000),2)
     }
 
     void test_robot_state_history_basics() {
@@ -91,44 +91,44 @@ public:
             OPERA_TEST_ASSERT(snapshot.modes_with_samples().empty())
         }
 
-        history.acquire(first,{{Point(0,0,0)},{Point(4,4,4)},{Point( 0,2,0)},{Point(1,0,3)}},500000000);
+        history.acquire(first,{{Point(0,0,0)},{Point(4,4,4)},{Point( 0,2,0)},{Point(1,0,3)}},500);
 
         {
-            auto snapshot = history.snapshot_at(500000000);
+            auto snapshot = history.snapshot_at(500);
             OPERA_TEST_FAIL(snapshot.samples(first))
             OPERA_TEST_ASSERT(snapshot.modes_with_samples().empty())
-            OPERA_TEST_ASSERT(not snapshot.can_look_ahead(500000000))
+            OPERA_TEST_ASSERT(not snapshot.can_look_ahead(500))
             OPERA_TEST_EQUALS(snapshot.mode_trace().size(),0)
             auto entrances = snapshot.presences_exiting_into(first);
             OPERA_TEST_EQUAL(entrances.size(),1)
             OPERA_TEST_ASSERT(entrances.back().mode().is_empty())
-            OPERA_TEST_EQUALS(entrances.back().to(),500000000)
+            OPERA_TEST_EQUALS(entrances.back().to(),500)
         }
 
-        history.acquire(first,{{Point(0,0,1)},{Point(4,4,5)},{Point(0,3,0)},{Point(1,1,3)}},600000000);
-        history.acquire(second,{{Point(0,0,1.5)},{Point(4,4,5.5)},{Point(0,3.5,0)},{Point(1,1.5,3)}},700000000);
+        history.acquire(first,{{Point(0,0,1)},{Point(4,4,5)},{Point(0,3,0)},{Point(1,1,3)}},600);
+        history.acquire(second,{{Point(0,0,1.5)},{Point(4,4,5.5)},{Point(0,3.5,0)},{Point(1,1.5,3)}},700);
 
         {
-            auto snapshot = history.snapshot_at(700000000);
+            auto snapshot = history.snapshot_at(700);
             OPERA_TEST_EQUALS(snapshot.mode_trace().ending_mode(),first)
             OPERA_TEST_EQUALS(snapshot.modes_with_samples().size(), 1)
-            OPERA_TEST_ASSERT(not snapshot.can_look_ahead(700000000))
+            OPERA_TEST_ASSERT(not snapshot.can_look_ahead(700))
             OPERA_TEST_EQUALS(snapshot.presences_in(first).size(), 1)
             OPERA_TEST_EQUALS(snapshot.presences_exiting_into(second).size(), 1)
             OPERA_TEST_EQUALS(snapshot.presences_exiting_into(second).back().mode(), first)
-            OPERA_TEST_EQUALS(snapshot.presences_exiting_into(second).back().from(), 500000000)
-            OPERA_TEST_EQUALS(snapshot.presences_exiting_into(second).back().to(), 700000000)
+            OPERA_TEST_EQUALS(snapshot.presences_exiting_into(second).back().from(), 500)
+            OPERA_TEST_EQUALS(snapshot.presences_exiting_into(second).back().to(), 700)
             OPERA_TEST_EQUALS(snapshot.range_of_num_samples_in(first), Interval<SizeType>(2u))
             OPERA_TEST_EQUALS(snapshot.samples(first).at(0).at(0).error(),0)
         }
 
-        history.acquire(first,{{Point(0,0,2),Point(0,0.1,2)},{Point(4,4,6)},{Point(0,4,0)},{Point(1,2,3),Point(1.1,2,3)}},800000000);
+        history.acquire(first,{{Point(0,0,2),Point(0,0.1,2)},{Point(4,4,6)},{Point(0,4,0)},{Point(1,2,3),Point(1.1,2,3)}},800);
 
         {
-            auto snapshot = history.snapshot_at(800000000);
+            auto snapshot = history.snapshot_at(800);
             OPERA_TEST_EQUALS(snapshot.mode_trace().ending_mode(), second)
-            OPERA_TEST_ASSERT(not snapshot.can_look_ahead(500000000))
-            OPERA_TEST_ASSERT(snapshot.can_look_ahead(800000000))
+            OPERA_TEST_ASSERT(not snapshot.can_look_ahead(500))
+            OPERA_TEST_ASSERT(snapshot.can_look_ahead(800))
             OPERA_TEST_ASSERT(not snapshot.can_look_ahead(800000001))
             OPERA_TEST_EQUALS(snapshot.samples(first).size(), 2)
             OPERA_TEST_PRINT(snapshot.samples(first))
@@ -142,11 +142,11 @@ public:
             OPERA_TEST_PRINT(snapshot.samples(second))
         }
 
-        history.acquire(first,{{Point(1,0,2)},{Point(5,4,6)},{Point(1,4,0)},{Point(2,2,3)}},1100000000);
-        history.acquire(second,{{Point(1,0,1.5)},{Point(5,4,5.5)},{Point(1,3.5,0)},{Point(2,1.5,3)}},1200000000);
+        history.acquire(first,{{Point(1,0,2)},{Point(5,4,6)},{Point(1,4,0)},{Point(2,2,3)}},1100);
+        history.acquire(second,{{Point(1,0,1.5)},{Point(5,4,5.5)},{Point(1,3.5,0)},{Point(2,1.5,3)}},1200);
 
         {
-            auto snapshot = history.snapshot_at(1200000000);
+            auto snapshot = history.snapshot_at(1200);
             OPERA_TEST_EQUALS(snapshot.samples(first).at(0).size(), 4)
             OPERA_TEST_EQUALS(snapshot.samples(first).at(0).at(1).error(),snapshot.samples(first).at(0).at(2).error())
             OPERA_TEST_EQUALS(snapshot.presences_in(first).size(), 2)
@@ -170,21 +170,21 @@ public:
         Mode first({robot, "first"}), second({robot, "second"}), third({robot, "third"}), fourth({robot, "fourth"}), fifth({robot, "fifth"});
 
         TimestampType ts = 0u;
-        history.acquire(first,{{Point(0,0,0)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(first,{{Point(1,0,0)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(second,{{Point(1,1,0)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(second,{{Point(1,2,0)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(second,{{Point(1,3,0)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(third,{{Point(1,3,1)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(third,{{Point(1,3,2)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(second,{{Point(1,4,2)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(second,{{Point(1,5,2)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(first,{{Point(2,5,2)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(first,{{Point(3,5,2)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(first,{{Point(4,5,2)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(third,{{Point(4,5,3)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(second,{{Point(4,6,3)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(fourth,{{Point(4,6,3)},{Point(5,4,4)}},ts); ts+= 100000000;
+        history.acquire(first,{{Point(0,0,0)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(first,{{Point(1,0,0)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(second,{{Point(1,1,0)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(second,{{Point(1,2,0)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(second,{{Point(1,3,0)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(third,{{Point(1,3,1)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(third,{{Point(1,3,2)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(second,{{Point(1,4,2)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(second,{{Point(1,5,2)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(first,{{Point(2,5,2)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(first,{{Point(3,5,2)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(first,{{Point(4,5,2)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(third,{{Point(4,5,3)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(second,{{Point(4,6,3)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(fourth,{{Point(4,6,3)},{Point(5,4,4)}},ts); ts+= 100;
 
         auto snapshot = history.snapshot_at(ts);
 
@@ -229,7 +229,7 @@ public:
         Mode first({robot, "first"}), second({robot, "second"}), third({robot, "third"}), fourth({robot, "fourth"}), fifth({robot, "fifth"});
 
         TimestampType ts = 0u;
-        history.acquire(first,{{Point(0,0,0)},{Point(4,4,4)}},ts); ts+= 100000000;
+        history.acquire(first,{{Point(0,0,0)},{Point(4,4,4)}},ts); ts+= 100;
         history.acquire(first,{{Point(1,0,0)},{Point(4,4,4)}},ts);
 
         {
@@ -237,9 +237,9 @@ public:
             OPERA_TEST_ASSERT(not snapshot.can_look_ahead(ts))
         }
 
-        ts+= 100000000;
-        history.acquire(second,{{Point(1,1,0)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(second,{{Point(1,2,0)},{Point(4,4,4)}},ts); ts+= 100000000;
+        ts+= 100;
+        history.acquire(second,{{Point(1,1,0)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(second,{{Point(1,2,0)},{Point(4,4,4)}},ts); ts+= 100;
         history.acquire(second,{{Point(1,3,0)},{Point(4,4,4)}},ts);
 
         {
@@ -247,20 +247,20 @@ public:
             OPERA_TEST_ASSERT(not snapshot.can_look_ahead(ts))
         }
 
-        ts+= 100000000;
-        history.acquire(third,{{Point(1,3,1)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(third,{{Point(1,3,2)},{Point(4,4,4)}},ts); ts+= 100000000;
+        ts+= 100;
+        history.acquire(third,{{Point(1,3,1)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(third,{{Point(1,3,2)},{Point(4,4,4)}},ts); ts+= 100;
         history.acquire(second,{{Point(1,4,2)},{Point(4,4,4)}},ts);
 
         {
             auto snapshot = history.snapshot_at(ts);
             OPERA_TEST_ASSERT(snapshot.can_look_ahead(ts))
-            OPERA_TEST_ASSERT(not snapshot.can_look_ahead(ts-600000000))
+            OPERA_TEST_ASSERT(not snapshot.can_look_ahead(ts-600))
         }
 
-        ts+= 100000000;
-        history.acquire(second,{{Point(1,5,2)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(first,{{Point(2,5,2)},{Point(4,4,4)}},ts); ts+= 100000000;
+        ts+= 100;
+        history.acquire(second,{{Point(1,5,2)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(first,{{Point(2,5,2)},{Point(4,4,4)}},ts); ts+= 100;
         history.acquire(first,{{Point(3,5,2)},{Point(4,4,4)}},ts);
 
         {
@@ -268,7 +268,7 @@ public:
             OPERA_TEST_ASSERT(snapshot.can_look_ahead(ts))
         }
 
-        ts+= 100000000;
+        ts+= 100;
         history.acquire(first,{{Point(4,5,2)},{Point(4,4,4)}},ts);
 
         {
@@ -276,9 +276,9 @@ public:
             OPERA_TEST_ASSERT(not snapshot.can_look_ahead(ts))
         }
 
-        ts+= 100000000;
-        history.acquire(third,{{Point(4,5,3)},{Point(4,4,4)}},ts); ts+= 100000000;
-        history.acquire(second,{{Point(4,6,3)},{Point(4,4,4)}},ts); ts+= 100000000;
+        ts+= 100;
+        history.acquire(third,{{Point(4,5,3)},{Point(4,4,4)}},ts); ts+= 100;
+        history.acquire(second,{{Point(4,6,3)},{Point(4,4,4)}},ts); ts+= 100;
         history.acquire(fourth,{{Point(4,6,3)},{Point(5,4,4)}},ts);
 
         {

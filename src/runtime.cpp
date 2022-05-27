@@ -122,16 +122,16 @@ void Runtime::_process_one_working_job() {
         for (SizeType i=1; i<job.prediction_trace().size()-1; ++i)
             samples_between_modes = samples_between_modes + robot_history_snapshot.range_of_num_samples_in(job.prediction_trace().at(i).mode);
 
-        auto lower_collision_distance = static_cast<TimestampType>(std::round(static_cast<FloatType>(1000000000*samples_between_modes.lower())/message_frequency));
-        auto upper_collision_distance = static_cast<TimestampType>(std::round(static_cast<FloatType>(1000000000*samples_between_modes.upper())/message_frequency));
+        auto lower_collision_distance = static_cast<TimestampType>(std::round(static_cast<FloatType>(1000*samples_between_modes.lower())/message_frequency));
+        auto upper_collision_distance = static_cast<TimestampType>(std::round(static_cast<FloatType>(1000*samples_between_modes.upper())/message_frequency));
 
         _sender.put(CollisionNotificationMessage(job.id().human(), job.id().human_segment(), job.id().robot(), job.id().robot_segment(), job.initial_time(), {lower_collision_distance,upper_collision_distance}, job.prediction_trace().ending_mode(), job.prediction_trace().likelihood()));
 
         std::ostringstream collision_ss;
         if (lower_collision_distance == upper_collision_distance) {
             if (lower_collision_distance == 0) collision_ss << " immediately in " << job.prediction_trace().ending_mode();
-            else collision_ss << " after " << ((FloatType)lower_collision_distance)/1000000000 << " seconds in trace of size " << job.prediction_trace().size() << " ending with " << job.prediction_trace().ending_mode();
-        } else collision_ss << " after [" << ((FloatType)lower_collision_distance)/1000000000 << ":" << ((FloatType)upper_collision_distance)/1000000000 << "] seconds in trace of size " << job.prediction_trace().size() << " ending with " << job.prediction_trace().ending_mode();
+            else collision_ss << " after " << ((FloatType)lower_collision_distance)/1000 << " seconds in trace of size " << job.prediction_trace().size() << " ending with " << job.prediction_trace().ending_mode();
+        } else collision_ss << " after [" << ((FloatType)lower_collision_distance)/1000 << ":" << ((FloatType)upper_collision_distance)/1000 << "] seconds in trace of size " << job.prediction_trace().size() << " ending with " << job.prediction_trace().ending_mode();
 
         CONCLOG_PRINTLN("Notification sent for {" << job.id() << ":" << job.path() << "} from " << job.initial_time() << collision_ss.str() << " (~" << job.prediction_trace().likelihood() << ")")
         ++_num_completed;

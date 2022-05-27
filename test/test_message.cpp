@@ -60,31 +60,31 @@ public:
     }
 
     void test_human_state_message_create() {
-        BodyStateMessage p("h0",{{Point(0,0,0)},{Point(0,2,0)}},300000000);
+        BodyStateMessage p("h0",{{Point(0,0,0)},{Point(0,2,0)}},300);
         OPERA_TEST_EQUALS(p.id(),"h0")
         OPERA_TEST_ASSERT(p.mode().is_empty())
         OPERA_TEST_EQUALS(p.points().size(),2)
-        OPERA_TEST_EQUALS(p.timestamp(),300000000)
+        OPERA_TEST_EQUALS(p.timestamp(),300)
     }
 
     void test_robot_state_message_create() {
         Mode loc({"r0", "first"});
-        BodyStateMessage p("r0",loc,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},200000000);
+        BodyStateMessage p("r0",loc,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},200);
         OPERA_TEST_EQUALS(p.id(),"r0")
         OPERA_TEST_EQUALS(p.mode(),loc)
         OPERA_TEST_EQUALS(p.points().size(),3)
-        OPERA_TEST_EQUALS(p.timestamp(),200000000)
+        OPERA_TEST_EQUALS(p.timestamp(),200)
     }
 
     void test_notification_message_create() {
         Mode loc({"r0", "first"});
-        CollisionNotificationMessage p("h0",1,"r0",4,200000000,Interval<TimestampType>(1000,2000),loc,1.0);
+        CollisionNotificationMessage p("h0",1,"r0",4,200,Interval<TimestampType>(1000,2000),loc,1.0);
 
         OPERA_TEST_EQUALS(p.human_id(),"h0")
         OPERA_TEST_EQUALS(p.human_segment_id(),1)
         OPERA_TEST_EQUALS(p.robot_id(),"r0")
         OPERA_TEST_EQUALS(p.robot_segment_id(),4)
-        OPERA_TEST_EQUALS(p.current_time(),200000000)
+        OPERA_TEST_EQUALS(p.current_time(),200)
         OPERA_TEST_EQUALS(p.collision_distance().lower(), 1000)
         OPERA_TEST_EQUALS(p.collision_distance().upper(), 2000)
         OPERA_TEST_EQUALS(p.collision_mode(), loc)

@@ -326,7 +326,7 @@ Interval<SizeType> RobotStateHistorySnapshot::_range_of_num_samples_within(List<
     SizeType min_value = std::numeric_limits<SizeType>::max();
     SizeType max_value = 0;
     for (auto const& p : presences) {
-        auto val = static_cast<SizeType>(floor(static_cast<double>(p.to()-p.from())/1e9*_history._robot.message_frequency()));
+        auto val = static_cast<SizeType>(floor(static_cast<double>(p.to()-p.from())/1000*_history._robot.message_frequency()));
         min_value = std::min(min_value,val);
         max_value = std::max(max_value,val);
     }
@@ -355,7 +355,7 @@ FloatType RobotStateHistorySnapshot::unrounded_sample_index(Mode const& mode, Ti
         }
     }
     OPERA_ASSERT_MSG(entry_time <= timestamp, "No presence for " << mode << " was found to identify the sample index")
-    return FloatType(timestamp - entry_time) / 1e9 * FloatType(_history._robot.message_frequency());
+    return FloatType(timestamp - entry_time) / 1000 * FloatType(_history._robot.message_frequency());
 }
 
 SizeType RobotStateHistorySnapshot::sample_index(Mode const& mode, TimestampType const& timestamp) const {
