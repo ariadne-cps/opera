@@ -59,25 +59,25 @@ class TestRuntimeIO {
         LookAheadJobFactory job_factory = DiscardLookAheadJobFactory();
         BodyRegistry registry;
         SynchronisedQueue<LookAheadJob> waiting_jobs, sleeping_jobs;
-        RuntimeReceiver receiver({access,BodyPresentationTopic::DEFAULT},{{access,BodyStateTopic::DEFAULT}},
+        RuntimeReceiver receiver({access,BodyPresentationTopic::DEFAULT},{access,HumanStateTopic::DEFAULT},{access,RobotStateTopic::DEFAULT},
                                  job_factory, registry, waiting_jobs, sleeping_jobs);
         String id = "h0";
         BodyPresentationMessage hp(id,{{0,1},{1,2}},{1.0,0.5});
-        BodyStateMessage hs(id,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},300);
+        HumanStateMessage hs({{id,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}}}},300);
         auto bp_publisher = access.make_body_presentation_publisher();
-        auto bs_publisher = access.make_body_state_publisher();
-        bs_publisher->put(hs);
+        auto hs_publisher = access.make_human_state_publisher();
+        hs_publisher->put(hs);
         OPERA_TEST_ASSERT(not registry.contains(id))
         OPERA_TEST_FAIL(registry.latest_human_instance_within(id,0))
         bp_publisher->put(hp);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_ASSERT(registry.contains(id))
-        bs_publisher->put(hs);
+        hs_publisher->put(hs);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         auto const& last_state = registry.latest_human_instance_within(id,300);
         OPERA_TEST_EQUALS(last_state.timestamp(),300)
         delete bp_publisher;
-        delete bs_publisher;
+        delete hs_publisher;
         MemoryBroker::instance().clear();
     }
 
@@ -86,26 +86,26 @@ class TestRuntimeIO {
         LookAheadJobFactory job_factory = DiscardLookAheadJobFactory();
         BodyRegistry registry;
         SynchronisedQueue<LookAheadJob> waiting_jobs, sleeping_jobs;
-        RuntimeReceiver receiver({access,BodyPresentationTopic::DEFAULT},{{access,BodyStateTopic::DEFAULT}},
+        RuntimeReceiver receiver({access,BodyPresentationTopic::DEFAULT},{access,HumanStateTopic::DEFAULT},{access,RobotStateTopic::DEFAULT},
                                  job_factory, registry, waiting_jobs, sleeping_jobs);
         String id = "r0";
         Mode mode({"phase", "waiting"});
         BodyPresentationMessage rp(id,10,{{0,1},{1,2}},{1.0,0.5});
-        BodyStateMessage rs(id,mode,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},300);
+        RobotStateMessage rs(id,mode,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},300);
         auto bp_publisher = access.make_body_presentation_publisher();
-        auto bs_publisher = access.make_body_state_publisher();
-        bs_publisher->put(rs);
+        auto rs_publisher = access.make_robot_state_publisher();
+        rs_publisher->put(rs);
         OPERA_TEST_ASSERT(not registry.contains(id))
         OPERA_TEST_FAIL(registry.robot_history(id))
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         bp_publisher->put(rp);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_ASSERT(registry.contains(id))
-        bs_publisher->put(rs);
+        rs_publisher->put(rs);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(receiver.num_pending_human_robot_pairs(),0)
         delete bp_publisher;
-        delete bs_publisher;
+        delete rs_publisher;
         MemoryBroker::instance().clear();
     }
 
@@ -114,42 +114,44 @@ class TestRuntimeIO {
         LookAheadJobFactory job_factory = DiscardLookAheadJobFactory();
         BodyRegistry registry;
         SynchronisedQueue<LookAheadJob> waiting_jobs, sleeping_jobs;
-        RuntimeReceiver receiver({access,BodyPresentationTopic::DEFAULT},{{access,BodyStateTopic::DEFAULT}},
+        RuntimeReceiver receiver({access,BodyPresentationTopic::DEFAULT},{access,HumanStateTopic::DEFAULT},{access,RobotStateTopic::DEFAULT},
                                  job_factory, registry, waiting_jobs, sleeping_jobs);
         String rid = "r0";
         String hid = "h0";
         Mode waiting({"phase", "waiting"}), running({"phase","running"});
         BodyPresentationMessage rp(rid,10,{{0,1},{1,2}},{1.0,0.5});
-        BodyStateMessage rs(rid, waiting, {{Point(0, 0, 0)}, {Point(0, 2, 0)}, {Point(0, 4, 0)}}, 3000);
+        RobotStateMessage rs(rid, waiting, {{Point(0, 0, 0)}, {Point(0, 2, 0)}, {Point(0, 4, 0)}}, 3000);
         BodyPresentationMessage hp(hid,{{0,1},{1,2}},{1.0,0.5});
-        BodyStateMessage hs(hid,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3200);
+        HumanStateMessage hs({{hid,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}}}},3200);
         auto bp_publisher = access.make_body_presentation_publisher();
-        auto bs_publisher = access.make_body_state_publisher();
+        auto hs_publisher = access.make_human_state_publisher();
+        auto rs_publisher = access.make_robot_state_publisher();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         bp_publisher->put(rp);
         bp_publisher->put(hp);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(receiver.num_pending_human_robot_pairs(),1)
-        bs_publisher->put(rs);
-        bs_publisher->put(hs);
+        hs_publisher->put(hs);
+        rs_publisher->put(rs);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(waiting_jobs.size(),0)
         OPERA_TEST_EQUALS(sleeping_jobs.size(),0)
         OPERA_TEST_EQUALS(receiver.num_pending_human_robot_pairs(),1)
 
-        BodyStateMessage rs2(rid,running,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3100);
-        bs_publisher->put(rs2);
+        RobotStateMessage rs2(rid,running,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3100);
+        rs_publisher->put(rs2);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(registry.robot_history(rid).snapshot_at(3100).modes_with_samples().size(), 1)
 
-        BodyStateMessage rs3(rid,waiting,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3200);
-        bs_publisher->put(rs3);
+        RobotStateMessage rs3(rid,waiting,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3200);
+        rs_publisher->put(rs3);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         OPERA_TEST_EQUALS(waiting_jobs.size(),4)
 
         delete bp_publisher;
-        delete bs_publisher;
+        delete hs_publisher;
+        delete rs_publisher;
         MemoryBroker::instance().clear();
     }
 };

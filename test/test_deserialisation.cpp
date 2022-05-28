@@ -37,7 +37,8 @@ public:
     void test() {
         OPERA_TEST_CALL(test_bodypresentationmessage_make_human())
         OPERA_TEST_CALL(test_bodypresentationmessage_make_robot())
-        OPERA_TEST_CALL(test_bodystatemessage_make())
+        OPERA_TEST_CALL(test_humanstatemessage_make())
+        OPERA_TEST_CALL(test_robotstatemessage_make())
         OPERA_TEST_CALL(test_collisiondetectionmessage_make())
     }
 
@@ -68,9 +69,28 @@ public:
         OPERA_TEST_EQUALS(p1.id(),p2.id())
     }
 
-    void test_bodystatemessage_make() {
+    void test_humanstatemessage_make() {
+        Deserialiser<HumanStateMessage> d(Resources::path("json/examples/state/humans.json"));
+        auto p = d.make();
+        OPERA_TEST_EQUALS(p.bodies().size(),1)
+        OPERA_TEST_EQUALS(p.timestamp(),328903)
+        auto const& bd = p.bodies().at(0);
+        OPERA_TEST_EQUALS(bd.first,"h0")
+        OPERA_TEST_PRINT(bd.second)
+        OPERA_TEST_EQUALS(bd.second.size(),8)
+        OPERA_TEST_EQUALS(bd.second.at(0).size(),1)
+        OPERA_TEST_EQUALS(bd.second.at(1).size(),1)
+        OPERA_TEST_EQUALS(bd.second.at(2).size(),2)
+        OPERA_TEST_EQUALS(bd.second.at(3).size(),1)
+        OPERA_TEST_EQUALS(bd.second.at(4).size(),1)
+        OPERA_TEST_EQUALS(bd.second.at(5).size(),1)
+        OPERA_TEST_EQUALS(bd.second.at(6).size(),1)
+        OPERA_TEST_EQUALS(bd.second.at(7).size(),1)
+    }
+
+    void test_robotstatemessage_make() {
         Mode loc({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}});
-        Deserialiser<BodyStateMessage> d(Resources::path("json/examples/state/robot0.json"));
+        Deserialiser<RobotStateMessage> d(Resources::path("json/examples/state/robot0.json"));
         auto p = d.make();
         OPERA_TEST_EQUALS(p.id(),"r0")
         OPERA_TEST_EQUALS(p.mode(),loc)
@@ -84,7 +104,7 @@ public:
         OPERA_TEST_EQUALS(p.points().at(5).size(),1)
         OPERA_TEST_EQUALS(p.points().at(6).size(),1)
         OPERA_TEST_EQUALS(p.points().at(7).size(),1)
-        OPERA_TEST_EQUALS(p.timestamp(),328903284232)
+        OPERA_TEST_EQUALS(p.timestamp(),328903)
     }
 
     void test_collisiondetectionmessage_make() {
@@ -95,7 +115,7 @@ public:
         OPERA_TEST_EQUALS(p.human_segment_id(),0)
         OPERA_TEST_EQUALS(p.robot_id(),"r0")
         OPERA_TEST_EQUALS(p.robot_segment_id(),3)
-        OPERA_TEST_EQUALS(p.current_time(),32890592300)
+        OPERA_TEST_EQUALS(p.current_time(),32890)
         OPERA_TEST_EQUALS(p.collision_distance().lower(), 72)
         OPERA_TEST_EQUALS(p.collision_distance().upper(), 123)
         OPERA_TEST_EQUALS(p.collision_mode(), loc)

@@ -86,11 +86,18 @@ template<> class Deserialiser<BodyPresentationMessage> : public DeserialiserBase
     BodyPresentationMessage make() const override;
 };
 
-//! \brief Converter to a BodyStateMessage from a JSON description file
-template<> class Deserialiser<BodyStateMessage> : public DeserialiserBase<BodyStateMessage> {
+//! \brief Converter to a HumanStateMessage from a JSON description file
+template<> class Deserialiser<HumanStateMessage> : public DeserialiserBase<HumanStateMessage> {
   public:
     using DeserialiserBase::DeserialiserBase;
-    BodyStateMessage make() const override;
+    HumanStateMessage make() const override;
+};
+
+//! \brief Converter to a RobotStateMessage from a JSON description file
+template<> class Deserialiser<RobotStateMessage> : public DeserialiserBase<RobotStateMessage> {
+public:
+    using DeserialiserBase::DeserialiserBase;
+    RobotStateMessage make() const override;
 };
 
 //! \brief Convert to a CollisionNotificationMessage from a JSON description file

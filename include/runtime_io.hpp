@@ -58,7 +58,8 @@ class RuntimeReceiver {
     //! \brief Create starting from subscribers and a \a registry to fill, along with \a waiting_jobs
     //! to populate as soon as the registry has history for the corresponding human-robot pair, and \a sleeping_jobs
     //! to move to waiting_jobs as soon as a new human state is received
-    RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, List<Pair<BrokerAccess,BodyStateTopic>> const& bs_subscribers,
+    RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, Pair<BrokerAccess,HumanStateTopic> const& hs_subscriber,
+                    Pair<BrokerAccess,RobotStateTopic> const& rs_subscriber,
                     LookAheadJobFactory const& factory, BodyRegistry& registry,
                     SynchronisedQueue<LookAheadJob>& waiting_jobs, SynchronisedQueue<LookAheadJob>& sleeping_jobs);
 
@@ -83,11 +84,13 @@ class RuntimeReceiver {
   private:
     List<HumanRobotIdPair> _pending_human_robot_pairs;
     mutable std::mutex _pairs_mux;
+    mutable std::mutex _state_received_mux;
 
     LookAheadJobFactory const& _factory;
 
     SubscriberInterface<BodyPresentationMessage>* _bp_subscriber;
-    List<SubscriberInterface<BodyStateMessage>*> _bs_subscribers;
+    SubscriberInterface<HumanStateMessage>* _hs_subscriber;
+    SubscriberInterface<RobotStateMessage>* _rs_subscriber;
 
     std::atomic<SizeType> _num_state_messages_received = 0;
 };

@@ -41,30 +41,36 @@ public:
     void test_clear() {
         MemoryBroker::instance().clear();
         MemoryBrokerAccess access;
-        BodyStateMessage bs("robot0", Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), {{}, {Point(0, -1, 0.1), Point(0.3, 3.1, -1.2)}, {}}, 93249042230);
+        HumanStateMessage hs({{"h0",{{Point(0,0,0)},{Point(0,2,0)}}}},300);
+        RobotStateMessage rs("robot0", Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), {{}, {Point(0, -1, 0.1), Point(0.3, 3.1, -1.2)}, {}}, 93249);
         BodyPresentationMessage bp("human1", {{0, 1},{3, 2}}, {1.0,0.5});
-        CollisionNotificationMessage cn("h0", 0, "r0", 3, 32890592300, Interval<TimestampType>(72, 123), Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), 0.5);
+        CollisionNotificationMessage cn("h0", 0, "r0", 3, 32890, Interval<TimestampType>(72, 123), Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), 0.5);
 
         auto bp_publisher = access.make_body_presentation_publisher();
-        auto bs_publisher = access.make_body_state_publisher();
+        auto hs_publisher = access.make_human_state_publisher();
+        auto rs_publisher = access.make_robot_state_publisher();
         auto cn_publisher = access.make_collision_notification_publisher();
 
         bp_publisher->put(bp);
-        bs_publisher->put(bs);
+        hs_publisher->put(hs);
+        rs_publisher->put(rs);
         cn_publisher->put(cn);
 
         OPERA_TEST_EQUALS(MemoryBroker::instance().size<BodyPresentationMessage>(),1)
-        OPERA_TEST_EQUALS(MemoryBroker::instance().size<BodyStateMessage>(),1)
+        OPERA_TEST_EQUALS(MemoryBroker::instance().size<HumanStateMessage>(),1)
+        OPERA_TEST_EQUALS(MemoryBroker::instance().size<RobotStateMessage>(),1)
         OPERA_TEST_EQUALS(MemoryBroker::instance().size<CollisionNotificationMessage>(),1)
 
         MemoryBroker::instance().clear();
 
         OPERA_TEST_EQUALS(MemoryBroker::instance().size<BodyPresentationMessage>(),0)
-        OPERA_TEST_EQUALS(MemoryBroker::instance().size<BodyStateMessage>(),0)
+        OPERA_TEST_EQUALS(MemoryBroker::instance().size<HumanStateMessage>(),0)
+        OPERA_TEST_EQUALS(MemoryBroker::instance().size<RobotStateMessage>(),0)
         OPERA_TEST_EQUALS(MemoryBroker::instance().size<CollisionNotificationMessage>(),0)
 
         delete bp_publisher;
-        delete bs_publisher;
+        delete hs_publisher;
+        delete rs_publisher;
         delete cn_publisher;
     }
 };

@@ -36,46 +36,53 @@ using namespace Opera;
 
 class ProfileSerialisation : public Profiler {
   public:
-    ProfileSerialisation() : Profiler(100000) { }
+    ProfileSerialisation() : Profiler(10000) { }
 
     void run() {
         profile_bodypresentationmessage();
-        profile_bodystatemessage();
+        profile_humanstatemessage();
+        profile_robotstatemessage();
         profile_collisionnotificationmessage();
     }
 
     void profile_bodypresentationmessage() {
-        SizeType num_samples = 1000;
         List<BodyPresentationMessage> messages;
         for (SizeType i=0; i<num_tries(); ++i)
             messages.push_back(Deserialiser<BodyPresentationMessage>(Resources::path("json/examples/presentation/human0.json")).make());
 
         profile("Serialisation of a BodyPresentationMessage into a human presentation JSON String",[&](SizeType i){
             Serialiser<BodyPresentationMessage>(messages.at(i)).to_string();
-            },num_samples);
+            });
     }
 
-    void profile_bodystatemessage() {
-        SizeType num_samples = 4259;
+    void profile_humanstatemessage() {
+        List<HumanStateMessage> messages;
+        for (SizeType i=0; i<num_tries(); ++i)
+            messages.push_back(Deserialiser<HumanStateMessage>(Resources::path("json/examples/state/humans.json")).make());
 
-        List<BodyStateMessage> messages;
-        for (SizeType i=0; i<num_samples; ++i)
-            messages.push_back(Deserialiser<BodyStateMessage>(Resources::path("json/scenarios/nocollision/h0/"+std::to_string(i+1)+".json")).make());
+        profile("Serialisation of a HumanStateMessage into a human sample JSON String",[&](SizeType i){
+            Serialiser<HumanStateMessage>(messages.at(i)).to_string();
+        });
+    }
 
-        profile("Serialisation of a BodyStateMessage into a human sample JSON String",[&](SizeType i){
-            Serialiser<BodyStateMessage>(messages.at(i)).to_string();
-        },num_samples);
+    void profile_robotstatemessage() {
+        List<RobotStateMessage> messages;
+        for (SizeType i=0; i<num_tries(); ++i)
+            messages.push_back(Deserialiser<RobotStateMessage>(Resources::path("json/examples/state/robot0.json")).make());
+
+        profile("Serialisation of a RobotStateMessage into a robot sample JSON String",[&](SizeType i){
+            Serialiser<RobotStateMessage>(messages.at(i)).to_string();
+        });
     }
 
     void profile_collisionnotificationmessage() {
-        SizeType num_samples = 1000;
         List<CollisionNotificationMessage> messages;
         for (SizeType i=0; i<num_tries(); ++i)
             messages.push_back(Deserialiser<CollisionNotificationMessage>(Resources::path("json/examples/notification/notification0.json")).make());
 
         profile("Serialisation of a CollisionNotificationMessage into a human presentation JSON String",[&](SizeType i){
             Serialiser<CollisionNotificationMessage>(messages.at(i)).to_string();
-            },num_samples);
+            });
     }
 };
 

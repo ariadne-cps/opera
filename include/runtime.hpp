@@ -42,7 +42,8 @@ class Runtime {
     //! \brief Create using a generic broker access and a \a factory for job manipulation
     Runtime(BrokerAccess const& access, LookAheadJobFactory const& factory, SizeType const& concurrency = std::thread::hardware_concurrency());
     //! \brief Create using specific accesses/topics and a \a factory for job manipulation
-    Runtime(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, List<Pair<BrokerAccess,BodyStateTopic>> const& bs_subscribers, Pair<BrokerAccess,CollisionNotificationTopic> const& cn_publisher,
+    Runtime(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, Pair<BrokerAccess,HumanStateTopic> const& hs_subscriber,
+            Pair<BrokerAccess,RobotStateTopic> const& rs_subscriber, Pair<BrokerAccess,CollisionNotificationTopic> const& cn_publisher,
             LookAheadJobFactory const& factory, SizeType const& concurrency = std::thread::hardware_concurrency());
 
     Runtime(Runtime const&) = delete;

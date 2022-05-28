@@ -37,8 +37,8 @@ public:
     void test() {
         OPERA_TEST_CALL(test_bodypresentationmessage_human())
         OPERA_TEST_CALL(test_bodypresentationmessage_robot())
-        OPERA_TEST_CALL(test_bodystatemessage_human())
-        OPERA_TEST_CALL(test_bodystatemessage_robot())
+        OPERA_TEST_CALL(test_humanstatemessage())
+        OPERA_TEST_CALL(test_robotstatemessage())
         OPERA_TEST_CALL(test_collisionnotificationmessage())
     }
 
@@ -56,25 +56,25 @@ public:
         OPERA_TEST_EQUALS(serialiser.to_string(),"{\"id\":\"robot1\",\"isHuman\":false,\"messageFrequency\":30,\"pointIds\":[[0,1],[3,2],[4,2]],\"thicknesses\":[1.0,0.5,0.5]}")
     }
 
-    void test_bodystatemessage_human() {
-        BodyStateMessage p("human0",{{Point(0.4,2.1,0.2)},{Point(0,-1,0.1),Point(0.3,3.1,-1.2)},{Point(0.4,0.1,1.2)},{Point(0,0,1)}},3423235253290);
-        Serialiser<BodyStateMessage> serialiser(p);
-        serialiser.to_file(Resources::path("json/examples/state/" + p.id() + ".tmp.json"));
-        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"bodyId\":\"human0\",\"continuousState\":[[[0.4,2.1,0.2]],[[0.0,-1.0,0.1],[0.3,3.1,-1.2]],[[0.4,0.1,1.2]],[[0.0,0.0,1.0]]],\"timestamp\":3423235253290}")
+    void test_humanstatemessage() {
+        HumanStateMessage p({{"human0",{{Point(0.4,2.1,0.2)},{Point(0,-1,0.1),Point(0.3,3.1,-1.2)},{Point(0.4,0.1,1.2)},{Point(0,0,1)}}}},3423235);
+        Serialiser<HumanStateMessage> serialiser(p);
+        serialiser.to_file(Resources::path("json/examples/state/humans.tmp.json"));
+        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"bodies\":[{\"bodyId\":\"human0\",\"continuousState\":[[[0.4,2.1,0.2]],[[0.0,-1.0,0.1],[0.3,3.1,-1.2]],[[0.4,0.1,1.2]],[[0.0,0.0,1.0]]]}],\"timestamp\":3423235}")
     }
 
-    void test_bodystatemessage_robot() {
-        BodyStateMessage p("robot0", Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), {{}, {Point(0, -1, 0.1), Point(0.3, 3.1, -1.2)}, {}}, 93249042230);
-        Serialiser<BodyStateMessage> serialiser(p);
+    void test_robotstatemessage() {
+        RobotStateMessage p("robot0", Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), {{}, {Point(0, -1, 0.1), Point(0.3, 3.1, -1.2)}, {}}, 93249);
+        Serialiser<RobotStateMessage> serialiser(p);
         serialiser.to_file(Resources::path("json/examples/state/" + p.id() + ".tmp.json"));
-        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"bodyId\":\"robot0\",\"mode\":{\"destination\":\"2\",\"origin\":\"3\",\"phase\":\"pre\"},\"continuousState\":[[],[[0.0,-1.0,0.1],[0.3,3.1,-1.2]],[]],\"timestamp\":93249042230}")
+        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"bodyId\":\"robot0\",\"mode\":{\"destination\":\"2\",\"origin\":\"3\",\"phase\":\"pre\"},\"continuousState\":[[],[[0.0,-1.0,0.1],[0.3,3.1,-1.2]],[]],\"timestamp\":93249}")
     }
 
     void test_collisionnotificationmessage() {
-        CollisionNotificationMessage p("h0", 0, "r0", 3, 32890592300, Interval<TimestampType>(72, 123), Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), 0.5);
+        CollisionNotificationMessage p("h0", 0, "r0", 3, 32890, Interval<TimestampType>(72, 123), Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), 0.5);
         Serialiser<CollisionNotificationMessage> serialiser(p);
         serialiser.to_file(Resources::path("json/examples/notification/notification0.tmp.json"));
-        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"human\":{\"bodyId\":\"h0\",\"segmentId\":0},\"robot\":{\"bodyId\":\"r0\",\"segmentId\":3},\"currentTime\":32890592300,\"collisionDistance\":{\"lower\":72,\"upper\":123},\"collisionMode\":{\"destination\":\"2\",\"origin\":\"3\",\"phase\":\"pre\"},\"likelihood\":0.5}")
+        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"human\":{\"bodyId\":\"h0\",\"segmentId\":0},\"robot\":{\"bodyId\":\"r0\",\"segmentId\":3},\"currentTime\":32890,\"collisionDistance\":{\"lower\":72,\"upper\":123},\"collisionMode\":{\"destination\":\"2\",\"origin\":\"3\",\"phase\":\"pre\"},\"likelihood\":0.5}")
     }
 };
 

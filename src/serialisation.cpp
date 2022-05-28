@@ -63,7 +63,48 @@ Document Serialiser<BodyPresentationMessage>::to_document() const {
     return document;
 }
 
-Document Serialiser<BodyStateMessage>::to_document() const {
+Document Serialiser<HumanStateMessage>::to_document() const {
+
+    Document document;
+    document.SetObject();
+    Document::AllocatorType& allocator = document.GetAllocator();
+
+    Value bodies;
+    bodies.SetArray();
+    for (auto const& bd : obj.bodies()) {
+        Value entry;
+        entry.SetObject();
+
+        Value id;
+        id.SetString(bd.first.c_str(),static_cast<rapidjson::SizeType>(bd.first.length()));
+        entry.AddMember("bodyId",id,allocator);
+
+        Value continuous_state;
+        continuous_state.SetArray();
+        for (auto const& samples : bd.second) {
+            Value samples_array;
+            samples_array.SetArray();
+            for (auto const& point : samples) {
+                Value coordinates;
+                coordinates.SetArray();
+                coordinates.PushBack(Value().SetDouble(point.x),allocator)
+                        .PushBack(Value().SetDouble(point.y),allocator)
+                        .PushBack(Value().SetDouble(point.z),allocator);
+                samples_array.PushBack(coordinates,allocator);
+            }
+            continuous_state.PushBack(samples_array,allocator);
+        }
+        entry.AddMember("continuousState",continuous_state,allocator);
+        bodies.PushBack(entry, allocator);
+    }
+
+    document.AddMember("bodies", bodies, allocator);
+    document.AddMember("timestamp",Value().SetUint64(obj.timestamp()),allocator);
+
+    return document;
+}
+
+Document Serialiser<RobotStateMessage>::to_document() const {
 
     Document document;
     document.SetObject();
@@ -73,15 +114,13 @@ Document Serialiser<BodyStateMessage>::to_document() const {
     id.SetString(obj.id().c_str(),static_cast<rapidjson::SizeType>(obj.id().length()));
     document.AddMember("bodyId",id,allocator);
 
-    if (not obj.mode().is_empty()) {
-        Value mode;
-        mode.SetObject();
-        for (auto const& v : obj.mode().values()) {
-            mode.AddMember(Value().SetString(v.first.c_str(),static_cast<rapidjson::SizeType>(v.first.length()),allocator),
-                                    Value().SetString(v.second.c_str(),static_cast<rapidjson::SizeType>(v.second.length()), allocator),allocator);
-        }
-        document.AddMember("mode",mode,allocator);
+    Value mode;
+    mode.SetObject();
+    for (auto const& v : obj.mode().values()) {
+        mode.AddMember(Value().SetString(v.first.c_str(),static_cast<rapidjson::SizeType>(v.first.length()),allocator),
+                                Value().SetString(v.second.c_str(),static_cast<rapidjson::SizeType>(v.second.length()), allocator),allocator);
     }
+    document.AddMember("mode",mode,allocator);
 
     Value continuous_state;
     continuous_state.SetArray();

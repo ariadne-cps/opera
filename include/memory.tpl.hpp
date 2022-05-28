@@ -38,9 +38,14 @@ template<> void MemoryBroker::put<BodyPresentationMessage>(BodyPresentationMessa
     _body_presentations.push_back(msg);
 }
 
-template<> void MemoryBroker::put<BodyStateMessage>(BodyStateMessage const& msg) {
+template<> void MemoryBroker::put<HumanStateMessage>(HumanStateMessage const& msg) {
     std::lock_guard<std::mutex> lock(_mux);
-    _body_states.push_back(msg);
+    _human_states.push_back(msg);
+}
+
+template<> void MemoryBroker::put<RobotStateMessage>(RobotStateMessage const& msg) {
+    std::lock_guard<std::mutex> lock(_mux);
+    _robot_states.push_back(msg);
 }
 
 template<> void MemoryBroker::put<CollisionNotificationMessage>(CollisionNotificationMessage const& msg) {
@@ -49,11 +54,13 @@ template<> void MemoryBroker::put<CollisionNotificationMessage>(CollisionNotific
 }
 
 template<> BodyPresentationMessage MemoryBroker::get<BodyPresentationMessage>(SizeType const& idx) const { std::lock_guard<std::mutex> lock(_mux); return _body_presentations.at(idx); }
-template<> BodyStateMessage MemoryBroker::get<BodyStateMessage>(SizeType const& idx) const { std::lock_guard<std::mutex> lock(_mux); return _body_states.at(idx); }
+template<> HumanStateMessage MemoryBroker::get<HumanStateMessage>(SizeType const& idx) const { std::lock_guard<std::mutex> lock(_mux); return _human_states.at(idx); }
+template<> RobotStateMessage MemoryBroker::get<RobotStateMessage>(SizeType const& idx) const { std::lock_guard<std::mutex> lock(_mux); return _robot_states.at(idx); }
 template<> CollisionNotificationMessage MemoryBroker::get<CollisionNotificationMessage>(SizeType const& idx) const { std::lock_guard<std::mutex> lock(_mux); return _collision_notifications.at(idx); }
 
 template<> SizeType MemoryBroker::size<BodyPresentationMessage>() const { std::lock_guard<std::mutex> lock(_mux); return _body_presentations.size(); }
-template<> SizeType MemoryBroker::size<BodyStateMessage>() const { std::lock_guard<std::mutex> lock(_mux); return _body_states.size(); }
+template<> SizeType MemoryBroker::size<HumanStateMessage>() const { std::lock_guard<std::mutex> lock(_mux); return _human_states.size(); }
+template<> SizeType MemoryBroker::size<RobotStateMessage>() const { std::lock_guard<std::mutex> lock(_mux); return _robot_states.size(); }
 template<> SizeType MemoryBroker::size<CollisionNotificationMessage>() const { std::lock_guard<std::mutex> lock(_mux); return _collision_notifications.size(); }
 
 }

@@ -92,11 +92,19 @@ template<> class Serialiser<BodyPresentationMessage> : public SerialiserBase<Bod
     rapidjson::Document to_document() const override;
 };
 
-//! \brief Utility for making a JSON description from a state message
-template<> class Serialiser<BodyStateMessage> : public SerialiserBase<BodyStateMessage> {
+//! \brief Utility for making a JSON description from a human state message
+template<> class Serialiser<HumanStateMessage> : public SerialiserBase<HumanStateMessage> {
   public:
     using SerialiserBase::SerialiserBase;
   protected:
+    rapidjson::Document to_document() const override;
+};
+
+//! \brief Utility for making a JSON description from a robot state message
+template<> class Serialiser<RobotStateMessage> : public SerialiserBase<RobotStateMessage> {
+public:
+    using SerialiserBase::SerialiserBase;
+protected:
     rapidjson::Document to_document() const override;
 };
 

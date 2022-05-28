@@ -48,11 +48,25 @@ BodyPresentationMessage Deserialiser<BodyPresentationMessage>::make() const {
         return BodyPresentationMessage(_document["id"].GetString(), _document["messageFrequency"].GetUint64(), point_ids, thicknesses);
 }
 
-BodyStateMessage Deserialiser<BodyStateMessage>::make() const {
+HumanStateMessage Deserialiser<HumanStateMessage>::make() const {
+    List<Pair<BodyIdType,List<List<Point>>>> bodies;
+    for (auto& body : _document["bodies"].GetArray()) {
+        List<List<Point>> points;
+        for (auto& point_samples : body["continuousState"].GetArray()) {
+            List<Point> samples;
+            for (auto& pt : point_samples.GetArray())
+                samples.emplace_back(pt[0].GetDouble(),pt[1].GetDouble(),pt[2].GetDouble());
+            points.push_back(samples);
+        }
+        bodies.push_back({body["bodyId"].GetString(),points});
+    }
+    return HumanStateMessage(bodies, _document["timestamp"].GetUint64());
+}
+
+RobotStateMessage Deserialiser<RobotStateMessage>::make() const {
     Map<String,String> mode_values;
-    if (_document.HasMember("mode"))
-        for (auto& v : _document["mode"].GetObject())
-            mode_values.insert(std::make_pair(v.name.GetString(),v.value.GetString()));
+    for (auto& v : _document["mode"].GetObject())
+        mode_values.insert(std::make_pair(v.name.GetString(),v.value.GetString()));
     List<List<Point>> points;
     for (auto& point_samples : _document["continuousState"].GetArray()) {
         List<Point> samples;
@@ -61,7 +75,7 @@ BodyStateMessage Deserialiser<BodyStateMessage>::make() const {
         points.push_back(samples);
     }
 
-    return BodyStateMessage(_document["bodyId"].GetString(), Mode(mode_values), points, _document["timestamp"].GetUint64());
+    return RobotStateMessage(_document["bodyId"].GetString(), Mode(mode_values), points, _document["timestamp"].GetUint64());
 }
 
 CollisionNotificationMessage Deserialiser<CollisionNotificationMessage>::make() const {

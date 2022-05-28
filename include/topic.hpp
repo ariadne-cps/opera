@@ -39,10 +39,16 @@ struct BodyPresentationTopic : std::string {
     static const BodyPresentationTopic DEFAULT;
 };
 
-//! \brief Topic for body state
-struct BodyStateTopic : std::string {
-    BodyStateTopic(std::string str) : std::string(str) { }
-    static const BodyStateTopic DEFAULT;
+//! \brief Topic for human state
+struct HumanStateTopic : std::string {
+    HumanStateTopic(std::string str) : std::string(str) { }
+    static const HumanStateTopic DEFAULT;
+};
+
+//! \brief Topic for robot state
+struct RobotStateTopic : std::string {
+    RobotStateTopic(std::string str) : std::string(str) { }
+    static const RobotStateTopic DEFAULT;
 };
 
 //! \brief Topic for collision notification

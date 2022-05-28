@@ -32,7 +32,8 @@ namespace Opera {
 
 void MemoryBroker::clear() {
     _body_presentations.clear();
-    _body_states.clear();
+    _human_states.clear();
+    _robot_states.clear();
     _collision_notifications.clear();
 }
 
@@ -40,8 +41,12 @@ PublisherInterface<BodyPresentationMessage>* MemoryBrokerAccess::make_body_prese
     return new MemoryPublisher<BodyPresentationMessage>();
 }
 
-PublisherInterface<BodyStateMessage>* MemoryBrokerAccess::make_body_state_publisher(BodyStateTopic const&) const {
-    return new MemoryPublisher<BodyStateMessage>();
+PublisherInterface<HumanStateMessage>* MemoryBrokerAccess::make_human_state_publisher(HumanStateTopic const&) const {
+    return new MemoryPublisher<HumanStateMessage>();
+}
+
+PublisherInterface<RobotStateMessage>* MemoryBrokerAccess::make_robot_state_publisher(RobotStateTopic const&) const {
+    return new MemoryPublisher<RobotStateMessage>();
 }
 
 PublisherInterface<CollisionNotificationMessage>* MemoryBrokerAccess::make_collision_notification_publisher(CollisionNotificationTopic const&) const {
@@ -52,8 +57,12 @@ SubscriberInterface<BodyPresentationMessage>* MemoryBrokerAccess::make_body_pres
     return new MemorySubscriber<BodyPresentationMessage>(callback);
 }
 
-SubscriberInterface<BodyStateMessage>* MemoryBrokerAccess::make_body_state_subscriber(CallbackFunction<BodyStateMessage> const& callback, BodyStateTopic const&) const {
-    return new MemorySubscriber<BodyStateMessage>(callback);
+SubscriberInterface<HumanStateMessage>* MemoryBrokerAccess::make_human_state_subscriber(CallbackFunction<HumanStateMessage> const& callback, HumanStateTopic const&) const {
+    return new MemorySubscriber<HumanStateMessage>(callback);
+}
+
+SubscriberInterface<RobotStateMessage>* MemoryBrokerAccess::make_robot_state_subscriber(CallbackFunction<RobotStateMessage> const& callback, RobotStateTopic const&) const {
+    return new MemorySubscriber<RobotStateMessage>(callback);
 }
 
 SubscriberInterface<CollisionNotificationMessage>* MemoryBrokerAccess::make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback, CollisionNotificationTopic const&) const {

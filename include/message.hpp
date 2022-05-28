@@ -65,13 +65,25 @@ class BodyPresentationMessage {
     List<FloatType> const _thicknesses;
 };
 
-//! \brief A representation of an inbound message for the state of a body
-class BodyStateMessage {
+//! \brief A representation of an inbound message for the state of a human
+class HumanStateMessage {
+  public:
+    //! \brief Construct without a mode
+    HumanStateMessage(List<Pair<BodyIdType,List<List<Point>>>> const& bodies, TimestampType const& timestamp);
+    //! \brief The bodies
+    List<Pair<BodyIdType,List<List<Point>>>> const& bodies() const;
+    //! \brief The timestamp associated with the message
+    TimestampType const& timestamp() const;
+  private:
+    List<Pair<BodyIdType,List<List<Point>>>> const _bodies;
+    TimestampType const _timestamp;
+};
+
+//! \brief A representation of an inbound message for the state of a robot
+class RobotStateMessage {
   public:
     //! \brief Construct from an id, a mode, a list of samples for each point, and a \a timestamp
-    BodyStateMessage(BodyIdType const& id, Mode const& mode, List<List<Point>> const& points, TimestampType const& timestamp);
-    //! \brief Construct without a mode
-    BodyStateMessage(BodyIdType const& id, List<List<Point>> const& points, TimestampType const& timestamp);
+    RobotStateMessage(BodyIdType const& id, Mode const& mode, List<List<Point>> const& points, TimestampType const& timestamp);
     //! \brief The id of the related body
     BodyIdType const& id() const;
     //! \brief The mode

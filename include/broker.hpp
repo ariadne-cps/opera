@@ -65,11 +65,13 @@ template<class T> class SubscriberInterface {
 class BrokerAccessInterface {
   public:
     virtual PublisherInterface<BodyPresentationMessage>* make_body_presentation_publisher(BodyPresentationTopic const& topic) const = 0;
-    virtual PublisherInterface<BodyStateMessage>* make_body_state_publisher(BodyStateTopic const& topic) const = 0;
+    virtual PublisherInterface<HumanStateMessage>* make_human_state_publisher(HumanStateTopic const& topic) const = 0;
+    virtual PublisherInterface<RobotStateMessage>* make_robot_state_publisher(RobotStateTopic const& topic) const = 0;
     virtual PublisherInterface<CollisionNotificationMessage>* make_collision_notification_publisher(CollisionNotificationTopic const& topic) const = 0;
 
     virtual SubscriberInterface<BodyPresentationMessage>* make_body_presentation_subscriber(CallbackFunction<BodyPresentationMessage> const& callback, BodyPresentationTopic const& topic) const = 0;
-    virtual SubscriberInterface<BodyStateMessage>* make_body_state_subscriber(CallbackFunction<BodyStateMessage> const& callback, BodyStateTopic const& topic) const = 0;
+    virtual SubscriberInterface<HumanStateMessage>* make_human_state_subscriber(CallbackFunction<HumanStateMessage> const& callback, HumanStateTopic const& topic) const = 0;
+    virtual SubscriberInterface<RobotStateMessage>* make_robot_state_subscriber(CallbackFunction<RobotStateMessage> const& callback, RobotStateTopic const& topic) const = 0;
     virtual SubscriberInterface<CollisionNotificationMessage>* make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback, CollisionNotificationTopic const& topic) const = 0;
 
     //! \brief Default destructor to avoid destructor not being called on objects of this type
@@ -81,10 +83,12 @@ class BrokerAccess : public Handle<BrokerAccessInterface> {
   public:
     using Handle<BrokerAccessInterface>::Handle;
     PublisherInterface<BodyPresentationMessage>* make_body_presentation_publisher(BodyPresentationTopic const& topic = BodyPresentationTopic::DEFAULT) const { return _ptr->make_body_presentation_publisher(topic); }
-    PublisherInterface<BodyStateMessage>* make_body_state_publisher(BodyStateTopic const& topic = BodyStateTopic::DEFAULT) const { return _ptr->make_body_state_publisher(topic); }
+    PublisherInterface<HumanStateMessage>* make_human_state_publisher(HumanStateTopic const& topic = HumanStateTopic::DEFAULT) const { return _ptr->make_human_state_publisher(topic); }
+    PublisherInterface<RobotStateMessage>* make_robot_state_publisher(RobotStateTopic const& topic = RobotStateTopic::DEFAULT) const { return _ptr->make_robot_state_publisher(topic); }
     PublisherInterface<CollisionNotificationMessage>* make_collision_notification_publisher(CollisionNotificationTopic const& topic = CollisionNotificationTopic::DEFAULT) const { return _ptr->make_collision_notification_publisher(topic); }
     SubscriberInterface<BodyPresentationMessage>* make_body_presentation_subscriber(CallbackFunction<BodyPresentationMessage> const& callback, BodyPresentationTopic const& topic = BodyPresentationTopic::DEFAULT) const { return _ptr->make_body_presentation_subscriber(callback,topic); }
-    SubscriberInterface<BodyStateMessage>* make_body_state_subscriber(CallbackFunction<BodyStateMessage> const& callback, BodyStateTopic const& topic = BodyStateTopic::DEFAULT) const { return _ptr->make_body_state_subscriber(callback,topic); }
+    SubscriberInterface<HumanStateMessage>* make_human_state_subscriber(CallbackFunction<HumanStateMessage> const& callback, HumanStateTopic const& topic = HumanStateTopic::DEFAULT) const { return _ptr->make_human_state_subscriber(callback,topic); }
+    SubscriberInterface<RobotStateMessage>* make_robot_state_subscriber(CallbackFunction<RobotStateMessage> const& callback, RobotStateTopic const& topic = RobotStateTopic::DEFAULT) const { return _ptr->make_robot_state_subscriber(callback,topic); }
     SubscriberInterface<CollisionNotificationMessage>* make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback, CollisionNotificationTopic const& topic = CollisionNotificationTopic::DEFAULT) const { return _ptr->make_collision_notification_subscriber(callback,topic); }
 };
 

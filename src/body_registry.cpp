@@ -158,9 +158,13 @@ void BodyRegistry::_add_human_instance(BodyIdType const& id, List<List<Point>> c
     _humans.at(id)->add(points,timestamp);
 }
 
-void BodyRegistry::acquire_state(BodyStateMessage const& msg) {
-    if (msg.mode().is_empty()) _add_human_instance(msg.id(), msg.points(), msg.timestamp());
-    else robot_history(msg.id()).acquire(msg.mode(), msg.points(), msg.timestamp());
+void BodyRegistry::acquire_state(HumanStateMessage const& msg) {
+    for (auto const& bd : msg.bodies())
+        _add_human_instance(bd.first, bd.second, msg.timestamp());
+}
+
+void BodyRegistry::acquire_state(RobotStateMessage const& msg) {
+    robot_history(msg.id()).acquire(msg.mode(), msg.points(), msg.timestamp());
 }
 
 void BodyRegistry::insert(BodyPresentationMessage const& presentation) {

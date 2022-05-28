@@ -57,25 +57,33 @@ List<FloatType> const& BodyPresentationMessage::thicknesses() const {
     return _thicknesses;
 }
 
-BodyStateMessage::BodyStateMessage(BodyIdType const& id, Mode const& mode, List<List<Point>> const& points, TimestampType const& timestamp) :
+HumanStateMessage::HumanStateMessage(List<Pair<BodyIdType,List<List<Point>>>> const& bodies, TimestampType const& timestamp) :
+        _bodies(bodies), _timestamp(timestamp) { }
+
+List<Pair<BodyIdType,List<List<Point>>>> const& HumanStateMessage::bodies() const {
+    return _bodies;
+}
+
+TimestampType const& HumanStateMessage::timestamp() const {
+    return _timestamp;
+}
+
+RobotStateMessage::RobotStateMessage(BodyIdType const& id, Mode const& mode, List<List<Point>> const& points, TimestampType const& timestamp) :
     _id(id), _mode(mode), _points(points), _timestamp(timestamp) { }
 
-BodyStateMessage::BodyStateMessage(BodyIdType const& id, List<List<Point>> const& points, TimestampType const& timestamp) :
-    BodyStateMessage(id, Mode({}), points, timestamp) { }
-
-BodyIdType const& BodyStateMessage::id() const {
+BodyIdType const& RobotStateMessage::id() const {
     return _id;
 }
 
-Mode const& BodyStateMessage::mode() const {
+Mode const& RobotStateMessage::mode() const {
     return _mode;
 }
 
-List<List<Point>> const& BodyStateMessage::points() const {
+List<List<Point>> const& RobotStateMessage::points() const {
     return _points;
 }
 
-TimestampType const& BodyStateMessage::timestamp() const {
+TimestampType const& RobotStateMessage::timestamp() const {
     return _timestamp;
 }
 

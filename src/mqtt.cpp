@@ -40,8 +40,12 @@ PublisherInterface<BodyPresentationMessage>* MqttBrokerAccess::make_body_present
     return new MqttPublisher<BodyPresentationMessage>(topic, _hostname, _port);
 }
 
-PublisherInterface<BodyStateMessage>* MqttBrokerAccess::make_body_state_publisher(BodyStateTopic const& topic) const {
-    return new MqttPublisher<BodyStateMessage>(topic, _hostname, _port);
+PublisherInterface<HumanStateMessage>* MqttBrokerAccess::make_human_state_publisher(HumanStateTopic const& topic) const {
+    return new MqttPublisher<HumanStateMessage>(topic, _hostname, _port);
+}
+
+PublisherInterface<RobotStateMessage>* MqttBrokerAccess::make_robot_state_publisher(RobotStateTopic const& topic) const {
+    return new MqttPublisher<RobotStateMessage>(topic, _hostname, _port);
 }
 
 PublisherInterface<CollisionNotificationMessage>* MqttBrokerAccess::make_collision_notification_publisher(CollisionNotificationTopic const& topic) const {
@@ -52,8 +56,12 @@ SubscriberInterface<BodyPresentationMessage>* MqttBrokerAccess::make_body_presen
     return new MqttSubscriber<BodyPresentationMessage>(topic, _hostname, _port, callback);
 }
 
-SubscriberInterface<BodyStateMessage>* MqttBrokerAccess::make_body_state_subscriber(CallbackFunction<BodyStateMessage> const& callback, BodyStateTopic const& topic) const {
-    return new MqttSubscriber<BodyStateMessage>(topic, _hostname, _port, callback);
+SubscriberInterface<HumanStateMessage>* MqttBrokerAccess::make_human_state_subscriber(CallbackFunction<HumanStateMessage> const& callback, HumanStateTopic const& topic) const {
+    return new MqttSubscriber<HumanStateMessage>(topic, _hostname, _port, callback);
+}
+
+SubscriberInterface<RobotStateMessage>* MqttBrokerAccess::make_robot_state_subscriber(CallbackFunction<RobotStateMessage> const& callback, RobotStateTopic const& topic) const {
+    return new MqttSubscriber<RobotStateMessage>(topic, _hostname, _port, callback);
 }
 
 SubscriberInterface<CollisionNotificationMessage>* MqttBrokerAccess::make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback, CollisionNotificationTopic const& topic) const {

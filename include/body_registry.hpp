@@ -128,8 +128,10 @@ class BodyRegistry {
     //! \brief Return the human instance at \a idx
     HumanStateInstance const& instance_at(BodyIdType const& id, SizeType const& idx) const;
 
-    //! \brief Acquire state from a state \a msg
-    void acquire_state(BodyStateMessage const& msg);
+    //! \brief Acquire state from a human state \a msg
+    void acquire_state(HumanStateMessage const& msg);
+    //! \brief Acquire state from a robot state \a msg
+    void acquire_state(RobotStateMessage const& msg);
 
     //! \brief Insert a new body from a \a presentation message
     void insert(BodyPresentationMessage const& presentation);

@@ -60,16 +60,17 @@ public:
     }
 
     void test_human_state_message_create() {
-        BodyStateMessage p("h0",{{Point(0,0,0)},{Point(0,2,0)}},300);
-        OPERA_TEST_EQUALS(p.id(),"h0")
-        OPERA_TEST_ASSERT(p.mode().is_empty())
-        OPERA_TEST_EQUALS(p.points().size(),2)
+        HumanStateMessage p({{"h0",{{Point(0,0,0)},{Point(0,2,0)}}}},300);
+        OPERA_TEST_EQUALS(p.bodies().size(),1)
         OPERA_TEST_EQUALS(p.timestamp(),300)
+        auto const& bd = p.bodies().at(0);
+        OPERA_TEST_EQUALS(bd.first,"h0")
+        OPERA_TEST_EQUALS(bd.second.size(),2)
     }
 
     void test_robot_state_message_create() {
         Mode loc({"r0", "first"});
-        BodyStateMessage p("r0",loc,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},200);
+        RobotStateMessage p("r0",loc,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},200);
         OPERA_TEST_EQUALS(p.id(),"r0")
         OPERA_TEST_EQUALS(p.mode(),loc)
         OPERA_TEST_EQUALS(p.points().size(),3)

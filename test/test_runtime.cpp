@@ -63,7 +63,8 @@ class TestRuntime {
         BodyPresentationMessage rp(rid, 1000, {{0, 1},{1, 2}}, {0.1,0.1});
         BodyPresentationMessage hp(hid,{{0,1}},{0.1});
         auto bp_publisher = access.make_body_presentation_publisher();
-        auto bs_publisher = access.make_body_state_publisher();
+        auto hs_publisher = access.make_human_state_publisher();
+        auto rs_publisher = access.make_robot_state_publisher();
         auto cn_subscriber = access.make_collision_notification_subscriber([&](CollisionNotificationMessage const& msg){ notifications.enqueue(msg); });
         bp_publisher->put(rp);
         bp_publisher->put(hp);
@@ -79,44 +80,44 @@ class TestRuntime {
         Mode expand({{"s", "xpand"}});
 
         TimestampType time = 0;
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 1}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 2}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 3}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 4}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 5}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{4, 0, 6}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{3, 0, 7}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{2, 0, 8}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{1, 0, 9}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{0, 0, 10}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{1, 0, 4}}, {{1, 0, 9}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{2, 0, 3}}, {{2, 0, 8}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{3, 0, 2}}, {{3, 0, 7}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{4, 0, 1}}, {{4, 0, 6}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{5, 0, 0}}, {{5, 0, 5}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{6, 0, 4}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{7, 0, 3}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{8, 0, 2}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{9, 0, 1}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 1}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 2}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 3}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 4}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 5}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{4, 0, 6}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{3, 0, 7}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{2, 0, 8}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{1, 0, 9}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{0, 0, 10}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{1, 0, 4}}, {{1, 0, 9}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{2, 0, 3}}, {{2, 0, 8}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{3, 0, 2}}, {{3, 0, 7}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{4, 0, 1}}, {{4, 0, 6}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{5, 0, 0}}, {{5, 0, 5}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{6, 0, 4}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{7, 0, 3}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{8, 0, 2}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{9, 0, 1}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
 
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
 
         OPERA_PRINT_TEST_CASE_TITLE("Human colliding on one segment, not at the current mode")
 
-        bs_publisher->put({hid,{{{0,1,5}},{{4,0,6}}},time-1});
+        hs_publisher->put({{{hid,{{{0,1,5}},{{4,0,6}}}}},time-1});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_pending_human_robot_pairs(),1)
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),0)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),0)
 
-        bs_publisher->put({hid,{{{0,1,5}},{{4,0,6}}},time});
+        hs_publisher->put({{{hid,{{{0,1,5}},{{4,0,6}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_pending_human_robot_pairs(),0)
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),2)
@@ -143,9 +144,9 @@ class TestRuntime {
 
         OPERA_PRINT_TEST_CASE_TITLE("Human not colliding on any segment")
 
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
-
-        bs_publisher->put({hid,{{{5,1,0}},{{10,1,0}}},time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        hs_publisher->put({{{hid,{{{5,1,0}},{{10,1,0}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),2)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),0)
@@ -173,14 +174,15 @@ class TestRuntime {
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),2)
 
         Mode newmode({{"s", "newmode"}});
-        bs_publisher->put({rid,newmode, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
-        bs_publisher->put({hid,{{{5,1,0}},{{10,1,0}}},time});
+        rs_publisher->put({rid,newmode, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        hs_publisher->put({{{hid,{{{5,1,0}},{{10,1,0}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),0)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),2)
 
         delete bp_publisher;
-        delete bs_publisher;
+        delete hs_publisher;
+        delete rs_publisher;
         delete cn_subscriber;
         MemoryBroker::instance().clear();
     }
@@ -202,7 +204,8 @@ class TestRuntime {
         BodyPresentationMessage rp(rid, 1000, {{0, 1},{1, 2}}, {0.1,0.1});
         BodyPresentationMessage hp(hid,{{0,1}},{0.1});
         auto bp_publisher = access.make_body_presentation_publisher();
-        auto bs_publisher = access.make_body_state_publisher();
+        auto hs_publisher = access.make_human_state_publisher();
+        auto rs_publisher = access.make_robot_state_publisher();
         auto cn_subscriber = access.make_collision_notification_subscriber([&](CollisionNotificationMessage const& msg){ notifications.enqueue(msg); });
         bp_publisher->put(rp);
         bp_publisher->put(hp);
@@ -217,44 +220,44 @@ class TestRuntime {
         Mode expand({{"s", "xpand"}});
 
         TimestampType time = 0;
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 1}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 2}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 3}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 4}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 5}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{4, 0, 6}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{3, 0, 7}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{2, 0, 8}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{1, 0, 9}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{0, 0, 10}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{1, 0, 4}}, {{1, 0, 9}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{2, 0, 3}}, {{2, 0, 8}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{3, 0, 2}}, {{3, 0, 7}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{4, 0, 1}}, {{4, 0, 6}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{5, 0, 0}}, {{5, 0, 5}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{6, 0, 4}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{7, 0, 3}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{8, 0, 2}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{9, 0, 1}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 1}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 2}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 3}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 4}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 5}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{4, 0, 6}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{3, 0, 7}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{2, 0, 8}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{1, 0, 9}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{0, 0, 10}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{1, 0, 4}}, {{1, 0, 9}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{2, 0, 3}}, {{2, 0, 8}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{3, 0, 2}}, {{3, 0, 7}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{4, 0, 1}}, {{4, 0, 6}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{5, 0, 0}}, {{5, 0, 5}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{6, 0, 4}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{7, 0, 3}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{8, 0, 2}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{9, 0, 1}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
 
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
 
         OPERA_PRINT_TEST_CASE_TITLE("Human colliding on one segment, not at the current mode")
 
-        bs_publisher->put({hid,{{{0,1,5}},{{4,0,6}}},time-1});
+        hs_publisher->put({{{hid,{{{0,1,5}},{{4,0,6}}}}},time-1});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_pending_human_robot_pairs(),1)
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),0)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),0)
 
-        bs_publisher->put({hid,{{{0,1,5}},{{4,0,6}}},time});
+        hs_publisher->put({{{hid,{{{0,1,5}},{{4,0,6}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_pending_human_robot_pairs(),0)
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),2)
@@ -281,9 +284,9 @@ class TestRuntime {
 
         OPERA_PRINT_TEST_CASE_TITLE("Human updated with the same position")
 
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
 
-        bs_publisher->put({hid,{{{0,1,5}},{{4,0,6}}},time});
+        hs_publisher->put({{{hid,{{{0,1,5}},{{4,0,6}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),2)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),0)
@@ -297,14 +300,15 @@ class TestRuntime {
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),2)
 
         Mode newmode({{"s", "newmode"}});
-        bs_publisher->put({rid,newmode, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
-        bs_publisher->put({hid,{{{5,1,0}},{{10,1,0}}},time});
+        rs_publisher->put({rid,newmode, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        hs_publisher->put({{{hid,{{{5,1,0}},{{10,1,0}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),0)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),2)
 
         delete bp_publisher;
-        delete bs_publisher;
+        delete hs_publisher;
+        delete rs_publisher;
         delete cn_subscriber;
         MemoryBroker::instance().clear();
     }
@@ -322,7 +326,8 @@ class TestRuntime {
         BodyPresentationMessage rp(rid, 1000, {{0, 1},{1, 2}}, {0.1,0.1});
         BodyPresentationMessage hp(hid,{{0,1}},{0.1});
         auto bp_publisher = access.make_body_presentation_publisher();
-        auto bs_publisher = access.make_body_state_publisher();
+        auto hs_publisher = access.make_human_state_publisher();
+        auto rs_publisher = access.make_robot_state_publisher();
         auto cn_subscriber = access.make_collision_notification_subscriber([&](CollisionNotificationMessage const& msg){ notifications.enqueue(msg); });
         bp_publisher->put(rp);
         bp_publisher->put(hp);
@@ -335,55 +340,55 @@ class TestRuntime {
         Mode xpand({{"s", "xpand"}});
 
         TimestampType time = 0;
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 1}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 2}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 3}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 4}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 5}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{4, 0, 6}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{3, 0, 7}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{2, 0, 8}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{1, 0, 9}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{0, 0, 10}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{1, 0, 4}}, {{1, 0, 9}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{2, 0, 3}}, {{2, 0, 8}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{3, 0, 2}}, {{3, 0, 7}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{4, 0, 1}}, {{4, 0, 6}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{5, 0, 0}}, {{5, 0, 5}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{6, 0, 4}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{7, 0, 3}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{8, 0, 2}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{9, 0, 1}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 1}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 2}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 3}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 4}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 5}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{4, 0, 6}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{3, 0, 7}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{2, 0, 8}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{1, 0, 9}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{0, 0, 10}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{1, 0, 4}}, {{1, 0, 9}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{2, 0, 3}}, {{2, 0, 8}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{3, 0, 2}}, {{3, 0, 7}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{4, 0, 1}}, {{4, 0, 6}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{5, 0, 0}}, {{5, 0, 5}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{6, 0, 4}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{7, 0, 3}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{8, 0, 2}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{9, 0, 1}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
 
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
 
-        bs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
-        bs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
-        bs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
-        bs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
-        bs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
+        rs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
+        rs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
+        rs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
+        rs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
 
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
 
         OPERA_PRINT_TEST_CASE_TITLE("Human colliding on one segment, not at the current mode")
 
-        bs_publisher->put({hid,{{{9,0,0}},{{9,0,1}}},time});
+        hs_publisher->put({{{hid,{{{9,0,0}},{{9,0,1}}}}},time});
         OPERA_TEST_PRINT(time)
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),2)
@@ -419,8 +424,8 @@ class TestRuntime {
 
         OPERA_PRINT_TEST_CASE_TITLE("Human not colliding on any segment")
 
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
-        bs_publisher->put({hid,{{{5,1,0}},{{10,1,0}}},time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
+        hs_publisher->put({{{hid,{{{5,1,0}},{{10,1,0}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),2)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),0)
@@ -450,7 +455,8 @@ class TestRuntime {
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),4)
 
         delete bp_publisher;
-        delete bs_publisher;
+        delete hs_publisher;
+        delete rs_publisher;
         delete cn_subscriber;
         MemoryBroker::instance().clear();
     }
@@ -467,21 +473,22 @@ class TestRuntime {
         BodyPresentationMessage rp(rid,10,{{0,1},{1,2}},{1.0,0.5});
         BodyPresentationMessage hp(hid,{{0,1},{1,2}},{1.0,0.5});
         auto bp_publisher = access.make_body_presentation_publisher();
-        auto bs_publisher = access.make_body_state_publisher();
+        auto hs_publisher = access.make_human_state_publisher();
+        auto rs_publisher = access.make_robot_state_publisher();
         auto cn_subscriber = access.make_collision_notification_subscriber([&](CollisionNotificationMessage const& msg){ notifications.enqueue(msg); });
         bp_publisher->put(rp);
         bp_publisher->put(hp);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-        BodyStateMessage rs(rid,mode,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3000);
-        bs_publisher->put(rs);
-        BodyStateMessage hs(hid,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3200);
-        bs_publisher->put(hs);
+        RobotStateMessage rs(rid,mode,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3000);
+        rs_publisher->put(rs);
+        HumanStateMessage hs({{hid,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}}}},3200);
+        hs_publisher->put(hs);
 
-        BodyStateMessage rs2(rid,Mode({"phase","running"}),{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3100);
-        bs_publisher->put(rs2);
-        BodyStateMessage rs3(rid,Mode({"phase","waiting"}),{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3200);
-        bs_publisher->put(rs3);
+        RobotStateMessage rs2(rid,Mode({"phase","running"}),{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3100);
+        rs_publisher->put(rs2);
+        RobotStateMessage rs3(rid,Mode({"phase","waiting"}),{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3200);
+        rs_publisher->put(rs3);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         OPERA_TEST_EQUALS(notifications.size(),4)
@@ -496,7 +503,8 @@ class TestRuntime {
         }
 
         delete bp_publisher;
-        delete bs_publisher;
+        delete hs_publisher;
+        delete rs_publisher;
         delete cn_subscriber;
         MemoryBroker::instance().clear();
     }
@@ -513,7 +521,8 @@ class TestRuntime {
         BodyPresentationMessage rp(rid, 1000, {{0, 1},{1, 2}}, {0.1,0.1});
         BodyPresentationMessage hp(hid,{{0,1}},{0.1});
         auto bp_publisher = access.make_body_presentation_publisher();
-        auto bs_publisher = access.make_body_state_publisher();
+        auto hs_publisher = access.make_human_state_publisher();
+        auto rs_publisher = access.make_robot_state_publisher();
         auto cn_subscriber = access.make_collision_notification_subscriber([&](CollisionNotificationMessage const& msg){ notifications.enqueue(msg); });
         bp_publisher->put(rp);
         bp_publisher->put(hp);
@@ -526,55 +535,55 @@ class TestRuntime {
         Mode xpand({{"s", "xpand"}});
 
         TimestampType time = 0;
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 1}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 2}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 3}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 4}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 5}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{4, 0, 6}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{3, 0, 7}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{2, 0, 8}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{1, 0, 9}}}, ++time});
-        bs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{0, 0, 10}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{1, 0, 4}}, {{1, 0, 9}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{2, 0, 3}}, {{2, 0, 8}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{3, 0, 2}}, {{3, 0, 7}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{4, 0, 1}}, {{4, 0, 6}}}, ++time});
-        bs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{5, 0, 0}}, {{5, 0, 5}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{6, 0, 4}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{7, 0, 3}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{8, 0, 2}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{9, 0, 1}}}, ++time});
-        bs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 1}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 2}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 3}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 4}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 5}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{4, 0, 6}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{3, 0, 7}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{2, 0, 8}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{1, 0, 9}}}, ++time});
+        rs_publisher->put({rid,endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{0, 0, 10}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{1, 0, 4}}, {{1, 0, 9}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{2, 0, 3}}, {{2, 0, 8}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{3, 0, 2}}, {{3, 0, 7}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{4, 0, 1}}, {{4, 0, 6}}}, ++time});
+        rs_publisher->put({rid,kneedown, {{{0, 0, 0}}, {{5, 0, 0}}, {{5, 0, 5}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{6, 0, 4}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{7, 0, 3}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{8, 0, 2}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{9, 0, 1}}}, ++time});
+        rs_publisher->put({rid,fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
 
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time});
 
-        bs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
-        bs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
-        bs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
-        bs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
-        bs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
+        rs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
+        rs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
+        rs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
+        rs_publisher->put({rid,xpand, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
 
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
-        bs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time});
+        rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time});
 
         OPERA_PRINT_TEST_CASE_TITLE("Human colliding on one segment, not at the current mode")
 
-        bs_publisher->put({hid,{{{9,0,0}},{{9,0,1}}},time});
+        hs_publisher->put({{{hid,{{{9,0,0}},{{9,0,1}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         OPERA_TEST_EQUALS(notifications.size(),2)
@@ -587,14 +596,15 @@ class TestRuntime {
 
         OPERA_PRINT_TEST_CASE_TITLE("Human not colliding on any segment")
 
-        bs_publisher->put({hid,{{{5,1,0}},{{10,1,0}}},++time});
+        hs_publisher->put({{{hid,{{{5,1,0}},{{10,1,0}}}}},++time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),0)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),4)
 
         delete bp_publisher;
-        delete bs_publisher;
+        delete hs_publisher;
+        delete rs_publisher;
         delete cn_subscriber;
         MemoryBroker::instance().clear();
     }

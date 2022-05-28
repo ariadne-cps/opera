@@ -47,19 +47,19 @@ class TestBrokerAccess {
     }
 
     void test_create_destroy() {
-        BodyStateMessage p("robot0", Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), {{}, {Point(0, -1, 0.1), Point(0.3, 3.1, -1.2)}, {}}, 93249042230);
+        HumanStateMessage hs({{"human0",{{Point(0,0,0)},{Point(0,2,0)}}}},300);
 
         OPERA_PRINT_TEST_COMMENT("Creating subscriber and removing it")
-        auto* subscriber = _access.make_body_state_subscriber([](auto){});
+        auto* subscriber = _access.make_human_state_subscriber([](auto){});
         OPERA_TEST_EXECUTE(delete subscriber)
 
         OPERA_PRINT_TEST_COMMENT("Creating publisher and removing it immediately")
-        auto* publisher1 = _access.make_body_state_publisher();
+        auto* publisher1 = _access.make_human_state_publisher();
         OPERA_TEST_EXECUTE(delete publisher1)
 
         OPERA_PRINT_TEST_COMMENT("Creating publisher and removing it after publishing")
-        auto* publisher2 = _access.make_body_state_publisher();
-        publisher2->put(p);
+        auto* publisher2 = _access.make_human_state_publisher();
+        publisher2->put(hs);
         OPERA_TEST_EXECUTE(delete publisher2)
     }
 
@@ -86,27 +86,30 @@ class TestBrokerAccess {
     void test_multiple_transfer() {
         BodyPresentationMessage hp("human1", {{0, 1},{3, 2}}, {1.0,0.5});
         BodyPresentationMessage rp("robot1", 30, {{0, 1},{3, 2},{4, 2}}, {1.0,0.5, 0.5});
-        BodyStateMessage hs("human0",{{Point(0.4,2.1,0.2)},{Point(0,-1,0.1),Point(0.3,3.1,-1.2)},{Point(0.4,0.1,1.2)},{Point(0,0,1)}},3423235253290);
-        BodyStateMessage rs("robot0", Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), {{}, {Point(0, -1, 0.1), Point(0.3, 3.1, -1.2)}, {}}, 93249042230);
+        HumanStateMessage hs({{"human0",{{Point(0.4,2.1,0.2)},{Point(0,-1,0.1),Point(0.3,3.1,-1.2)},{Point(0.4,0.1,1.2)},{Point(0,0,1)}}}},3423235);
+        RobotStateMessage rs("robot0", Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), {{}, {Point(0, -1, 0.1), Point(0.3, 3.1, -1.2)}, {}}, 93249);
         CollisionNotificationMessage cn("h0", 0, "r0", 3, 32890592300, Interval<TimestampType>(72, 123), Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), 0.5);
 
         List<BodyPresentationMessage> bp_received;
-        List<BodyStateMessage> bs_received;
+        List<HumanStateMessage> hs_received;
+        List<RobotStateMessage> rs_received;
         List<CollisionNotificationMessage> cn_received;
 
         auto bp_subscriber = _access.make_body_presentation_subscriber([&](auto p){ bp_received.push_back(p); });
-        auto bs_subscriber = _access.make_body_state_subscriber([&](auto p){ bs_received.push_back(p); });
+        auto hs_subscriber = _access.make_human_state_subscriber([&](auto p){ hs_received.push_back(p); });
+        auto rs_subscriber = _access.make_robot_state_subscriber([&](auto p){ rs_received.push_back(p); });
         auto cn_subscriber = _access.make_collision_notification_subscriber([&](auto p){ cn_received.push_back(p); });
         auto bp_publisher = _access.make_body_presentation_publisher();
-        auto bs_publisher = _access.make_body_state_publisher();
+        auto hs_publisher = _access.make_human_state_publisher();
+        auto rs_publisher = _access.make_robot_state_publisher();
         auto cn_publisher = _access.make_collision_notification_publisher();
         bp_publisher->put(hp);
         bp_publisher->put(rp);
-        bs_publisher->put(hs);
-        bs_publisher->put(rs);
+        hs_publisher->put(hs);
+        rs_publisher->put(rs);
         cn_publisher->put(cn);
         SizeType i=0;
-        while (bp_received.size() != 2 or bs_received.size() != 2 or cn_received.size() != 1) {
+        while (bp_received.size() != 2 or hs_received.size() != 1 or rs_received.size() != 1 or cn_received.size() != 1) {
             ++i;
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
@@ -114,10 +117,12 @@ class TestBrokerAccess {
         OPERA_PRINT_TEST_COMMENT("Took " << i << " ms to acknowledge the reception")
 
         delete bp_subscriber;
-        delete bs_subscriber;
+        delete hs_subscriber;
+        delete rs_subscriber;
         delete cn_subscriber;
         delete bp_publisher;
-        delete bs_publisher;
+        delete hs_publisher;
+        delete rs_publisher;
         delete cn_publisher;
     }
 };

@@ -33,7 +33,7 @@ using namespace ConcLog;
 
 namespace Opera {
 
-RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, List<Pair<BrokerAccess,BodyStateTopic>> const& bs_subscribers,
+RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, Pair<BrokerAccess,HumanStateTopic> const& hs_subscriber, Pair<BrokerAccess,RobotStateTopic> const& rs_subscriber,
                                  LookAheadJobFactory const& factory, BodyRegistry& registry, SynchronisedQueue<LookAheadJob>& waiting_jobs, SynchronisedQueue<LookAheadJob>& sleeping_jobs) :
     _factory(factory),
     _bp_subscriber(bp_subscriber.first.make_body_presentation_subscriber([&](auto const& msg){
@@ -43,27 +43,45 @@ RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const&
             else for (auto const& hid : registry.human_ids()) _pending_human_robot_pairs.push_back({msg.id(),hid});
             registry.insert(msg);
         }
-    },bp_subscriber.second))
-{
-    CallbackFunction<BodyStateMessage> state_callback([&](auto const& msg){
-        if (registry.contains(msg.id())) {
-            CONCLOG_PRINTLN_AT(2,"Received state message from " << msg.id() << " at " << msg.timestamp())
-            registry.acquire_state(msg);
+    },bp_subscriber.second)),
+    _hs_subscriber(hs_subscriber.first.make_human_state_subscriber([&](auto const& msg){
+        for (auto const& bd : msg.bodies()) {
+            if (registry.contains(bd.first)) {
+                CONCLOG_PRINTLN_AT(2,"Received human state message from " << bd.first << " at " << msg.timestamp())
+                registry.acquire_state(msg);
+            } else {
+                CONCLOG_PRINTLN_AT(2,"Discarded human state message from " << bd.first << " since the body is not registered")
+            }
+        }
+        {
+            std::lock_guard<std::mutex> lock(_state_received_mux);
             _move_sleeping_jobs_to_waiting_jobs(registry, sleeping_jobs, waiting_jobs);
             _promote_pairs_to_jobs(registry, sleeping_jobs, waiting_jobs);
-        } else {
-            CONCLOG_PRINTLN_AT(2,"Discarded state message from " << msg.id() << " since the body is not registered")
         }
         ++_num_state_messages_received;
-    });
-    for (auto const& p : bs_subscribers)
-        _bs_subscribers.push_back(p.first.make_body_state_subscriber(state_callback,p.second));
+    },hs_subscriber.second)),
+    _rs_subscriber(rs_subscriber.first.make_robot_state_subscriber([&](auto const& msg){
+        if (registry.contains(msg.id())) {
+            CONCLOG_PRINTLN_AT(2,"Received robot state message from " << msg.id() << " at " << msg.timestamp())
+            registry.acquire_state(msg);
+            {
+                std::lock_guard<std::mutex> lock(_state_received_mux);
+                _move_sleeping_jobs_to_waiting_jobs(registry, sleeping_jobs, waiting_jobs);
+                _promote_pairs_to_jobs(registry, sleeping_jobs, waiting_jobs);
+            }
+        } else {
+            CONCLOG_PRINTLN_AT(2,"Discarded robot state message from " << msg.id() << " since the body is not registered")
+        }
+        ++_num_state_messages_received;
+    },hs_subscriber.second))
+
+{
 }
 
 RuntimeReceiver::~RuntimeReceiver() noexcept {
     delete _bp_subscriber;
-    for (SizeType i=0; i<_bs_subscribers.size(); ++i)
-        delete _bs_subscribers.at(i);
+    delete _hs_subscriber;
+    delete _rs_subscriber;
 }
 
 SizeType RuntimeReceiver::num_pending_human_robot_pairs() const {
@@ -73,6 +91,7 @@ SizeType RuntimeReceiver::num_pending_human_robot_pairs() const {
 
 void RuntimeReceiver::_promote_pairs_to_jobs(BodyRegistry const& registry, SynchronisedQueue<LookAheadJob>& sleeping_jobs, SynchronisedQueue<LookAheadJob>& waiting_jobs) {
     List<HumanRobotIdPair> new_pairs;
+    std::lock_guard<std::mutex> lock(_pairs_mux);
     for (auto const& p : _pending_human_robot_pairs) {
         auto const& robot_latest_time = registry.robot_history(p.robot).latest_time();
         if (registry.has_human_instances_within(p.human, robot_latest_time)) {
@@ -93,10 +112,7 @@ void RuntimeReceiver::_promote_pairs_to_jobs(BodyRegistry const& registry, Synch
             } else new_pairs.emplace_back(p);
         } else new_pairs.emplace_back(p);
     }
-    {
-        std::lock_guard<std::mutex> lock(_pairs_mux);
-        _pending_human_robot_pairs = new_pairs;
-    }
+    _pending_human_robot_pairs = new_pairs;
 }
 
 void RuntimeReceiver::_move_sleeping_jobs_to_waiting_jobs(BodyRegistry const& registry, SynchronisedQueue<LookAheadJob>& sleeping_jobs, SynchronisedQueue<LookAheadJob>& waiting_jobs) {

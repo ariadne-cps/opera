@@ -45,14 +45,14 @@ struct ProfileState : public Profiler {
         FloatType thickness = 1.0;
         Human h("h0", {{0, 1}}, {thickness});
 
-        List<BodyStateMessage> pkts;
+        List<HumanStateMessage> pkts;
         for (SizeType i=0; i<num_tries(); ++i) {
-            pkts.push_back(BodyStateMessage(h.id(),{{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))},
-                                              {Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}},
-                                              static_cast<TimestampType>(10*i)));
+            pkts.push_back({{{h.id(),{{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))},
+                                              {Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}}}},
+                                              static_cast<TimestampType>(10*i)});
         }
 
-        profile("Make human state instance from message fields",[&](SizeType i){ HumanStateInstance hsi(h,pkts.at(i).points(),pkts.at(i).timestamp()); });
+        profile("Make human state instance from message fields",[&](SizeType i){ HumanStateInstance hsi(h,pkts.at(i).bodies().at(0).second,pkts.at(i).timestamp()); });
     }
 
     void profile_robot_history_acquirement_and_update() {
@@ -60,12 +60,12 @@ struct ProfileState : public Profiler {
         Robot r("r0", 10, {{0, 1}}, {thickness});
         RobotStateHistory history(r);
 
-        List<BodyStateMessage> pkts;
+        List<RobotStateMessage> pkts;
         for (SizeType i=0; i<num_tries(); ++i) {
-            pkts.push_back(BodyStateMessage(r.id(), Mode({"robot", "first"}),
+            pkts.push_back({r.id(), Mode({"robot", "first"}),
                                             {{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))},
                                                     {Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}},
-                                            static_cast<TimestampType>(10*i)));
+                                            static_cast<TimestampType>(10*i)});
         }
 
         profile("Acquire robot message for new mode",[&](SizeType i){ history.acquire(pkts.at(i).mode(),pkts.at(i).points(),pkts.at(i).timestamp()); });
@@ -77,10 +77,10 @@ struct ProfileState : public Profiler {
 
         pkts.clear();
         for (SizeType i=0; i<num_tries(); ++i) {
-            pkts.push_back(BodyStateMessage(r.id(), Mode({"robot", "first"}),
+            pkts.push_back({r.id(), Mode({"robot", "first"}),
                                             {{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))},
                                              {Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}},
-                                            static_cast<TimestampType>(10000020+10*i)));
+                                            static_cast<TimestampType>(10000020+10*i)});
         }
 
         profile("Acquire robot message for existing mode",[&](SizeType i){ history.acquire(pkts.at(i).mode(),pkts.at(i).points(),pkts.at(i).timestamp()); });
