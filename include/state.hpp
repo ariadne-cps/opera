@@ -45,7 +45,7 @@ using BodyIdType = std::string;
 class HumanStateInstance {
   public:
     //! \brief Construct from a human, points and timestamp
-    HumanStateInstance(Human const& human, List<List<Point>> const& points, TimestampType const& timestamp);
+    HumanStateInstance(Human const& human, Map<KeypointIdType,List<Point>> const& points, TimestampType const& timestamp);
 
     //! \brief The timestamp of the instance
     TimestampType const& timestamp() const;
@@ -64,7 +64,7 @@ class HumanStateHistory {
     HumanStateHistory(HumanStateHistory const& other) = delete;
 
     //! \brief Add an instance
-    void acquire(List<List<Point>> const& points, TimestampType const& timestamp);
+    void acquire(Map<KeypointIdType,List<Point>> const& points, TimestampType const& timestamp);
 
     //! \brief Check if there are instances with timestamp within \a timestamp
     bool has_instances_within(TimestampType const& timestamp) const;
@@ -157,7 +157,7 @@ class RobotStateHistory {
 
     //! \brief Acquire the \a state to be ultimately held into the hystory
     //! \details Hystory will not be effectively updated till the mode changes
-    void acquire(Mode const& mode, List<List<Point>> const& points, TimestampType const& timestamp);
+    void acquire(Mode const& mode, Map<KeypointIdType,List<Point>> const& points, TimestampType const& timestamp);
 
     //! \brief The mode of the robot at the given \a timestamp
     //! \details If the time is greater than the received last sample, then the current mode is returned

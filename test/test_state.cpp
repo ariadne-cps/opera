@@ -43,28 +43,28 @@ public:
     }
 
     void test_human_state_instance() {
-        Human h("h0", {{3,2},{1,0}}, {0.5,1.0});
-        HumanStateInstance instance(h,{{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},500);
+        Human h("h0", {{"nose","neck"},{"left_shoulder","right_shoulder"}}, {0.5,1.0});
+        HumanStateInstance instance(h,{{{"nose",{Point(0,0,0)}},{"neck",{Point(4,4,4)}},{"left_shoulder",{Point(0,2,0)}},{"right_shoulder",{Point(1,0,3)}}}},500);
 
         OPERA_TEST_EQUALS(instance.samples().size(),2)
         OPERA_TEST_EQUALS(instance.timestamp(),500)
     }
 
     void test_human_state_history() {
-        Human h("h0", {{3,2},{1,0}}, {0.5,1.0});
+        Human h("h0", {{"nose","neck"},{"left_shoulder","right_shoulder"}}, {0.5,1.0});
         HumanStateHistory history(h);
 
         OPERA_TEST_EQUALS(history.size(),0)
         OPERA_TEST_FAIL(history.instance_distance(1000,4000))
-        history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},1000);
+        history.acquire({{{"nose",{Point(0,0,0)}},{"neck",{Point(4,4,4)}},{"left_shoulder",{Point(0,2,0)}},{"right_shoulder",{Point(1,0,3)}}}},1000);
         OPERA_TEST_EQUALS(history.size(),1)
         OPERA_TEST_EXECUTE(history.latest_within(1001))
         OPERA_TEST_EXECUTE(history.latest_within(1000))
         OPERA_TEST_FAIL(history.latest_within(999))
         OPERA_TEST_EQUALS(history.instance_number(1000),0)
         OPERA_TEST_FAIL(history.instance_number(1001))
-        history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},2000);
-        history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(0,2,0)},{Point(1,0,3)}},3000);
+        history.acquire({{{"nose",{Point(0,0,0)}},{"neck",{Point(4,4,4)}},{"left_shoulder",{Point(0,2,0)}},{"right_shoulder",{Point(1,0,3)}}}},2000);
+        history.acquire({{{"nose",{Point(0,0,0)}},{"neck",{Point(4,4,4)}},{"left_shoulder",{Point(0,2,0)}},{"right_shoulder",{Point(1,0,3)}}}},3000);
         OPERA_TEST_EQUALS(history.size(),3)
         OPERA_TEST_FAIL(history.instance_distance(1000,4000))
         OPERA_TEST_FAIL(history.instance_distance(10000000,3000))
@@ -78,7 +78,7 @@ public:
 
     void test_robot_state_history_basics() {
         String robot("robot");
-        Robot r("r0", 10, {{3, 2},{1, 0}}, {1.0, 0.5});
+        Robot r("r0", 10, {{"3", "2"},{"1", "0"}}, {1.0, 0.5});
         RobotStateHistory history(r);
         Mode empty_mode, first({robot, "first"}), second({robot, "second"});
 
@@ -91,7 +91,7 @@ public:
             OPERA_TEST_ASSERT(snapshot.modes_with_samples().empty())
         }
 
-        history.acquire(first,{{Point(0,0,0)},{Point(4,4,4)},{Point( 0,2,0)},{Point(1,0,3)}},500);
+        history.acquire(first,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}},{"2",{Point( 0,2,0)}},{"3",{Point(1,0,3)}}}},500);
 
         {
             auto snapshot = history.snapshot_at(500);
@@ -105,8 +105,8 @@ public:
             OPERA_TEST_EQUALS(entrances.back().to(),500)
         }
 
-        history.acquire(first,{{Point(0,0,1)},{Point(4,4,5)},{Point(0,3,0)},{Point(1,1,3)}},600);
-        history.acquire(second,{{Point(0,0,1.5)},{Point(4,4,5.5)},{Point(0,3.5,0)},{Point(1,1.5,3)}},700);
+        history.acquire(first,{{{"0",{Point(0,0,1)}},{"1",{Point(4,4,5)}},{"2",{Point( 0,3,0)}},{"3",{Point(1,1,3)}}}},600);
+        history.acquire(second,{{{"0",{Point(0,0,1.5)}},{"1",{Point(4,4,5.5)}},{"2",{Point( 0,3.5,0)}},{"3",{Point(1,1.5,3)}}}},700);
 
         {
             auto snapshot = history.snapshot_at(700);
@@ -122,7 +122,7 @@ public:
             OPERA_TEST_EQUALS(snapshot.samples(first).at(0).at(0).error(),0)
         }
 
-        history.acquire(first,{{Point(0,0,2),Point(0,0.1,2)},{Point(4,4,6)},{Point(0,4,0)},{Point(1,2,3),Point(1.1,2,3)}},800);
+        history.acquire(first,{{{"0",{Point(0,0,2),Point(0,0.1,2)}},{"1",{Point(4,4,6)}},{"2",{Point( 0,4,0)}},{"3",{Point(1,2,3),Point(1.1,2,3)}}}},800);
 
         {
             auto snapshot = history.snapshot_at(800);
@@ -142,8 +142,8 @@ public:
             OPERA_TEST_PRINT(snapshot.samples(second))
         }
 
-        history.acquire(first,{{Point(1,0,2)},{Point(5,4,6)},{Point(1,4,0)},{Point(2,2,3)}},1100);
-        history.acquire(second,{{Point(1,0,1.5)},{Point(5,4,5.5)},{Point(1,3.5,0)},{Point(2,1.5,3)}},1200);
+        history.acquire(first,{{{"0",{Point(1,0,2)}},{"1",{Point(5,4,6)}},{"2",{Point( 1,4,0)}},{"3",{Point(2,2,3)}}}},1100);
+        history.acquire(second,{{{"0",{Point(1,0,1.5)}},{"1",{Point(5,4,5.5)}},{"2",{Point( 1,3.5,0)}},{"3",{Point(2,1.5,3)}}}},1200);
 
         {
             auto snapshot = history.snapshot_at(1200);
@@ -164,27 +164,27 @@ public:
 
     void test_robot_state_history_analytics() {
         String robot("robot");
-        Robot r("r0", 10, {{0,1}}, {1.0});
+        Robot r("r0", 10, {{"0","1"}}, {1.0});
         RobotStateHistory history(r);
 
         Mode first({robot, "first"}), second({robot, "second"}), third({robot, "third"}), fourth({robot, "fourth"}), fifth({robot, "fifth"});
 
         TimestampType ts = 0u;
-        history.acquire(first,{{Point(0,0,0)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(first,{{Point(1,0,0)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(second,{{Point(1,1,0)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(second,{{Point(1,2,0)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(second,{{Point(1,3,0)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(third,{{Point(1,3,1)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(third,{{Point(1,3,2)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(second,{{Point(1,4,2)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(second,{{Point(1,5,2)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(first,{{Point(2,5,2)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(first,{{Point(3,5,2)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(first,{{Point(4,5,2)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(third,{{Point(4,5,3)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(second,{{Point(4,6,3)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(fourth,{{Point(4,6,3)},{Point(5,4,4)}},ts); ts+= 100;
+        history.acquire(first,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(first,{{{"0",{Point(1,0,0)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(second,{{{"0",{Point(1,1,0)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(second,{{{"0",{Point(1,2,0)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(second,{{{"0",{Point(1,3,0)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(third,{{{"0",{Point(1,3,1)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(third,{{{"0",{Point(1,3,2)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(second,{{{"0",{Point(1,4,2)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(second,{{{"0",{Point(1,5,2)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(first,{{{"0",{Point(2,5,2)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(first,{{{"0",{Point(3,5,2)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(first,{{{"0",{Point(4,5,2)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(third,{{{"0",{Point(4,5,3)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(second,{{{"0",{Point(4,6,3)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(fourth,{{{"0",{Point(4,6,3)}},{"1",{Point(5,4,4)}}}},ts); ts+= 100;
 
         auto snapshot = history.snapshot_at(ts);
 
@@ -223,14 +223,14 @@ public:
 
     void test_robot_state_history_can_look_ahead() {
         String robot("robot");
-        Robot r("r0", 10, {{0,1}}, {1.0});
+        Robot r("r0", 10, {{"0","1"}}, {1.0});
         RobotStateHistory history(r);
 
         Mode first({robot, "first"}), second({robot, "second"}), third({robot, "third"}), fourth({robot, "fourth"}), fifth({robot, "fifth"});
 
         TimestampType ts = 0u;
-        history.acquire(first,{{Point(0,0,0)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(first,{{Point(1,0,0)},{Point(4,4,4)}},ts);
+        history.acquire(first,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(first,{{{"0",{Point(1,0,0)}},{"1",{Point(4,4,4)}}}},ts);
 
         {
             auto snapshot = history.snapshot_at(ts);
@@ -238,9 +238,9 @@ public:
         }
 
         ts+= 100;
-        history.acquire(second,{{Point(1,1,0)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(second,{{Point(1,2,0)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(second,{{Point(1,3,0)},{Point(4,4,4)}},ts);
+        history.acquire(second,{{{"0",{Point(1,1,0)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(second,{{{"0",{Point(1,2,0)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(second,{{{"0",{Point(1,3,0)}},{"1",{Point(4,4,4)}}}},ts);
 
         {
             auto snapshot = history.snapshot_at(ts);
@@ -248,9 +248,9 @@ public:
         }
 
         ts+= 100;
-        history.acquire(third,{{Point(1,3,1)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(third,{{Point(1,3,2)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(second,{{Point(1,4,2)},{Point(4,4,4)}},ts);
+        history.acquire(third,{{{"0",{Point(1,3,1)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(third,{{{"0",{Point(1,3,2)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(second,{{{"0",{Point(1,4,2)}},{"1",{Point(4,4,4)}}}},ts);
 
         {
             auto snapshot = history.snapshot_at(ts);
@@ -259,9 +259,9 @@ public:
         }
 
         ts+= 100;
-        history.acquire(second,{{Point(1,5,2)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(first,{{Point(2,5,2)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(first,{{Point(3,5,2)},{Point(4,4,4)}},ts);
+        history.acquire(second,{{{"0",{Point(1,5,2)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(first,{{{"0",{Point(2,5,2)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(first,{{{"0",{Point(3,5,2)}},{"1",{Point(4,4,4)}}}},ts);
 
         {
             auto snapshot = history.snapshot_at(ts);
@@ -269,7 +269,7 @@ public:
         }
 
         ts+= 100;
-        history.acquire(first,{{Point(4,5,2)},{Point(4,4,4)}},ts);
+        history.acquire(first,{{{"0",{Point(4,5,2)}},{"1",{Point(4,4,4)}}}},ts);
 
         {
             auto snapshot = history.snapshot_at(ts);
@@ -277,9 +277,9 @@ public:
         }
 
         ts+= 100;
-        history.acquire(third,{{Point(4,5,3)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(second,{{Point(4,6,3)},{Point(4,4,4)}},ts); ts+= 100;
-        history.acquire(fourth,{{Point(4,6,3)},{Point(5,4,4)}},ts);
+        history.acquire(third,{{{"0",{Point(4,5,3)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(second,{{{"0",{Point(4,6,3)}},{"1",{Point(4,4,4)}}}},ts); ts+= 100;
+        history.acquire(fourth,{{{"0",{Point(4,6,3)}},{"1",{Point(5,4,4)}}}},ts);
 
         {
             auto snapshot = history.snapshot_at(ts);

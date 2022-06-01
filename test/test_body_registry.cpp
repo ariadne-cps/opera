@@ -49,8 +49,8 @@ class TestBodyRegistry {
 
     void test_insert_remove_clear() {
         BodyRegistry registry;
-        BodyPresentationMessage h("h0",{{0,1},{1,2}},{1.0,0.5});
-        BodyPresentationMessage r("r0",10,{{0,1},{1,2}},{1.0,0.5});
+        BodyPresentationMessage h("h0",{{"nose","neck"},{"neck","mid_hip"}},{1.0,0.5});
+        BodyPresentationMessage r("r0",10,{{"0","1"},{"1","2"}},{1.0,0.5});
 
         registry.insert(h);
         registry.insert(r);
@@ -74,7 +74,8 @@ class TestBodyRegistry {
         OPERA_TEST_ASSERT(history.snapshot_at(0).modes_with_samples().empty())
 
         OPERA_TEST_FAIL(registry.acquire_state(HumanStateMessage({{"h", {{}}}}, 0u)))
-        registry.acquire_state(HumanStateMessage({{h.id(), {{Point(0, 0, 0)},{Point(4, 4, 4)},{Point(0, 2, 0)}}}}, 34289023));
+
+        registry.acquire_state({{{h.id(), {{{"nose",{Point(0,0,0)}},{"neck",{Point(4,4,4)}},{"mid_hip",{Point(0,2,0)}}}}}}, 34289023});
         auto const& last_state = registry.latest_human_instance_within(h.id(),34289023);
         OPERA_TEST_EQUALS(last_state.timestamp(),34289023)
         OPERA_TEST_EQUALS(registry.instance_number(h.id(),34289023),0)
@@ -102,15 +103,15 @@ class TestBodyRegistry {
 
     void test_instance_distance() {
         BodyRegistry registry;
-        BodyPresentationMessage h("h0",{{0,1},{1,2}},{1.0,0.5});
-        BodyPresentationMessage r("r0",10,{{0,1},{1,2}},{1.0,0.5});
+        BodyPresentationMessage h("h0",{{"nose","neck"},{"neck","mid_hip"}},{1.0,0.5});
+        BodyPresentationMessage r("r0",10,{{"0","1"},{"1","2"}},{1.0,0.5});
 
         registry.insert(h);
         registry.insert(r);
 
-        registry.acquire_state({{{h.id(), {{Point(0, 0, 0)},{Point(4, 4, 4)},{Point(0, 2, 0)}}}}, 1000});
-        registry.acquire_state({{{h.id(), {{Point(0, 0, 0)},{Point(4, 4, 4)},{Point(0, 2, 0)}}}}, 2000});
-        registry.acquire_state({{{h.id(), {{Point(0, 0, 0)},{Point(4, 4, 4)},{Point(0, 2, 0)}}}}, 3000});
+        registry.acquire_state({{{h.id(), {{{"nose",{Point(0,0,0)}},{"neck",{Point(4,4,4)}},{"mid_hip",{Point(0,2,0)}}}}}}, 1000});
+        registry.acquire_state({{{h.id(), {{{"nose",{Point(0,0,0)}},{"neck",{Point(4,4,4)}},{"mid_hip",{Point(0,2,0)}}}}}}, 2000});
+        registry.acquire_state({{{h.id(), {{{"nose",{Point(0,0,0)}},{"neck",{Point(4,4,4)}},{"mid_hip",{Point(0,2,0)}}}}}}, 3000});
 
         OPERA_TEST_EQUALS(registry.instance_distance(h.id(),1000,3000),2)
         OPERA_TEST_EQUALS(registry.instance_distance(h.id(),1000,2000),1)

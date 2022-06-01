@@ -31,7 +31,7 @@
 
 namespace Opera {
 
-HumanRegistryEntry::HumanRegistryEntry(BodyIdType const& id, List<Pair<IdType,IdType>> const& points_ids, List<FloatType> const& thicknesses)
+HumanRegistryEntry::HumanRegistryEntry(BodyIdType const& id, List<Pair<KeypointIdType,KeypointIdType>> const& points_ids, List<FloatType> const& thicknesses)
     : _body({id,points_ids,thicknesses}), _history(_body) { }
 
 Human const& HumanRegistryEntry::body() const {
@@ -58,11 +58,11 @@ HumanStateInstance const& HumanRegistryEntry::at(SizeType const& idx) const {
         return _history.at(idx);
 }
 
-void HumanRegistryEntry::add(List<List<Point>> const& points, TimestampType const& timestamp) {
+void HumanRegistryEntry::add(Map<KeypointIdType,List<Point>> const& points, TimestampType const& timestamp) {
     _history.acquire(points,timestamp);
 }
 
-RobotRegistryEntry::RobotRegistryEntry(BodyIdType const& id, SizeType const& message_frequency, List<Pair<IdType,IdType>> const& points_ids, List<FloatType> const& thicknesses)
+RobotRegistryEntry::RobotRegistryEntry(BodyIdType const& id, SizeType const& message_frequency, List<Pair<KeypointIdType,KeypointIdType>> const& points_ids, List<FloatType> const& thicknesses)
     : _body({id,message_frequency,points_ids,thicknesses}), _history(_body) { }
 
 Robot const& RobotRegistryEntry::body() const {
@@ -153,7 +153,7 @@ HumanStateInstance const& BodyRegistry::instance_at(BodyIdType const& id, SizeTy
     return _humans.at(id)-> at(idx);
 }
 
-void BodyRegistry::_add_human_instance(BodyIdType const& id, List<List<Point>> const& points, TimestampType const& timestamp) {
+void BodyRegistry::_add_human_instance(BodyIdType const& id, Map<KeypointIdType,List<Point>> const& points, TimestampType const& timestamp) {
     OPERA_PRECONDITION(contains(id))
     _humans.at(id)->add(points,timestamp);
 }
@@ -164,15 +164,18 @@ void BodyRegistry::acquire_state(HumanStateMessage const& msg) {
 }
 
 void BodyRegistry::acquire_state(RobotStateMessage const& msg) {
-    robot_history(msg.id()).acquire(msg.mode(), msg.points(), msg.timestamp());
+    Map<KeypointIdType,List<Point>> points;
+    for (SizeType i=0; i<msg.points().size(); ++i)
+        points.insert(std::make_pair(to_string(i),msg.points().at(i)));
+    robot_history(msg.id()).acquire(msg.mode(), points, msg.timestamp());
 }
 
 void BodyRegistry::insert(BodyPresentationMessage const& presentation) {
     if (not contains(presentation.id())) {
         if (presentation.is_human())
-            _humans.insert(std::make_pair(presentation.id(),new HumanRegistryEntry(presentation.id(),presentation.point_ids(),presentation.thicknesses())));
+            _humans.insert(std::make_pair(presentation.id(),new HumanRegistryEntry(presentation.id(),presentation.segment_pairs(),presentation.thicknesses())));
         else
-            _robots.insert(std::make_pair(presentation.id(),new RobotRegistryEntry(presentation.id(),presentation.message_frequency(),presentation.point_ids(),presentation.thicknesses())));
+            _robots.insert(std::make_pair(presentation.id(),new RobotRegistryEntry(presentation.id(),presentation.message_frequency(),presentation.segment_pairs(),presentation.thicknesses())));
     }
 }
 

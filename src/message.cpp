@@ -31,11 +31,11 @@
 
 namespace Opera {
 
-BodyPresentationMessage::BodyPresentationMessage(BodyIdType const& id, List<Pair<IdType,IdType>> const& point_ids, List<FloatType> const& thicknesses) :
-    _id(id), _is_human(true), _message_frequency(0), _point_ids(point_ids), _thicknesses(thicknesses) { }
+BodyPresentationMessage::BodyPresentationMessage(BodyIdType const& id, List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs, List<FloatType> const& thicknesses) :
+    _id(id), _is_human(true), _message_frequency(0), _segment_pairs(segment_pairs), _thicknesses(thicknesses) { }
 
-BodyPresentationMessage::BodyPresentationMessage(BodyIdType const& id,  SizeType const& message_frequency, List<Pair<IdType,IdType>> const& point_ids, List<FloatType> const& thicknesses) :
-    _id(id), _is_human(false), _message_frequency(message_frequency), _point_ids(point_ids), _thicknesses(thicknesses) { }
+BodyPresentationMessage::BodyPresentationMessage(BodyIdType const& id,  SizeType const& message_frequency, List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs, List<FloatType> const& thicknesses) :
+    _id(id), _is_human(false), _message_frequency(message_frequency), _segment_pairs(segment_pairs), _thicknesses(thicknesses) { }
 
 BodyIdType const& BodyPresentationMessage::id() const {
     return _id;
@@ -49,18 +49,18 @@ SizeType const& BodyPresentationMessage::message_frequency() const {
     return _message_frequency;
 }
 
-List<Pair<IdType,IdType>> const& BodyPresentationMessage::point_ids() const {
-    return _point_ids;
+List<Pair<KeypointIdType,KeypointIdType>> const& BodyPresentationMessage::segment_pairs() const {
+    return _segment_pairs;
 }
 
 List<FloatType> const& BodyPresentationMessage::thicknesses() const {
     return _thicknesses;
 }
 
-HumanStateMessage::HumanStateMessage(List<Pair<BodyIdType,List<List<Point>>>> const& bodies, TimestampType const& timestamp) :
+HumanStateMessage::HumanStateMessage(List<Pair<BodyIdType,Map<KeypointIdType,List<Point>>>> const& bodies, TimestampType const& timestamp) :
         _bodies(bodies), _timestamp(timestamp) { }
 
-List<Pair<BodyIdType,List<List<Point>>>> const& HumanStateMessage::bodies() const {
+List<Pair<BodyIdType,Map<KeypointIdType,List<Point>>>> const& HumanStateMessage::bodies() const {
     return _bodies;
 }
 
@@ -87,7 +87,7 @@ TimestampType const& RobotStateMessage::timestamp() const {
     return _timestamp;
 }
 
-CollisionNotificationMessage::CollisionNotificationMessage(BodyIdType const& human_id, IdType const& human_segment_id, BodyIdType const& robot_id, IdType const& robot_segment_id,
+CollisionNotificationMessage::CollisionNotificationMessage(BodyIdType const& human_id, Pair<KeypointIdType,KeypointIdType> const& human_segment_id, BodyIdType const& robot_id, Pair<KeypointIdType,KeypointIdType> const& robot_segment_id,
                                                            TimestampType const& current_time, Interval<TimestampType> const& collision_distance, Mode const& collision_mode, PositiveFloatType const& likelihood) :
         _human_id(human_id), _human_segment_id(human_segment_id), _robot_id(robot_id), _robot_segment_id(robot_segment_id),
         _current_time(current_time), _collision_distance(collision_distance), _collision_mode(collision_mode), _likelihood(likelihood) { }
@@ -96,7 +96,7 @@ BodyIdType const& CollisionNotificationMessage::human_id() const {
     return _human_id;
 }
 
-IdType const& CollisionNotificationMessage::human_segment_id() const {
+Pair<KeypointIdType,KeypointIdType> const& CollisionNotificationMessage::human_segment_id() const {
     return _human_segment_id;
 }
 
@@ -104,7 +104,7 @@ BodyIdType const& CollisionNotificationMessage::robot_id() const {
     return _robot_id;
 }
 
-IdType const& CollisionNotificationMessage::robot_segment_id() const {
+Pair<KeypointIdType,KeypointIdType> const& CollisionNotificationMessage::robot_segment_id() const {
     return _robot_segment_id;
 }
 

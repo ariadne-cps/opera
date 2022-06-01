@@ -119,7 +119,7 @@ class TestLookAheadJob {
     void test_lookaheadjob_create_basic() {
         TimestampType const initial_time = 349234;
         LookAheadJobIdentifier id("h0", 2u, "r0", 3u);
-        Human h("h0", {{0, 1}}, {1.0});
+        Human h("h0", {{"nose", "neck"}}, {1.0});
         auto sample = h.segment(0).create_sample({{-0.5, 1.0, 1.25}},{{}});
         OPERA_TEST_PRINT(id)
         LookAheadJob job = DiscardLookAheadJob(id, initial_time, sample, ModeTrace().push_back({{"robot", "first"}}), LookAheadJobPath());
@@ -135,7 +135,7 @@ class TestLookAheadJob {
         LookAheadJobPath path;
         path.add(3,1);
         LookAheadJobIdentifier id("h0", 2u, "r0", 3u);
-        Human h("h0", {{0, 1}}, {1.0});
+        Human h("h0", {{"nose", "neck"}}, {1.0});
         auto sample = h.segment(0).create_sample({{-0.5, 1.0, 1.25}},{{}});
         LookAheadJob job = DiscardLookAheadJob(id, initial_time, sample, ModeTrace().push_back({{"robot", "first"}}), path);
 
@@ -143,8 +143,8 @@ class TestLookAheadJob {
     }
 
     void test_lookaheadjob_earliest_collision_index() {
-        Human h0("h0", {{0,1}}, {0.1});
-        Robot r0("r0", 1000, {{0, 1},{1, 2}}, {0.1,0.1});
+        Human h0("h0", {{"nose","neck"}}, {0.1});
+        Robot r0("r0", 1000, {{"0", "1"},{"1", "2"}}, {0.1,0.1});
 
         Mode contract({{"s", "contract"}});
         Mode endup({{"s", "endup"}});
@@ -156,41 +156,41 @@ class TestLookAheadJob {
 
         TimestampType time = 0;
 
-        h.acquire(contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(10,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(4,0,1)}},{"2",{Point(9,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(3,0,2)}},{"2",{Point(8,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(2,0,3)}},{"2",{Point(7,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(1,0,4)}},{"2",{Point(6,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,0)}}}}, ++time);
 
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 1}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 2}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 3}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 4}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 5}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{4, 0, 6}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{3, 0, 7}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{2, 0, 8}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{1, 0, 9}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{0, 0, 10}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,1)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,2)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,3)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,4)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,5)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(4,0,6)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(3,0,7)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(2,0,8)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(1,0,9)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(0,0,10)}}}}, ++time);
 
-        h.acquire(kneedown, {{{0, 0, 0}}, {{1, 0, 4}}, {{1, 0, 9}}}, ++time);
-        h.acquire(kneedown, {{{0, 0, 0}}, {{2, 0, 3}}, {{2, 0, 8}}}, ++time);
-        h.acquire(kneedown, {{{0, 0, 0}}, {{3, 0, 2}}, {{3, 0, 7}}}, ++time);
-        h.acquire(kneedown, {{{0, 0, 0}}, {{4, 0, 1}}, {{4, 0, 6}}}, ++time);
-        h.acquire(kneedown, {{{0, 0, 0}}, {{5, 0, 0}}, {{5, 0, 5}}}, ++time);
+        h.acquire(kneedown, {{{"0",{Point(0,0,0)}},{"1",{Point(1,0,4)}},{"2",{Point(1,0,9)}}}}, ++time);
+        h.acquire(kneedown, {{{"0",{Point(0,0,0)}},{"1",{Point(2,0,3)}},{"2",{Point(2,0,8)}}}}, ++time);
+        h.acquire(kneedown, {{{"0",{Point(0,0,0)}},{"1",{Point(3,0,2)}},{"2",{Point(3,0,7)}}}}, ++time);
+        h.acquire(kneedown, {{{"0",{Point(0,0,0)}},{"1",{Point(4,0,1)}},{"2",{Point(4,0,6)}}}}, ++time);
+        h.acquire(kneedown, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(5,0,5)}}}}, ++time);
 
-        h.acquire(fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{6, 0, 4}}}, ++time);
-        h.acquire(fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{7, 0, 3}}}, ++time);
-        h.acquire(fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{8, 0, 2}}}, ++time);
-        h.acquire(fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{9, 0, 1}}}, ++time);
-        h.acquire(fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time);
+        h.acquire(fullright, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(6,0,4)}}}}, ++time);
+        h.acquire(fullright, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(7,0,3)}}}}, ++time);
+        h.acquire(fullright, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(8,0,2)}}}}, ++time);
+        h.acquire(fullright, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(9,0,1)}}}}, ++time);
+        h.acquire(fullright, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(10,0,0)}}}}, ++time);
 
-        h.acquire(contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(10,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(4,0,1)}},{"2",{Point(9,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(3,0,2)}},{"2",{Point(8,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(2,0,3)}},{"2",{Point(7,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(1,0,4)}},{"2",{Point(6,0,0)}}}}, ++time);
 
         OPERA_TEST_EQUALS(h.snapshot_at(time).checked_sample_index(h.mode_at(time), time), 4)
 

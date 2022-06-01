@@ -47,7 +47,7 @@ class TestBrokerAccess {
     }
 
     void test_create_destroy() {
-        HumanStateMessage hs({{"human0",{{Point(0,0,0)},{Point(0,2,0)}}}},300);
+        HumanStateMessage hs({{"human0",{{{"head",{Point(0,0,0)}},{"neck",{Point(0,2,0)}}}}}},300);
 
         OPERA_PRINT_TEST_COMMENT("Creating subscriber and removing it")
         auto* subscriber = _access.make_human_state_subscriber([](auto){});
@@ -64,7 +64,7 @@ class TestBrokerAccess {
     }
 
     void test_single_transfer() {
-        BodyPresentationMessage hp("human1", {{0, 1},{3, 2}}, {1.0,0.5});
+        BodyPresentationMessage hp("human1", {{"nose", "neck"},{"left_shoulder", "right_shoulder"}}, {1.0,0.5});
         List<BodyPresentationMessage> bp_received;
 
         auto bp_subscriber = _access.make_body_presentation_subscriber([&](auto p){ bp_received.push_back(p); });
@@ -84,11 +84,11 @@ class TestBrokerAccess {
     }
 
     void test_multiple_transfer() {
-        BodyPresentationMessage hp("human1", {{0, 1},{3, 2}}, {1.0,0.5});
-        BodyPresentationMessage rp("robot1", 30, {{0, 1},{3, 2},{4, 2}}, {1.0,0.5, 0.5});
-        HumanStateMessage hs({{"human0",{{Point(0.4,2.1,0.2)},{Point(0,-1,0.1),Point(0.3,3.1,-1.2)},{Point(0.4,0.1,1.2)},{Point(0,0,1)}}}},3423235);
+        BodyPresentationMessage hp("human1", {{"nose", "neck"},{"left_shoulder", "right_shoulder"}}, {1.0,0.5});
+        BodyPresentationMessage rp("robot1", 30, {{"0", "1"},{"3", "2"},{"4", "2"}}, {1.0,0.5, 0.5});
+        HumanStateMessage hs({{"human0",{{{"head",{Point(0,0,0)}},{"neck",{Point(0,2,0)}},{"left_shoulder",{Point(1,2,0)}},{"right_shoulder",{Point(3,2,0)}}}}}},3423235);
         RobotStateMessage rs("robot0", Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), {{}, {Point(0, -1, 0.1), Point(0.3, 3.1, -1.2)}, {}}, 93249);
-        CollisionNotificationMessage cn("h0", 0, "r0", 3, 32890592300, Interval<TimestampType>(72, 123), Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), 0.5);
+        CollisionNotificationMessage cn("h0", {"nose","neck"}, "r0", {"4","2"}, 32890592300, Interval<TimestampType>(72, 123), Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), 0.5);
 
         List<BodyPresentationMessage> bp_received;
         List<HumanStateMessage> hs_received;

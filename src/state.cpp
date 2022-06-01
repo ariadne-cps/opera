@@ -36,7 +36,7 @@ using namespace ConcLog;
 
 namespace Opera {
 
-HumanStateInstance::HumanStateInstance(Human const& human, List<List<Point>> const& points, TimestampType const& timestamp) : _timestamp(timestamp) {
+HumanStateInstance::HumanStateInstance(Human const& human, Map<KeypointIdType,List<Point>> const& points, TimestampType const& timestamp) : _timestamp(timestamp) {
     OPERA_PRECONDITION(human.num_points() == points.size())
     for (SizeType i=0; i<human.num_segments(); ++i) {
         auto const& segment = human.segment(i);
@@ -58,7 +58,7 @@ TimestampType const& HumanStateInstance::timestamp() const {
 
 HumanStateHistory::HumanStateHistory(Human const& human) : _human(human) { }
 
-void HumanStateHistory::acquire(List<List<Point>> const& points, TimestampType const& timestamp) {
+void HumanStateHistory::acquire(Map<KeypointIdType,List<Point>> const& points, TimestampType const& timestamp) {
     _instances.push_back({_human,points,timestamp});
 }
 
@@ -172,7 +172,7 @@ Mode const& RobotStateHistory::mode_at(TimestampType const& time) const {
     return _latest_mode;
 }
 
-void RobotStateHistory::acquire(Mode const& mode, List<List<Point>> const& points, TimestampType const& timestamp) {
+void RobotStateHistory::acquire(Mode const& mode, Map<KeypointIdType,List<Point>> const& points, TimestampType const& timestamp) {
     /*
      * 1) If the mode is different from the current one (including the first mode inserted)
      *   a) Save the buffered content

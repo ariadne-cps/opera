@@ -60,8 +60,8 @@ class TestRuntime {
 
         SynchronisedQueue<CollisionNotificationMessage> notifications;
 
-        BodyPresentationMessage rp(rid, 1000, {{0, 1},{1, 2}}, {0.1,0.1});
-        BodyPresentationMessage hp(hid,{{0,1}},{0.1});
+        BodyPresentationMessage rp(rid, 1000, {{"0", "1"},{"1", "2"}}, {0.1,0.1});
+        BodyPresentationMessage hp(hid,{{"nose","neck"}},{0.1});
         auto bp_publisher = access.make_body_presentation_publisher();
         auto hs_publisher = access.make_human_state_publisher();
         auto rs_publisher = access.make_robot_state_publisher();
@@ -111,13 +111,13 @@ class TestRuntime {
 
         OPERA_PRINT_TEST_CASE_TITLE("Human colliding on one segment, not at the current mode")
 
-        hs_publisher->put({{{hid,{{{0,1,5}},{{4,0,6}}}}},time-1});
+        hs_publisher->put({{{hid,{{{"nose",{Point(0,1,5)}},{"neck",{Point(4,0,6)}}}}}},time-1});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_pending_human_robot_pairs(),1)
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),0)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),0)
 
-        hs_publisher->put({{{hid,{{{0,1,5}},{{4,0,6}}}}},time});
+        hs_publisher->put({{{hid,{{{"nose",{Point(0,1,5)}},{"neck",{Point(4,0,6)}}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_pending_human_robot_pairs(),0)
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),2)
@@ -146,7 +146,8 @@ class TestRuntime {
 
         rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        hs_publisher->put({{{hid,{{{5,1,0}},{{10,1,0}}}}},time});
+
+        hs_publisher->put({{{hid,{{{"nose",{Point(5,1,0)}},{"neck",{Point(10,1,0)}}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),2)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),0)
@@ -175,7 +176,7 @@ class TestRuntime {
 
         Mode newmode({{"s", "newmode"}});
         rs_publisher->put({rid,newmode, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
-        hs_publisher->put({{{hid,{{{5,1,0}},{{10,1,0}}}}},time});
+        hs_publisher->put({{{hid,{{{"nose",{Point(5,1,0)}},{"neck",{Point(10,1,0)}}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),0)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),2)
@@ -201,8 +202,8 @@ class TestRuntime {
 
         SynchronisedQueue<CollisionNotificationMessage> notifications;
 
-        BodyPresentationMessage rp(rid, 1000, {{0, 1},{1, 2}}, {0.1,0.1});
-        BodyPresentationMessage hp(hid,{{0,1}},{0.1});
+        BodyPresentationMessage rp(rid, 1000, {{"0", "1"},{"1", "2"}}, {0.1,0.1});
+        BodyPresentationMessage hp(hid,{{"nose","neck"}},{0.1});
         auto bp_publisher = access.make_body_presentation_publisher();
         auto hs_publisher = access.make_human_state_publisher();
         auto rs_publisher = access.make_robot_state_publisher();
@@ -251,13 +252,13 @@ class TestRuntime {
 
         OPERA_PRINT_TEST_CASE_TITLE("Human colliding on one segment, not at the current mode")
 
-        hs_publisher->put({{{hid,{{{0,1,5}},{{4,0,6}}}}},time-1});
+        hs_publisher->put({{{hid,{{{"nose",{Point(0,1,5)}},{"neck",{Point(4,0,6)}}}}}},time-1});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_pending_human_robot_pairs(),1)
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),0)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),0)
 
-        hs_publisher->put({{{hid,{{{0,1,5}},{{4,0,6}}}}},time});
+        hs_publisher->put({{{hid,{{{"nose",{Point(0,1,5)}},{"neck",{Point(4,0,6)}}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_pending_human_robot_pairs(),0)
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),2)
@@ -286,7 +287,7 @@ class TestRuntime {
 
         rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
 
-        hs_publisher->put({{{hid,{{{0,1,5}},{{4,0,6}}}}},time});
+        hs_publisher->put({{{hid,{{{"nose",{Point(0,1,5)}},{"neck",{Point(4,0,6)}}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),2)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),0)
@@ -301,7 +302,7 @@ class TestRuntime {
 
         Mode newmode({{"s", "newmode"}});
         rs_publisher->put({rid,newmode, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time});
-        hs_publisher->put({{{hid,{{{5,1,0}},{{10,1,0}}}}},time});
+        hs_publisher->put({{{hid,{{{"nose",{Point(5,1,0)}},{"neck",{Point(10,1,0)}}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),0)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),2)
@@ -323,8 +324,8 @@ class TestRuntime {
 
         SynchronisedQueue<CollisionNotificationMessage> notifications;
 
-        BodyPresentationMessage rp(rid, 1000, {{0, 1},{1, 2}}, {0.1,0.1});
-        BodyPresentationMessage hp(hid,{{0,1}},{0.1});
+        BodyPresentationMessage rp(rid, 1000, {{"0", "1"},{"1", "2"}}, {0.1,0.1});
+        BodyPresentationMessage hp(hid,{{"nose","neck"}},{0.1});
         auto bp_publisher = access.make_body_presentation_publisher();
         auto hs_publisher = access.make_human_state_publisher();
         auto rs_publisher = access.make_robot_state_publisher();
@@ -388,7 +389,7 @@ class TestRuntime {
 
         OPERA_PRINT_TEST_CASE_TITLE("Human colliding on one segment, not at the current mode")
 
-        hs_publisher->put({{{hid,{{{9,0,0}},{{9,0,1}}}}},time});
+        hs_publisher->put({{{hid,{{{"nose",{Point(9,0,0)}},{"neck",{Point(9,0,1)}}}}}},time});
         OPERA_TEST_PRINT(time)
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),2)
@@ -425,7 +426,7 @@ class TestRuntime {
         OPERA_PRINT_TEST_CASE_TITLE("Human not colliding on any segment")
 
         rs_publisher->put({rid,contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time});
-        hs_publisher->put({{{hid,{{{5,1,0}},{{10,1,0}}}}},time});
+        hs_publisher->put({{{hid,{{{"nose",{Point(5,1,0)}},{"neck",{Point(10,1,0)}}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),2)
         OPERA_TEST_EQUALS(runtime.num_sleeping_jobs(),0)
@@ -470,8 +471,8 @@ class TestRuntime {
         String rid = "r0";
         String hid = "h0";
         Mode mode({"phase", "waiting"});
-        BodyPresentationMessage rp(rid,10,{{0,1},{1,2}},{1.0,0.5});
-        BodyPresentationMessage hp(hid,{{0,1},{1,2}},{1.0,0.5});
+        BodyPresentationMessage rp(rid,10,{{"0","1"},{"1","2"}},{1.0,0.5});
+        BodyPresentationMessage hp(hid,{{"nose","neck"},{"neck","mid_hip"}},{1.0,0.5});
         auto bp_publisher = access.make_body_presentation_publisher();
         auto hs_publisher = access.make_human_state_publisher();
         auto rs_publisher = access.make_robot_state_publisher();
@@ -482,7 +483,7 @@ class TestRuntime {
 
         RobotStateMessage rs(rid,mode,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3000);
         rs_publisher->put(rs);
-        HumanStateMessage hs({{hid,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}}}},3200);
+        HumanStateMessage hs({{"h0",{{{"nose",{Point(0,0,0)}},{"neck",{Point(0,2,0)}},{"mid_hip",{Point(0,4,0)}}}}}},3200);
         hs_publisher->put(hs);
 
         RobotStateMessage rs2(rid,Mode({"phase","running"}),{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},3100);
@@ -496,9 +497,8 @@ class TestRuntime {
         while (notifications.size() > 0) {
             notifications.reserve();
             auto msg = notifications.dequeue();
-            LookAheadJobIdentifier id(msg.human_id(),msg.human_segment_id(),msg.robot_id(),msg.robot_segment_id());
             std::stringstream ss;
-            ss << "Collision for " << id << " at " << msg.collision_distance() << " in mode " << msg.collision_mode();
+            ss << "Collision for {" << msg.human_id() << "@(" << msg.human_segment_id().first << "," << msg.human_segment_id().second << ")+" << msg.robot_id() << "@(" << msg.robot_segment_id().first << "," << msg.robot_segment_id().second << ")} at " << msg.collision_distance() << " in mode " << msg.collision_mode();
             OPERA_TEST_PRINT(ss.str())
         }
 
@@ -518,8 +518,8 @@ class TestRuntime {
 
         SynchronisedQueue<CollisionNotificationMessage> notifications;
 
-        BodyPresentationMessage rp(rid, 1000, {{0, 1},{1, 2}}, {0.1,0.1});
-        BodyPresentationMessage hp(hid,{{0,1}},{0.1});
+        BodyPresentationMessage rp(rid, 1000, {{"0", "1"},{"1", "2"}}, {0.1,0.1});
+        BodyPresentationMessage hp(hid,{{"nose","neck"}},{0.1});
         auto bp_publisher = access.make_body_presentation_publisher();
         auto hs_publisher = access.make_human_state_publisher();
         auto rs_publisher = access.make_robot_state_publisher();
@@ -583,7 +583,7 @@ class TestRuntime {
 
         OPERA_PRINT_TEST_CASE_TITLE("Human colliding on one segment, not at the current mode")
 
-        hs_publisher->put({{{hid,{{{9,0,0}},{{9,0,1}}}}},time});
+        hs_publisher->put({{{hid,{{{"nose",{Point(9,0,0)}},{"neck",{Point(9,0,1)}}}}}},time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         OPERA_TEST_EQUALS(notifications.size(),2)
@@ -596,7 +596,7 @@ class TestRuntime {
 
         OPERA_PRINT_TEST_CASE_TITLE("Human not colliding on any segment")
 
-        hs_publisher->put({{{hid,{{{5,1,0}},{{10,1,0}}}}},++time});
+        hs_publisher->put({{{hid,{{{"nose",{Point(5,1,0)}},{"neck",{Point(10,1,0)}}}}}},++time});
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),0)

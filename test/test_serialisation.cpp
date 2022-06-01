@@ -43,24 +43,24 @@ public:
     }
 
     void test_bodypresentationmessage_human() {
-        BodyPresentationMessage p("human1", {{0, 1},{3, 2}}, {1.0,0.5});
+        BodyPresentationMessage p("human1", {{"nose","neck"},{"left_shoulder","right_shoulder"}}, {1.0,0.5});
         Serialiser<BodyPresentationMessage> serialiser(p);
         serialiser.to_file(Resources::path("json/examples/presentation/" + p.id() + ".tmp.json"));
-        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"id\":\"human1\",\"isHuman\":true,\"pointIds\":[[0,1],[3,2]],\"thicknesses\":[1.0,0.5]}")
+        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"id\":\"human1\",\"isHuman\":true,\"segmentPairs\":[[\"nose\",\"neck\"],[\"left_shoulder\",\"right_shoulder\"]],\"thicknesses\":[1.0,0.5]}")
     }
 
     void test_bodypresentationmessage_robot() {
-        BodyPresentationMessage p("robot1", 30, {{0, 1},{3, 2},{4, 2}}, {1.0,0.5, 0.5});
+        BodyPresentationMessage p("robot1", 30, {{"0", "1"},{"3", "2"},{"4", "2"}}, {1.0,0.5, 0.5});
         Serialiser<BodyPresentationMessage> serialiser(p);
         serialiser.to_file(Resources::path("json/examples/presentation/" + p.id() + ".tmp.json"));
-        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"id\":\"robot1\",\"isHuman\":false,\"messageFrequency\":30,\"pointIds\":[[0,1],[3,2],[4,2]],\"thicknesses\":[1.0,0.5,0.5]}")
+        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"id\":\"robot1\",\"isHuman\":false,\"messageFrequency\":30,\"segmentPairs\":[[\"0\",\"1\"],[\"3\",\"2\"],[\"4\",\"2\"]],\"thicknesses\":[1.0,0.5,0.5]}")
     }
 
     void test_humanstatemessage() {
-        HumanStateMessage p({{"human0",{{Point(0.4,2.1,0.2)},{Point(0,-1,0.1),Point(0.3,3.1,-1.2)},{Point(0.4,0.1,1.2)},{Point(0,0,1)}}}},3423235);
+        HumanStateMessage p({{"human0",{{{"nose",{Point(0.4,2.1,0.2)}},{"neck",{Point(0,-1,0.1),Point(0.3,3.1,-1.2)}},{"left_shoulder",{Point(0.4,0.1,1.2)}},{"right_shoulder",{Point(0,0,1)}}}}}},3423235);
         Serialiser<HumanStateMessage> serialiser(p);
         serialiser.to_file(Resources::path("json/examples/state/humans.tmp.json"));
-        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"bodies\":[{\"bodyId\":\"human0\",\"continuousState\":[[[0.4,2.1,0.2]],[[0.0,-1.0,0.1],[0.3,3.1,-1.2]],[[0.4,0.1,1.2]],[[0.0,0.0,1.0]]]}],\"timestamp\":3423235}")
+        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"bodies\":[{\"bodyId\":\"human0\",\"keypoints\":{\"left_shoulder\":[[0.4,0.1,1.2]],\"neck\":[[0.0,-1.0,0.1],[0.3,3.1,-1.2]],\"nose\":[[0.4,2.1,0.2]],\"right_shoulder\":[[0.0,0.0,1.0]]}}],\"timestamp\":3423235}")
     }
 
     void test_robotstatemessage() {
@@ -71,10 +71,10 @@ public:
     }
 
     void test_collisionnotificationmessage() {
-        CollisionNotificationMessage p("h0", 0, "r0", 3, 32890, Interval<TimestampType>(72, 123), Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), 0.5);
+        CollisionNotificationMessage p("h0", {"nose","neck"}, "r0", {"0","1"}, 32890, Interval<TimestampType>(72, 123), Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), 0.5);
         Serialiser<CollisionNotificationMessage> serialiser(p);
         serialiser.to_file(Resources::path("json/examples/notification/notification0.tmp.json"));
-        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"human\":{\"bodyId\":\"h0\",\"segmentId\":0},\"robot\":{\"bodyId\":\"r0\",\"segmentId\":3},\"currentTime\":32890,\"collisionDistance\":{\"lower\":72,\"upper\":123},\"collisionMode\":{\"destination\":\"2\",\"origin\":\"3\",\"phase\":\"pre\"},\"likelihood\":0.5}")
+        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"human\":{\"bodyId\":\"h0\",\"segmentId\":[\"nose\",\"neck\"]},\"robot\":{\"bodyId\":\"r0\",\"segmentId\":[\"0\",\"1\"]},\"currentTime\":32890,\"collisionDistance\":{\"lower\":72,\"upper\":123},\"collisionMode\":{\"destination\":\"2\",\"origin\":\"3\",\"phase\":\"pre\"},\"likelihood\":0.5}")
     }
 };
 

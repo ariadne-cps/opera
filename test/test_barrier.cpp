@@ -49,7 +49,7 @@ class TestBarrier {
     }
 
     void test_barrier_sequence_section_create() {
-        Human h("h0", {{0, 1},{3, 2}}, {1.0,1.0});
+        Human h("h0", {{"nose", "neck"},{"left_shoulder", "right_shoulder"}}, {1.0,1.0});
         auto hs = h.segment(1).create_sample({Point(0,0,0)},{Point(2,2,2)});
         auto section = SphereMinimumDistanceBarrierSequenceSectionFactory().create(hs);
         OPERA_TEST_PRINT(section)
@@ -66,7 +66,7 @@ class TestBarrier {
     }
 
     void test_barrier_sequence_section_add_remove() {
-        Human h("r0", {{0, 1}}, {1.0});
+        Human h("h0", {{"nose", "neck"}}, {1.0});
         auto hs = h.segment(0).create_sample({Point(0,0,0)},{Point(2,2,2)});
         PositiveFloatType distance = 0.5;
         auto section = SphereMinimumDistanceBarrierSequenceSection(hs);
@@ -90,8 +90,8 @@ class TestBarrier {
     }
 
     void test_barrier_sequence_section_populate() {
-        Robot r("r0", 10, {{0, 1}}, {1.0});
-        Human h("h0", {{0, 1}}, {1.0});
+        Robot r("r0", 10, {{"0", "1"}}, {1.0});
+        Human h("h0", {{"nose", "neck"}}, {1.0});
 
         auto hs = h.segment(0).create_sample({Point(1,3,0)},{Point(2,3,0)});
 
@@ -145,8 +145,8 @@ class TestBarrier {
     }
 
     void test_barrier_sequence_section_reuse_element() {
-        Robot r("r0", 10, {{0, 1}}, {1.0});
-        Human h("h0", {{0, 1}}, {1.0});
+        Robot r("r0", 10, {{"0", "1"}}, {1.0});
+        Human h("h0", {{"nose", "neck"}}, {1.0});
 
         auto hs1 = h.segment(0).create_sample({Point(4,5,0)},{Point(5,5,0)});
 
@@ -155,18 +155,20 @@ class TestBarrier {
         Mode third({r.id(), "third"});
         auto section = CapsuleMinimumDistanceBarrierSequenceSection(hs1);
         RobotStateHistory history(r);
-        history.acquire(first,{{Point(-3,7,0)},{Point(-2,7,0)}},0);
-        history.acquire(first,{{Point(-2,6,0)},{Point(-1,6,0)}},100);
-        history.acquire(first,{{Point(-1,5,0)},{Point(0,5,0)}},200);
-        history.acquire(first,{{Point(-2,6,0)},{Point(0,5,0)}},300);
-        history.acquire(first,{{Point(-1,5,0)},{Point(0,5,0)}},400);
-        history.acquire(first,{{Point(0,4,0)},{Point(1,4,0)}},500);
-        history.acquire(first,{{Point(0,4,0)},{Point(1,4,0)}},600);
-        history.acquire(first,{{Point(1,3,0)},{Point(2,3,0)}},700);
-        history.acquire(first,{{Point(1,3,0)},{Point(2,3,0)}},800);
-        history.acquire(second,{{Point(1,3,0)},{Point(2,3,0)}},900);
-        history.acquire(third,{{Point(2,3,0)},{Point(3,3,0)}},1000);
-        history.acquire(first,{{Point(-3,7,0)},{Point(-2,7,0)}},1100);
+
+        history.acquire(first,{{{"0",{Point(-3,7,0)}},{"1",{Point(-2,7,0)}}}},0);
+        history.acquire(first,{{{"0",{Point(-2,6,0)}},{"1",{Point(-1,6,0)}}}},100);
+        history.acquire(first,{{{"0",{Point(-1,5,0)}},{"1",{Point(0,5,0)}}}},200);
+        history.acquire(first,{{{"0",{Point(-2,6,0)}},{"1",{Point(0,5,0)}}}},300);
+        history.acquire(first,{{{"0",{Point(-1,5,0)}},{"1",{Point(0,5,0)}}}},400);
+        history.acquire(first,{{{"0",{Point(0,4,0)}},{"1",{Point(1,4,0)}}}},500);
+        history.acquire(first,{{{"0",{Point(0,4,0)}},{"1",{Point(1,4,0)}}}},600);
+        history.acquire(first,{{{"0",{Point(1,3,0)}},{"1",{Point(2,3,0)}}}},700);
+        history.acquire(first,{{{"0",{Point(1,3,0)}},{"1",{Point(2,3,0)}}}},800);
+        history.acquire(second,{{{"0",{Point(1,3,0)}},{"1",{Point(2,3,0)}}}},900);
+        history.acquire(third,{{{"0",{Point(2,3,0)}},{"1",{Point(3,3,0)}}}},1000);
+        history.acquire(first,{{{"0",{Point(-3,7,0)}},{"1",{Point(-2,7,0)}}}},1100);
+
         SizeType idx = 0;
         auto snapshot = history.snapshot_at(1100);
         for (auto const& s : snapshot.samples(first).at(0)) if (not section.check_and_update(s, {0, idx++})) break;
@@ -189,8 +191,8 @@ class TestBarrier {
     }
 
     void test_sphere_barrier_sequence_section_reset() {
-        Robot r("r0", 10, {{0, 1}}, {1.0});
-        Human h("h0", {{0, 1}}, {1.0});
+        Robot r("r0", 10, {{"0", "1"}}, {1.0});
+        Human h("h0", {{"nose", "neck"}}, {1.0});
 
         auto hs1 = h.segment(0).create_sample({Point(4,5,0)},{Point(5,5,0)});
 
@@ -200,19 +202,19 @@ class TestBarrier {
         Mode fourth({r.id(), "fourth"});
         auto section1 = SphereMinimumDistanceBarrierSequenceSection(hs1);
         RobotStateHistory history(r);
-        history.acquire(first,{{Point(-3,7,0)},{Point(-2,7,0)}},0);
-        history.acquire(first,{{Point(-2,6,0)},{Point(-1,6,0)}},100);
-        history.acquire(first,{{Point(-1,5,0)},{Point(0,5,0)}},200);
-        history.acquire(first,{{Point(-2,6,0)},{Point(0,5,0)}},300);
-        history.acquire(first,{{Point(-1,5,0)},{Point(0,5,0)}},400);
-        history.acquire(first,{{Point(0,4,0)},{Point(1,4,0)}},500);
-        history.acquire(first,{{Point(0,4,0)},{Point(1,4,0)}},600);
-        history.acquire(first,{{Point(1,3,0)},{Point(2,3,0)}},700);
-        history.acquire(first,{{Point(1,3,0)},{Point(2,3,0)}},800);
-        history.acquire(second,{{Point(1,3,0)},{Point(2,3,0)}},900);
-        history.acquire(third,{{Point(2,3,0)},{Point(3,3,0)}},1000);
-        history.acquire(fourth,{{Point(3,2,0)},{Point(4,2,0)}},1100);
-        history.acquire(first,{{Point(-3,7,0)},{Point(-2,7,0)}},1200);
+        history.acquire(first,{{{"0",{Point(-3,7,0)}},{"1",{Point(-2,7,0)}}}},0);
+        history.acquire(first,{{{"0",{Point(-2,6,0)}},{"1",{Point(-1,6,0)}}}},100);
+        history.acquire(first,{{{"0",{Point(-1,5,0)}},{"1",{Point(0,5,0)}}}},200);
+        history.acquire(first,{{{"0",{Point(-2,6,0)}},{"1",{Point(0,5,0)}}}},300);
+        history.acquire(first,{{{"0",{Point(-1,5,0)}},{"1",{Point(0,5,0)}}}},400);
+        history.acquire(first,{{{"0",{Point(0,4,0)}},{"1",{Point(1,4,0)}}}},500);
+        history.acquire(first,{{{"0",{Point(0,4,0)}},{"1",{Point(1,4,0)}}}},600);
+        history.acquire(first,{{{"0",{Point(1,3,0)}},{"1",{Point(2,3,0)}}}},700);
+        history.acquire(first,{{{"0",{Point(1,3,0)}},{"1",{Point(2,3,0)}}}},800);
+        history.acquire(second,{{{"0",{Point(1,3,0)}},{"1",{Point(2,3,0)}}}},900);
+        history.acquire(third,{{{"0",{Point(2,3,0)}},{"1",{Point(3,3,0)}}}},1000);
+        history.acquire(fourth,{{{"0",{Point(3,2,0)}},{"1",{Point(4,2,0)}}}},1100);
+        history.acquire(first,{{{"0",{Point(-3,7,0)}},{"1",{Point(-2,7,0)}}}},1200);
         SizeType idx = 0;
         auto snapshot = history.snapshot_at(1200);
         for (auto const& s : snapshot.samples(first).at(0)) if (not section1.check_and_update(s, {0, idx++})) break;
@@ -241,8 +243,8 @@ class TestBarrier {
     }
 
     void test_capsule_barrier_sequence_section_reset_without_modes() {
-        Robot r("r0", 10, {{0, 1}}, {0.5});
-        Human h("h0", {{0, 1}}, {0.5});
+        Robot r("r0", 10, {{"0", "1"}}, {0.5});
+        Human h("h0", {{"nose", "neck"}}, {0.5});
 
         auto hs = h.segment(0).create_sample({Point(0,0,0)},{Point(1,0,0)});
 
@@ -289,8 +291,8 @@ class TestBarrier {
     }
 
     void test_capsule_barrier_sequence_section_reset_with_modes() {
-        Robot r("r0", 10, {{0, 1}}, {1.0});
-        Human h("h0", {{0, 1}}, {1.0});
+        Robot r("r0", 10, {{"0", "1"}}, {1.0});
+        Human h("h0", {{"nose", "neck"}}, {1.0});
 
         auto hs1 = h.segment(0).create_sample({Point(4,5,0)},{Point(5,5,0)});
 
@@ -300,19 +302,19 @@ class TestBarrier {
         Mode fourth({r.id(), "fourth"});
         auto section1 = CapsuleMinimumDistanceBarrierSequenceSection(hs1);
         RobotStateHistory history(r);
-        history.acquire(first,{{Point(-3,7,0)},{Point(-2,7,0)}},0);
-        history.acquire(first,{{Point(-2,6,0)},{Point(-1,6,0)}},100);
-        history.acquire(first,{{Point(-1,5,0)},{Point(0,5,0)}},200);
-        history.acquire(first,{{Point(-2,6,0)},{Point(0,5,0)}},300);
-        history.acquire(first,{{Point(-1,5,0)},{Point(0,5,0)}},400);
-        history.acquire(first,{{Point(0,4,0)},{Point(1,4,0)}},500);
-        history.acquire(first,{{Point(0,4,0)},{Point(1,4,0)}},600);
-        history.acquire(first,{{Point(1,3,0)},{Point(2,3,0)}},700);
-        history.acquire(first,{{Point(1,3,0)},{Point(2,3,0)}},800);
-        history.acquire(second,{{Point(1,3,0)},{Point(2,3,0)}},900);
-        history.acquire(third,{{Point(2,3,0)},{Point(3,3,0)}},1000);
-        history.acquire(fourth,{{Point(3,2,0)},{Point(4,2,0)}},1100);
-        history.acquire(first,{{Point(-3,7,0)},{Point(-2,7,0)}},1200);
+        history.acquire(first,{{{"0",{Point(-3,7,0)}},{"1",{Point(-2,7,0)}}}},0);
+        history.acquire(first,{{{"0",{Point(-2,6,0)}},{"1",{Point(-1,6,0)}}}},100);
+        history.acquire(first,{{{"0",{Point(-1,5,0)}},{"1",{Point(0,5,0)}}}},200);
+        history.acquire(first,{{{"0",{Point(-2,6,0)}},{"1",{Point(0,5,0)}}}},300);
+        history.acquire(first,{{{"0",{Point(-1,5,0)}},{"1",{Point(0,5,0)}}}},400);
+        history.acquire(first,{{{"0",{Point(0,4,0)}},{"1",{Point(1,4,0)}}}},500);
+        history.acquire(first,{{{"0",{Point(0,4,0)}},{"1",{Point(1,4,0)}}}},600);
+        history.acquire(first,{{{"0",{Point(1,3,0)}},{"1",{Point(2,3,0)}}}},700);
+        history.acquire(first,{{{"0",{Point(1,3,0)}},{"1",{Point(2,3,0)}}}},800);
+        history.acquire(second,{{{"0",{Point(1,3,0)}},{"1",{Point(2,3,0)}}}},900);
+        history.acquire(third,{{{"0",{Point(2,3,0)}},{"1",{Point(3,3,0)}}}},1000);
+        history.acquire(fourth,{{{"0",{Point(3,2,0)}},{"1",{Point(4,2,0)}}}},1100);
+        history.acquire(first,{{{"0",{Point(-3,7,0)}},{"1",{Point(-2,7,0)}}}},1200);
         SizeType idx = 0;
         auto snapshot = history.snapshot_at(1200);
         for (auto const& s : snapshot.samples(first).at(0)) if (not section1.check_and_update(s, {0, idx++})) break;
@@ -350,7 +352,7 @@ class TestBarrier {
     }
 
     void test_barrier_sequence_section_reset_from_gtz() {
-        Human h("h0", {{0, 1}}, {1.0});
+        Human h("h0", {{"nose", "neck"}}, {1.0});
         auto original_sample = h.segment(0).create_sample({{9, 0, 0}},{{9,4,0}});
         CapsuleMinimumDistanceBarrierSequenceSection barrier_sequence_section(original_sample);
         barrier_sequence_section.add_barrier(7.5,{{3,0}});
@@ -360,8 +362,8 @@ class TestBarrier {
     }
 
     void test_capsule_barrier_sequence_single_section() {
-        Robot r("r0", 10, {{0, 1}}, {0.25});
-        Human h("h0", {{0, 1}}, {0.25});
+        Robot r("r0", 10, {{"0", "1"}}, {0.25});
+        Human h("h0", {{"nose", "neck"}}, {0.25});
 
         Mode first({r.id(), "first"});
         Mode second({r.id(), "second"});
@@ -369,19 +371,19 @@ class TestBarrier {
         Mode fourth({r.id(), "fourth"});
         auto sequence1 = MinimumDistanceBarrierSequence(CapsuleMinimumDistanceBarrierSequenceSectionFactory(),KeepOneMinimumDistanceBarrierSequenceUpdatePolicy());
         RobotStateHistory history(r);
-        history.acquire(first,{{Point(-3,0,0)},{Point(-2,0,0)}},0);
-        history.acquire(first,{{Point(-2,0,0)},{Point(-1,0,0)}},100);
-        history.acquire(first,{{Point(-1,0,0)},{Point(0,0,0)}},200);
-        history.acquire(first,{{Point(-2,0,0)},{Point(-1,0,0)}},300);
-        history.acquire(first,{{Point(-1,0,0)},{Point(0,0,0)}},400);
-        history.acquire(first,{{Point(0,0,0)},{Point(1,0,0)}},500);
-        history.acquire(first,{{Point(0,0,0)},{Point(1,0,0)}},600);
-        history.acquire(first,{{Point(1,0,0)},{Point(2,0,0)}},700);
-        history.acquire(first,{{Point(1,0,0)},{Point(2,0,0)}},800);
-        history.acquire(second,{{Point(1,0,0)},{Point(2,0,0)}},900);
-        history.acquire(third,{{Point(2,0,0)},{Point(3,0,0)}},1000);
-        history.acquire(fourth,{{Point(3,0,0)},{Point(4,0,0)}},1100);
-        history.acquire(first,{{Point(-3,0,0)},{Point(-2,0,0)}},1200);
+        history.acquire(first,{{{"0",{Point(-3,0,0)}},{"1",{Point(-2,0,0)}}}},0);
+        history.acquire(first,{{{"0",{Point(-2,0,0)}},{"1",{Point(-1,0,0)}}}},100);
+        history.acquire(first,{{{"0",{Point(-1,0,0)}},{"1",{Point(0,0,0)}}}},200);
+        history.acquire(first,{{{"0",{Point(-2,0,0)}},{"1",{Point(-1,0,0)}}}},300);
+        history.acquire(first,{{{"0",{Point(-1,0,0)}},{"1",{Point(0,0,0)}}}},400);
+        history.acquire(first,{{{"0",{Point(0,0,0)}},{"1",{Point(1,0,0)}}}},500);
+        history.acquire(first,{{{"0",{Point(0,0,0)}},{"1",{Point(1,0,0)}}}},600);
+        history.acquire(first,{{{"0",{Point(1,0,0)}},{"1",{Point(2,0,0)}}}},700);
+        history.acquire(first,{{{"0",{Point(1,0,0)}},{"1",{Point(2,0,0)}}}},800);
+        history.acquire(second,{{{"0",{Point(1,0,0)}},{"1",{Point(2,0,0)}}}},900);
+        history.acquire(third,{{{"0",{Point(2,0,0)}},{"1",{Point(3,0,0)}}}},1000);
+        history.acquire(fourth,{{{"0",{Point(3,0,0)}},{"1",{Point(4,0,0)}}}},1100);
+        history.acquire(first,{{{"0",{Point(-3,0,0)}},{"1",{Point(-2,0,0)}}}},1200);
 
         auto hs1 = h.segment(0).create_sample({Point(8,0,0)},{Point(9,0,0)});
         auto hs2 = h.segment(0).create_sample({Point(7,0,0)},{Point(8,0,0)});
@@ -441,8 +443,8 @@ class TestBarrier {
     }
 
     void test_capsule_barrier_sequence_multiple_sections() {
-        Robot r("r0", 10, {{0, 1}}, {0.25});
-        Human h("h0", {{0, 1}}, {0.25});
+        Robot r("r0", 10, {{"0", "1"}}, {0.25});
+        Human h("h0", {{"nose", "neck"}}, {0.25});
 
         Mode first({r.id(), "first"});
         Mode second({r.id(), "second"});
@@ -450,19 +452,19 @@ class TestBarrier {
         Mode fourth({r.id(), "fourth"});
         auto sequence1 = MinimumDistanceBarrierSequence(CapsuleMinimumDistanceBarrierSequenceSectionFactory(),AddWhenNecessaryMinimumDistanceBarrierSequenceUpdatePolicy());
         RobotStateHistory history(r);
-        history.acquire(first,{{Point(-3,0,0)},{Point(-2,0,0)}},0);
-        history.acquire(first,{{Point(-2,0,0)},{Point(-1,0,0)}},100);
-        history.acquire(first,{{Point(-1,0,0)},{Point(0,0,0)}},200);
-        history.acquire(first,{{Point(-2,0,0)},{Point(-1,0,0)}},300);
-        history.acquire(first,{{Point(-1,0,0)},{Point(0,0,0)}},400);
-        history.acquire(first,{{Point(0,0,0)},{Point(1,0,0)}},500);
-        history.acquire(first,{{Point(0,0,0)},{Point(1,0,0)}},600);
-        history.acquire(first,{{Point(1,0,0)},{Point(2,0,0)}},700);
-        history.acquire(first,{{Point(1,0,0)},{Point(2,0,0)}},800);
-        history.acquire(second,{{Point(1,0,0)},{Point(2,0,0)}},900);
-        history.acquire(third,{{Point(2,0,0)},{Point(3,0,0)}},1000);
-        history.acquire(fourth,{{Point(3,0,0)},{Point(4,0,0)}},1100);
-        history.acquire(first,{{Point(-3,0,0)},{Point(-2,0,0)}},1200);
+        history.acquire(first,{{{"0",{Point(-3,0,0)}},{"1",{Point(-2,0,0)}}}},0);
+        history.acquire(first,{{{"0",{Point(-2,0,0)}},{"1",{Point(-1,0,0)}}}},100);
+        history.acquire(first,{{{"0",{Point(-1,0,0)}},{"1",{Point(0,0,0)}}}},200);
+        history.acquire(first,{{{"0",{Point(-2,0,0)}},{"1",{Point(-1,0,0)}}}},300);
+        history.acquire(first,{{{"0",{Point(-1,0,0)}},{"1",{Point(0,0,0)}}}},400);
+        history.acquire(first,{{{"0",{Point(0,0,0)}},{"1",{Point(1,0,0)}}}},500);
+        history.acquire(first,{{{"0",{Point(0,0,0)}},{"1",{Point(1,0,0)}}}},600);
+        history.acquire(first,{{{"0",{Point(1,0,0)}},{"1",{Point(2,0,0)}}}},700);
+        history.acquire(first,{{{"0",{Point(1,0,0)}},{"1",{Point(2,0,0)}}}},800);
+        history.acquire(second,{{{"0",{Point(1,0,0)}},{"1",{Point(2,0,0)}}}},900);
+        history.acquire(third,{{{"0",{Point(2,0,0)}},{"1",{Point(3,0,0)}}}},1000);
+        history.acquire(fourth,{{{"0",{Point(3,0,0)}},{"1",{Point(4,0,0)}}}},1100);
+        history.acquire(first,{{{"0",{Point(-3,0,0)}},{"1",{Point(-2,0,0)}}}},1200);
 
         auto hs1 = h.segment(0).create_sample({Point(3,0,0)},{Point(4,0,0)});
         auto hs2 = h.segment(0).create_sample({Point(4,0,0)},{Point(5,0,0)});

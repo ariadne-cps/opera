@@ -47,7 +47,7 @@ class TestRuntimeIO {
         BrokerAccess access = MemoryBrokerAccess();
         RuntimeSender sender({access,CollisionNotificationTopic::DEFAULT});
         Mode mode({"phase","running"});
-        CollisionNotificationMessage msg("h0", 0, "r0", 3, 32890592300, Interval<TimestampType>(72, 123), mode, 0.5);
+        CollisionNotificationMessage msg("h0", {"nose","neck"}, "r0", {"0","1"}, 32890592300, Interval<TimestampType>(72, 123), mode, 0.5);
         sender.put(msg);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         OPERA_TEST_EQUALS(MemoryBroker::instance().size<CollisionNotificationMessage>(),1)
@@ -62,8 +62,8 @@ class TestRuntimeIO {
         RuntimeReceiver receiver({access,BodyPresentationTopic::DEFAULT},{access,HumanStateTopic::DEFAULT},{access,RobotStateTopic::DEFAULT},
                                  job_factory, registry, waiting_jobs, sleeping_jobs);
         String id = "h0";
-        BodyPresentationMessage hp(id,{{0,1},{1,2}},{1.0,0.5});
-        HumanStateMessage hs({{id,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}}}},300);
+        BodyPresentationMessage hp(id,{{"nose","neck"},{"neck","mid_hip"}},{1.0,0.5});
+        HumanStateMessage hs({{id,{{{"nose",{Point(0,0,0)}},{"neck",{Point(0,2,0)}},{"mid_hip",{Point(0,4,0)}}}}}},300);
         auto bp_publisher = access.make_body_presentation_publisher();
         auto hs_publisher = access.make_human_state_publisher();
         hs_publisher->put(hs);
@@ -90,7 +90,7 @@ class TestRuntimeIO {
                                  job_factory, registry, waiting_jobs, sleeping_jobs);
         String id = "r0";
         Mode mode({"phase", "waiting"});
-        BodyPresentationMessage rp(id,10,{{0,1},{1,2}},{1.0,0.5});
+        BodyPresentationMessage rp(id,10,{{"0","1"},{"1","2"}},{1.0,0.5});
         RobotStateMessage rs(id,mode,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}},300);
         auto bp_publisher = access.make_body_presentation_publisher();
         auto rs_publisher = access.make_robot_state_publisher();
@@ -119,10 +119,10 @@ class TestRuntimeIO {
         String rid = "r0";
         String hid = "h0";
         Mode waiting({"phase", "waiting"}), running({"phase","running"});
-        BodyPresentationMessage rp(rid,10,{{0,1},{1,2}},{1.0,0.5});
+        BodyPresentationMessage rp(rid,10,{{"0","1"},{"1","2"}},{1.0,0.5});
         RobotStateMessage rs(rid, waiting, {{Point(0, 0, 0)}, {Point(0, 2, 0)}, {Point(0, 4, 0)}}, 3000);
-        BodyPresentationMessage hp(hid,{{0,1},{1,2}},{1.0,0.5});
-        HumanStateMessage hs({{hid,{{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}}}},3200);
+        BodyPresentationMessage hp(hid,{{"nose","neck"},{"neck","mid_hip"}},{1.0,0.5});
+        HumanStateMessage hs({{hid,{{{"nose",{Point(0,0,0)}},{"neck",{Point(0,2,0)}},{"mid_hip",{Point(0,4,0)}}}}}},3200);
         auto bp_publisher = access.make_body_presentation_publisher();
         auto hs_publisher = access.make_human_state_publisher();
         auto rs_publisher = access.make_robot_state_publisher();

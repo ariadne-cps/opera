@@ -1,11 +1,11 @@
 {
   "human": {
     "bodyId" : "h0",
-    "segmentId" : 0
+    "segmentId" : ["nose","neck"]
   },
   "robot": {
     "bodyId" : "r0",
-    "segmentId" : 3
+    "segmentId" : ["5","6"]
   },
   "currentTime" : 32890,
   "collisionDistance" : {

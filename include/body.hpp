@@ -35,20 +35,25 @@
 
 namespace Opera {
 
-using IdType = unsigned int;
+using SegmentIndexType = unsigned int;
+using KeypointIdType = std::string;
 using BodyIdType = std::string;
 
 class BodySegment;
 
+//! \brief A generic body having segments
 class Body {
   protected:
     //! \brief Construct from fields
-    Body(BodyIdType const& id, List<Pair<IdType,IdType>> const& points_ids, List<FloatType> const& thicknesses);
+    Body(BodyIdType const& id, List<Pair<KeypointIdType,KeypointIdType>> const& points_ids, List<FloatType> const& thicknesses);
     //! \brief Copy constructor
     Body(Body const& other);
   public:
     //! \brief The body identifier
     BodyIdType const& id() const;
+
+    //! \brief The identifiers for each keypoint, with defined order
+    List<KeypointIdType> const& keypoint_ids() const;
 
     //! \brief Return the segment indexed by \a idx
     BodySegment const& segment(SizeType const& idx) const;
@@ -65,7 +70,7 @@ class Body {
 
   private:
     BodyIdType const _id;
-    SizeType _num_points;
+    List<KeypointIdType> _keypoint_ids;
   protected:
     List<BodySegment> _segments;
 };
@@ -74,14 +79,14 @@ class Body {
 class Human : public Body {
   public:
     //! \brief Construct from fields
-    Human(BodyIdType const& id, List<Pair<IdType,IdType>> const& points_ids, List<FloatType> const& thicknesses);
+    Human(BodyIdType const& id, List<Pair<KeypointIdType,KeypointIdType>> const& points_ids, List<FloatType> const& thicknesses);
 };
 
 //! \brief A robot is a body able to have its history
 class Robot : public Body {
   public:
     //! \brief Construct from fields
-    Robot(BodyIdType const& id, SizeType const& message_frequency, List<Pair<IdType,IdType>> const& points_ids, List<FloatType> const& thicknesses);
+    Robot(BodyIdType const& id, SizeType const& message_frequency, List<Pair<KeypointIdType,KeypointIdType>> const& points_ids, List<FloatType> const& thicknesses);
     //! \brief The frequency of messages sent by the robot, in Hz
     SizeType const& message_frequency() const;
   private:
@@ -93,17 +98,17 @@ class BodySegmentSample;
 class BodySegment {
     friend class Body;
   public:
-    //! \brief Construct from identifier, head_centre/tail_centre identifiers and thickness
-    BodySegment(Body const* body, IdType const& id, IdType const& head_id, IdType const& tail_id, FloatType const& thickness);
+    //! \brief Construct from body and its index in it, head_centre/tail_centre identifiers and thickness
+    BodySegment(Body const* body, SegmentIndexType const& index, KeypointIdType const& head_id, KeypointIdType const& tail_id, FloatType const& thickness);
   public:
-    //! \brief Identifier for the segment within the specific body
-    IdType const& id() const;
+    //! \brief Index for the segment within the specific body
+    SegmentIndexType const& index() const;
 
     //! \brief Identifier for the head
-    IdType const& head_id() const;
+    KeypointIdType const& head_id() const;
 
     //! \brief Identifier for the tail
-    IdType const& tail_id() const;
+    KeypointIdType const& tail_id() const;
 
     //! \brief Return the thickness of the body segment around the geometrical segment
     FloatType const& thickness() const;
@@ -118,9 +123,9 @@ class BodySegment {
     friend std::ostream& operator<<(std::ostream& os, BodySegment const& s);
 
   private:
-    IdType const _id;
-    IdType const _head_id;
-    IdType const _tail_id;
+    SegmentIndexType const _index;
+    KeypointIdType const _head_id;
+    KeypointIdType const _tail_id;
     FloatType const _thickness;
     Body const* _body;
 };
@@ -128,7 +133,7 @@ class BodySegment {
 class BodySegmentSampleInterface {
   public:
     //! \brief Return the identifier of the segment
-    virtual IdType const& segment_id() const = 0;
+    virtual SegmentIndexType const& segment_index() const = 0;
 
     //! \brief Return the centre point for the head of the segment
     virtual Point const& head_centre() const = 0;
@@ -176,7 +181,7 @@ class BodySegmentSample: public BodySegmentSampleInterface {
     //! \brief Create empty
     BodySegmentSample(BodySegment const* segment);
 
-    IdType const& segment_id() const override;
+    SegmentIndexType const& segment_index() const override;
 
     Point const& head_centre() const override;
     Point const& tail_centre() const override;

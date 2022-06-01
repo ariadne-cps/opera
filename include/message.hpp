@@ -37,15 +37,16 @@
 namespace Opera {
 
 using IdType = unsigned int;
+using KeypointIdType = std::string;
 using BodyIdType = std::string;
 
 //! \brief A representation of an inbound message for the presentation of a body
 class BodyPresentationMessage {
   public:
     //! \brief Construct for a human
-    BodyPresentationMessage(BodyIdType const& id, List<Pair<IdType,IdType>> const& point_ids, List<FloatType> const& thicknesses);
+    BodyPresentationMessage(BodyIdType const& id, List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs, List<FloatType> const& thicknesses);
     //! \brief Construct for a robot
-    BodyPresentationMessage(BodyIdType const& id, SizeType const& message_frequency, List<Pair<IdType,IdType>> const& point_ids, List<FloatType> const& thicknesses);
+    BodyPresentationMessage(BodyIdType const& id, SizeType const& message_frequency, List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs, List<FloatType> const& thicknesses);
     //! \brief The id of the related body
     BodyIdType const& id() const;
     //! \brief Whether this is a human
@@ -53,29 +54,29 @@ class BodyPresentationMessage {
     //! \brief The message sending frequency in Hz
     //! \details We use 0 when not known (i.e., for a human)
     SizeType const& message_frequency() const;
-    //! \brief The points for each segment
-    List<Pair<IdType,IdType>> const& point_ids() const;
+    //! \brief The keypoints for each segment
+    List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs() const;
     //! \brief The thicknesses for each segment
     List<FloatType> const& thicknesses() const;
   private:
     BodyIdType const _id;
     bool const _is_human;
     SizeType const _message_frequency;
-    List<Pair<IdType,IdType>> const _point_ids;
+    List<Pair<KeypointIdType,KeypointIdType>> const _segment_pairs;
     List<FloatType> const _thicknesses;
 };
 
 //! \brief A representation of an inbound message for the state of a human
 class HumanStateMessage {
   public:
-    //! \brief Construct without a mode
-    HumanStateMessage(List<Pair<BodyIdType,List<List<Point>>>> const& bodies, TimestampType const& timestamp);
+    //! \brief Construct from fields
+    HumanStateMessage(List<Pair<BodyIdType,Map<KeypointIdType,List<Point>>>> const& bodies, TimestampType const& timestamp);
     //! \brief The bodies
-    List<Pair<BodyIdType,List<List<Point>>>> const& bodies() const;
+    List<Pair<BodyIdType,Map<KeypointIdType,List<Point>>>> const& bodies() const;
     //! \brief The timestamp associated with the message
     TimestampType const& timestamp() const;
   private:
-    List<Pair<BodyIdType,List<List<Point>>>> const _bodies;
+    List<Pair<BodyIdType,Map<KeypointIdType,List<Point>>>> const _bodies;
     TimestampType const _timestamp;
 };
 
@@ -103,17 +104,17 @@ class RobotStateMessage {
 class CollisionNotificationMessage {
   public:
     //! \brief Construct from fields
-    CollisionNotificationMessage(BodyIdType const& human_id, IdType const& human_segment_id, BodyIdType const& robot_id, IdType const& robot_segment_id,
+    CollisionNotificationMessage(BodyIdType const& human_id, Pair<KeypointIdType,KeypointIdType> const& human_segment_id, BodyIdType const& robot_id, Pair<KeypointIdType,KeypointIdType> const& robot_segment_id,
                                  TimestampType const& current_time, Interval<TimestampType> const& collision_distance, Mode const& collision_mode, PositiveFloatType const& likelihood);
 
     //! \brief The identifier of the human
     BodyIdType const& human_id() const;
     //! \brief The identifier of the segment for the human
-    IdType const& human_segment_id() const;
+    Pair<KeypointIdType,KeypointIdType> const& human_segment_id() const;
     //! \brief The identifier of the robot
     BodyIdType const& robot_id() const;
     //! \brief The identifier of the segment for the robot
-    IdType const& robot_segment_id() const;
+    Pair<KeypointIdType,KeypointIdType> const& robot_segment_id() const;
     //! \brief The current time according to the message
     TimestampType const& current_time() const;
     //! \brief The collision segment_distance (in ns)
@@ -125,9 +126,9 @@ class CollisionNotificationMessage {
 
   private:
     BodyIdType const _human_id;
-    IdType const _human_segment_id;
+    Pair<KeypointIdType,KeypointIdType> const _human_segment_id;
     BodyIdType const _robot_id;
-    IdType const _robot_segment_id;
+    Pair<KeypointIdType,KeypointIdType> const _robot_segment_id;
     TimestampType const _current_time;
     Interval<TimestampType> const _collision_distance;
     Mode const _collision_mode;

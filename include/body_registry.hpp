@@ -38,7 +38,7 @@ namespace Opera {
 class HumanRegistryEntry {
   public:
     //! \brief Construct from human fields
-    HumanRegistryEntry(BodyIdType const& id, List<Pair<IdType,IdType>> const& points_ids, List<FloatType> const& thicknesses);
+    HumanRegistryEntry(BodyIdType const& id, List<Pair<KeypointIdType,KeypointIdType>> const& points_ids, List<FloatType> const& thicknesses);
 
     //! \brief Return the body
     Human const& body() const;
@@ -58,7 +58,7 @@ class HumanRegistryEntry {
     HumanStateInstance const& at(SizeType const& idx) const;
 
     //! \brief Add a new instance from \a points and \a timestamp
-    void add(List<List<Point>> const& points, TimestampType const& timestamp);
+    void add(Map<KeypointIdType,List<Point>> const& points, TimestampType const& timestamp);
   private:
     Human const _body;
     HumanStateHistory _history;
@@ -68,7 +68,7 @@ class HumanRegistryEntry {
 struct RobotRegistryEntry {
   public:
     //! \brief Construct from robot fields
-    RobotRegistryEntry(BodyIdType const& id, SizeType const& message_frequency, List<Pair<IdType,IdType>> const& points_ids, List<FloatType> const& thicknesses);
+    RobotRegistryEntry(BodyIdType const& id, SizeType const& message_frequency, List<Pair<KeypointIdType,KeypointIdType>> const& points_ids, List<FloatType> const& thicknesses);
 
     //! \brief Return the body
     Robot const& body() const;
@@ -142,7 +142,7 @@ class BodyRegistry {
 
   private:
 
-    void _add_human_instance(BodyIdType const& id, List<List<Point>> const& points, TimestampType const& timestamp);
+    void _add_human_instance(BodyIdType const& id, Map<KeypointIdType,List<Point>> const& points, TimestampType const& timestamp);
 
   private:
     Map<BodyIdType,SharedPointer<RobotRegistryEntry>> _robots;

@@ -41,10 +41,10 @@ public:
     void test_clear() {
         MemoryBroker::instance().clear();
         MemoryBrokerAccess access;
-        HumanStateMessage hs({{"h0",{{Point(0,0,0)},{Point(0,2,0)}}}},300);
+        HumanStateMessage hs({{"h0",{{{"head",{Point(0,0,0)}},{"neck",{Point(0,2,0)}}}}}},300);
         RobotStateMessage rs("robot0", Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), {{}, {Point(0, -1, 0.1), Point(0.3, 3.1, -1.2)}, {}}, 93249);
-        BodyPresentationMessage bp("human1", {{0, 1},{3, 2}}, {1.0,0.5});
-        CollisionNotificationMessage cn("h0", 0, "r0", 3, 32890, Interval<TimestampType>(72, 123), Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), 0.5);
+        BodyPresentationMessage bp("human1", {{"nose", "neck"},{"left_shoulder", "right_shoulder"}}, {1.0,0.5});
+        CollisionNotificationMessage cn("h0", {"nose","neck"}, "r0", {"0","1"}, 32890, Interval<TimestampType>(72, 123), Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), 0.5);
 
         auto bp_publisher = access.make_body_presentation_publisher();
         auto hs_publisher = access.make_human_state_publisher();

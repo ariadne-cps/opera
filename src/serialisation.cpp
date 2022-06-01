@@ -46,18 +46,18 @@ Document Serialiser<BodyPresentationMessage>::to_document() const {
     if (not obj.is_human()) document.AddMember("messageFrequency",Value().SetUint64(obj.message_frequency()),allocator);
 
     Value thicknesses;
-    Value point_ids;
+    Value segment_pairs;
     thicknesses.SetArray();
-    point_ids.SetArray();
-    for (SizeType i=0; i<obj.point_ids().size(); ++i) {
+    segment_pairs.SetArray();
+    for (SizeType i=0; i<obj.segment_pairs().size(); ++i) {
         thicknesses.PushBack(Value().SetDouble(obj.thicknesses()[i]),allocator);
-        Value points;
-        points.SetArray();
-        points.PushBack(Value().SetUint(obj.point_ids()[i].first),allocator);
-        points.PushBack(Value().SetUint(obj.point_ids()[i].second),allocator);
-        point_ids.PushBack(points,allocator);
+        Value pair;
+        pair.SetArray();
+        pair.PushBack(Value().SetString(obj.segment_pairs()[i].first.c_str(),static_cast<rapidjson::SizeType>(obj.segment_pairs()[i].first.length())),allocator);
+        pair.PushBack(Value().SetString(obj.segment_pairs()[i].second.c_str(),static_cast<rapidjson::SizeType>(obj.segment_pairs()[i].second.length())),allocator);
+        segment_pairs.PushBack(pair,allocator);
     }
-    document.AddMember("pointIds",point_ids,allocator);
+    document.AddMember("segmentPairs",segment_pairs,allocator);
     document.AddMember("thicknesses",thicknesses,allocator);
 
     return document;
@@ -79,12 +79,12 @@ Document Serialiser<HumanStateMessage>::to_document() const {
         id.SetString(bd.first.c_str(),static_cast<rapidjson::SizeType>(bd.first.length()));
         entry.AddMember("bodyId",id,allocator);
 
-        Value continuous_state;
-        continuous_state.SetArray();
-        for (auto const& samples : bd.second) {
+        Value keypoints;
+        keypoints.SetObject();
+        for (auto const& keypoint_samples : bd.second) {
             Value samples_array;
             samples_array.SetArray();
-            for (auto const& point : samples) {
+            for (auto const& point : keypoint_samples.second) {
                 Value coordinates;
                 coordinates.SetArray();
                 coordinates.PushBack(Value().SetDouble(point.x),allocator)
@@ -92,9 +92,9 @@ Document Serialiser<HumanStateMessage>::to_document() const {
                         .PushBack(Value().SetDouble(point.z),allocator);
                 samples_array.PushBack(coordinates,allocator);
             }
-            continuous_state.PushBack(samples_array,allocator);
+            keypoints.AddMember(Value().SetString(keypoint_samples.first.c_str(),static_cast<rapidjson::SizeType>(keypoint_samples.first.length()),allocator),samples_array,allocator);
         }
-        entry.AddMember("continuousState",continuous_state,allocator);
+        entry.AddMember("keypoints",keypoints,allocator);
         bodies.PushBack(entry, allocator);
     }
 
@@ -152,13 +152,21 @@ Document Serialiser<CollisionNotificationMessage>::to_document() const {
     Value human;
     human.SetObject();
     human.AddMember("bodyId",Value().SetString(obj.human_id().c_str(),static_cast<rapidjson::SizeType>(obj.human_id().length()),allocator),allocator);
-    human.AddMember("segmentId",Value().SetUint(obj.human_segment_id()),allocator);
+    Value human_segment_id;
+    human_segment_id.SetArray();
+    human_segment_id.PushBack(Value().SetString(obj.human_segment_id().first.c_str(),static_cast<rapidjson::SizeType>(obj.human_segment_id().first.length()),allocator),allocator);
+    human_segment_id.PushBack(Value().SetString(obj.human_segment_id().second.c_str(),static_cast<rapidjson::SizeType>(obj.human_segment_id().second.length()),allocator),allocator);
+    human.AddMember("segmentId",human_segment_id,allocator);
     document.AddMember("human",human,allocator);
 
     Value robot;
     robot.SetObject();
     robot.AddMember("bodyId",Value().SetString(obj.robot_id().c_str(),static_cast<rapidjson::SizeType>(obj.robot_id().length()),allocator),allocator);
-    robot.AddMember("segmentId",Value().SetUint(obj.robot_segment_id()),allocator);
+    Value robot_segment_id;
+    robot_segment_id.SetArray();
+    robot_segment_id.PushBack(Value().SetString(obj.robot_segment_id().first.c_str(),static_cast<rapidjson::SizeType>(obj.robot_segment_id().first.length()),allocator),allocator);
+    robot_segment_id.PushBack(Value().SetString(obj.robot_segment_id().second.c_str(),static_cast<rapidjson::SizeType>(obj.robot_segment_id().second.length()),allocator),allocator);
+    robot.AddMember("segmentId",robot_segment_id,allocator);
     document.AddMember("robot",robot,allocator);
 
     document.AddMember("currentTime", Value().SetUint64(obj.current_time()), allocator);

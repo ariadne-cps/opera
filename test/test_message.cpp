@@ -43,24 +43,24 @@ public:
     }
 
     void test_human_presentation_message_create() {
-        BodyPresentationMessage p("h0",{{0,1},{1,2}},{1.0,0.5});
+        BodyPresentationMessage p("h0",{{"nose","neck"},{"neck","torso"}},{1.0,0.5});
         OPERA_TEST_EQUALS(p.id(),"h0")
         OPERA_TEST_ASSERT(p.is_human())
-        OPERA_TEST_EQUALS(p.point_ids().size(),2)
+        OPERA_TEST_EQUALS(p.segment_pairs().size(),2)
         OPERA_TEST_EQUALS(p.thicknesses().size(),2)
     }
 
     void test_robot_presentation_message_create() {
-        BodyPresentationMessage p("r0",10,{{0,1},{1,2}},{1.0,0.5});
+        BodyPresentationMessage p("r0",10,{{"0","1"},{"1","2"}},{1.0,0.5});
         OPERA_TEST_EQUALS(p.id(),"r0")
         OPERA_TEST_ASSERT(not p.is_human())
         OPERA_TEST_EQUALS(p.message_frequency(),10)
-        OPERA_TEST_EQUALS(p.point_ids().size(),2)
+        OPERA_TEST_EQUALS(p.segment_pairs().size(),2)
         OPERA_TEST_EQUALS(p.thicknesses().size(),2)
     }
 
     void test_human_state_message_create() {
-        HumanStateMessage p({{"h0",{{Point(0,0,0)},{Point(0,2,0)}}}},300);
+        HumanStateMessage p({{"h0",{{{"nose",{Point(0,0,0)}},{"neck",{Point(0,2,0)}}}}}},300);
         OPERA_TEST_EQUALS(p.bodies().size(),1)
         OPERA_TEST_EQUALS(p.timestamp(),300)
         auto const& bd = p.bodies().at(0);
@@ -79,12 +79,14 @@ public:
 
     void test_notification_message_create() {
         Mode loc({"r0", "first"});
-        CollisionNotificationMessage p("h0",1,"r0",4,200,Interval<TimestampType>(1000,2000),loc,1.0);
+        CollisionNotificationMessage p("h0",{"left_wrist","left_elbow"},"r0",{"nose","neck"},200,Interval<TimestampType>(1000,2000),loc,1.0);
 
         OPERA_TEST_EQUALS(p.human_id(),"h0")
-        OPERA_TEST_EQUALS(p.human_segment_id(),1)
+        OPERA_TEST_EQUALS(p.human_segment_id().first,"left_wrist")
+        OPERA_TEST_EQUALS(p.human_segment_id().second,"left_elbow")
         OPERA_TEST_EQUALS(p.robot_id(),"r0")
-        OPERA_TEST_EQUALS(p.robot_segment_id(),4)
+        OPERA_TEST_EQUALS(p.robot_segment_id().first,"nose")
+        OPERA_TEST_EQUALS(p.robot_segment_id().second,"neck")
         OPERA_TEST_EQUALS(p.current_time(),200)
         OPERA_TEST_EQUALS(p.collision_distance().lower(), 1000)
         OPERA_TEST_EQUALS(p.collision_distance().upper(), 2000)

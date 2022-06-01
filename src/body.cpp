@@ -33,24 +33,32 @@
 
 namespace Opera {
 
-Body::Body(BodyIdType const& id, List<Pair<IdType,IdType>> const& points_ids, List<FloatType> const& thicknesses) :
+Body::Body(BodyIdType const& id, List<Pair<KeypointIdType,KeypointIdType>> const& points_ids, List<FloatType> const& thicknesses) :
     _id(id) {
     OPERA_ASSERT_MSG(points_ids.size() == thicknesses.size(), "The number of point pairs must equal the number of thicknesses")
 
-    _num_points = 0;
-    for (List<IdType>::size_type i=0; i<thicknesses.size(); ++i) {
-        _num_points = std::max(std::max(_num_points,static_cast<SizeType>(points_ids.at(i).first+1)),static_cast<SizeType>(points_ids.at(i).second+1));
-        _segments.push_back({this,static_cast<IdType>(i),points_ids.at(i).first,points_ids.at(i).second,thicknesses.at(i)});
+    Set<KeypointIdType> keypoints;
+
+    for (List<SegmentIndexType>::size_type i=0; i<thicknesses.size(); ++i) {
+        KeypointIdType const& first = points_ids.at(i).first;
+        KeypointIdType const& second = points_ids.at(i).second;
+        if (not keypoints.contains(first)) { keypoints.insert(first); _keypoint_ids.push_back(first); }
+        if (not keypoints.contains(second)) { keypoints.insert(second); _keypoint_ids.push_back(second); }
+        _segments.push_back({this,static_cast<SegmentIndexType>(i),first,second,thicknesses.at(i)});
     }
 }
 
-Body::Body(Body const& other) : _id(other._id), _num_points(other._num_points) {
+Body::Body(Body const& other) : _id(other._id), _keypoint_ids(other._keypoint_ids) {
     for (auto s : other._segments)
-        _segments.push_back({this,s.id(),s.head_id(),s.tail_id(),s.thickness()});
+        _segments.push_back({this, s.index(), s.head_id(), s.tail_id(), s.thickness()});
 }
 
 BodyIdType const& Body::id() const {
     return _id;
+}
+
+List<KeypointIdType> const& Body::keypoint_ids() const {
+    return _keypoint_ids;
 }
 
 BodySegment const& Body::segment(SizeType const& idx) const {
@@ -62,7 +70,7 @@ SizeType Body::num_segments() const {
 }
 
 SizeType Body::num_points() const {
-    return _num_points;
+    return _keypoint_ids.size();
 }
 
 std::ostream& operator<<(std::ostream& os, Body const& b) {
@@ -74,10 +82,10 @@ std::ostream& operator<<(std::ostream& os, Body const& b) {
     return os;
 }
 
-Human::Human(BodyIdType const& id, List<Pair<IdType,IdType>> const& points_ids, List<FloatType> const& thicknesses) :
+Human::Human(BodyIdType const& id, List<Pair<KeypointIdType,KeypointIdType>> const& points_ids, List<FloatType> const& thicknesses) :
     Body(id,points_ids,thicknesses) { }
 
-Robot::Robot(BodyIdType const& id, SizeType const& message_frequency, List<Pair<IdType,IdType>> const& points_ids, List<FloatType> const& thicknesses) :
+Robot::Robot(BodyIdType const& id, SizeType const& message_frequency, List<Pair<KeypointIdType,KeypointIdType>> const& points_ids, List<FloatType> const& thicknesses) :
     Body(id,points_ids,thicknesses), _message_frequency(message_frequency) {
     OPERA_ASSERT_MSG(message_frequency > 0, "The message frequency must be strictly positive")
 }
@@ -86,18 +94,18 @@ SizeType const& Robot::message_frequency() const {
     return _message_frequency;
 }
 
-BodySegment::BodySegment(Body const* body, IdType const& id, IdType const& head_id, IdType const& tail_id, FloatType const& thickness) :
-    _id(id), _head_id(head_id), _tail_id(tail_id), _thickness(thickness), _body(body) { }
+BodySegment::BodySegment(Body const* body, SegmentIndexType const& id, KeypointIdType const& head_id, KeypointIdType const& tail_id, FloatType const& thickness) :
+        _index(id), _head_id(head_id), _tail_id(tail_id), _thickness(thickness), _body(body) { }
 
-IdType const& BodySegment::id() const {
-    return _id;
+SegmentIndexType const& BodySegment::index() const {
+    return _index;
 }
 
-IdType const& BodySegment::head_id() const {
+KeypointIdType const& BodySegment::head_id() const {
     return _head_id;
 }
 
-IdType const& BodySegment::tail_id() const {
+KeypointIdType const& BodySegment::tail_id() const {
     return _tail_id;
 }
 
@@ -116,7 +124,7 @@ BodySegmentSample BodySegment::create_sample(List<Point> const& begin, List<Poin
 }
 
 std::ostream& operator<<(std::ostream& os, BodySegment const& s) {
-    return os << "(body_id=" << s._body->id() << ", id=" << s._id << ", head_id=" << s._head_id << ", tail_id=" << s._tail_id << ", thickness=" << s._thickness << ")";
+    return os << "(body_id=" << s._body->id() << ", index=" << s._index << ", head_id=" << s._head_id << ", tail_id=" << s._tail_id << ", thickness=" << s._thickness << ")";
 }
 
 BodySegmentSample::BodySegmentSample(BodySegment const* segment) :
@@ -130,8 +138,8 @@ BodySegmentSample::BodySegmentSample(BodySegment const* segment) :
         _bs(nullptr)
         { }
 
-IdType const& BodySegmentSample::segment_id() const {
-    return _segment->id();
+SegmentIndexType const& BodySegmentSample::segment_index() const {
+    return _segment->index();
 }
 
 Point const& BodySegmentSample::head_centre() const {
@@ -216,7 +224,7 @@ std::ostream& operator<<(std::ostream& os, BodySegmentSampleInterface const& s) 
 }
 
 bool operator!=(BodySegmentSample const& first, BodySegmentSample const& second) {
-    if (first.segment_id() != second.segment_id()) return true;
+    if (first.segment_index() != second.segment_index()) return true;
     if (first.error() != second.error()) return true;
     if (first.thickness() != second.thickness()) return true;
     if (first.head_centre().is_undefined() or second.head_centre().is_undefined()) {

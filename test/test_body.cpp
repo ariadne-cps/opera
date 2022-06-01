@@ -45,14 +45,15 @@ public:
     }
 
     void test_body_creation() {
-        Human h("h0", {{3,2},{1,0}}, {0.5,1.0});
+        Human h("h0", {{"head","neck"},{"left_arm","left_shoulder"}}, {0.5,1.0});
 
         OPERA_TEST_PRINT(h)
         OPERA_TEST_EQUALS(h.id(),"h0")
         OPERA_TEST_EQUALS(h.num_segments(),2)
         OPERA_TEST_EQUALS(h.num_points(),4)
+        OPERA_TEST_EQUALS(h.keypoint_ids(),List<KeypointIdType>({"head","neck","left_arm","left_shoulder"}))
 
-        Robot r("r0", 10, {{0,1}}, {0.5});
+        Robot r("r0", 10, {{"0","1"}}, {0.5});
         OPERA_TEST_PRINT(r)
         OPERA_TEST_EQUALS(r.id(),"r0")
         OPERA_TEST_EQUALS(r.num_segments(),1)
@@ -62,12 +63,12 @@ public:
 
     void test_bodysegmentsample_creation() {
 
-        Robot r("r0", 10, {{3, 2},{1, 0}}, {1.0, 0.5});
+        Robot r("r0", 10, {{"3", "2"},{"1", "0"}}, {1.0, 0.5});
         auto segment = r.segment(1);
 
-        OPERA_TEST_EQUALS(segment.id(),1)
-        OPERA_TEST_EQUALS(segment.head_id(),1)
-        OPERA_TEST_EQUALS(segment.tail_id(),0)
+        OPERA_TEST_EQUALS(segment.index(), 1)
+        OPERA_TEST_EQUALS(segment.head_id(),"1")
+        OPERA_TEST_EQUALS(segment.tail_id(),"0")
         OPERA_TEST_EQUALS(segment.thickness(),0.5)
 
         auto s1 = segment.create_sample();
@@ -78,7 +79,7 @@ public:
 
         FloatType thickness = 1.0;
 
-        Robot r("r0", 10, {{0, 1}}, {thickness});
+        Robot r("r0", 10, {{"0", "1"}}, {thickness});
         auto segment = r.segment(0);
 
         auto s1 = segment.create_sample();
@@ -130,7 +131,7 @@ public:
     }
 
     void test_bodysegmentsample_compare() {
-        Robot r("r0", 10, {{3, 2},{1, 0}}, {1.0, 0.5});
+        Robot r("r0", 10, {{"3", "2"},{"1", "0"}}, {1.0, 0.5});
         auto segment = r.segment(1);
 
         auto s1 = segment.create_sample();
@@ -152,7 +153,7 @@ public:
 
     void test_bodysegmentsample_intersection() {
         FloatType thickness = 1.0;
-        Robot r("r0", 10,{{0, 1}}, {thickness});
+        Robot r("r0", 10,{{"0", "1"}}, {thickness});
         auto segment = r.segment(0);
 
         auto s1 = segment.create_sample({Point(0, 0, 0)}, {Point(5, 5, 5)});
@@ -186,7 +187,7 @@ public:
     }
 
     void test_bounding_box() {
-        Human h("h0", {{3, 2},{1, 0}}, {1.0, 0.5});
+        Human h("h0", {{"3", "2"},{"1", "0"}}, {1.0, 0.5});
         auto human_sample = h.segment(1).create_sample();
         human_sample.update({Point(1,5,0)},{Point(3,5,0)});
 
@@ -202,7 +203,7 @@ public:
     }
 
     void test_bounding_sphere() {
-        Robot r("r0", 10, {{3, 2},{1, 0}}, {1.0, 0.5});
+        Robot r("r0", 10, {{"3", "2"},{"1", "0"}}, {1.0, 0.5});
         auto robot_sample = r.segment(0).create_sample();
         robot_sample.update({Point(0,0,0)},{Point(2,0,0)});
         auto human_sample = r.segment(1).create_sample();

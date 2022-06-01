@@ -49,11 +49,17 @@ public:
         Deserialiser<BodyPresentationMessage> d2("{\n"
                                    "  \"id\": \"h0\",\n"
                                    "  \"isHuman\": true,\n"
-                                   "  \"pointIds\": [[14,12],[11,12],[5,7],[6,8],[7,9],[8,10],[1,2],[0,1],[0,2],[1,3],[2,4],[3,5],[4,6],[17,0],[17,5],[17,6],[17,11],[17,12]],\n"
-                                   "  \"thicknesses\": [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]\n"
+                                   "  \"segmentPairs\": [[\"nose\",\"nose\"],[\"left_wrist\",\"left_wrist\"],[\"right_wrist\",\"right_wrist\"],"
+                                   "  [\"nose\",\"neck\"],[\"left_shoulder\",\"right_shoulder\"],[\"left_shoulder\",\"left_elbow\"],[\"left_elbow\",\"left_wrist\"],"
+                                   "  [\"right_shoulder\",\"right_elbow\"],[\"right_elbow\",\"right_wrist\"],[\"right_shoulder\",\"right_hip\"],"
+                                   "  [\"left_shoulder\",\"left_hip\"],[\"left_hip\",\"right_hip\"],[\"right_hip\",\"right_knee\"],[\"right_knee\",\"right_ankle\"],"
+                                   "  [\"left_hip\",\"left_knee\"],[\"left_knee\",\"left_ankle\"],[\"chest\",\"mid_hip\"]],\n"
+                                   "  \"thicknesses\": [0.13,0.085,0.085,0.058,0.12,0.05,0.042,0.05,0.042,0.1,0.1,0.125,0.097,0.066,0.097,0.066,0.1]\n"
                                    "}");
+
         auto p2 = d2.make();
         OPERA_TEST_EQUALS(p1.id(),p2.id())
+        OPERA_TEST_EQUALS(p1.segment_pairs().size(),p2.segment_pairs().size())
     }
     void test_bodypresentationmessage_make_robot() {
         Deserialiser<BodyPresentationMessage> d1(Resources::path("json/examples/presentation/robot0.json"));
@@ -62,11 +68,12 @@ public:
                             "  \"id\": \"r0\",\n"
                             "  \"isHuman\": false,\n"
                             "  \"messageFrequency\": 10,\n"
-                            "  \"pointIds\": [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7]],\n"
+                            "  \"segmentPairs\": [[\"0\",\"1\"],[\"1\",\"2\"],[\"2\",\"3\"],[\"3\",\"4\"],[\"4\",\"5\"],[\"5\",\"6\"],[\"6\",\"7\"]],\n"
                             "  \"thicknesses\": [1,1,1,1,1,1,1]\n"
                             "}");
         auto p2 = d2.make();
         OPERA_TEST_EQUALS(p1.id(),p2.id())
+        OPERA_TEST_EQUALS(p1.segment_pairs().size(),p2.segment_pairs().size())
     }
 
     void test_humanstatemessage_make() {
@@ -76,16 +83,15 @@ public:
         OPERA_TEST_EQUALS(p.timestamp(),328903)
         auto const& bd = p.bodies().at(0);
         OPERA_TEST_EQUALS(bd.first,"h0")
-        OPERA_TEST_PRINT(bd.second)
         OPERA_TEST_EQUALS(bd.second.size(),8)
-        OPERA_TEST_EQUALS(bd.second.at(0).size(),1)
-        OPERA_TEST_EQUALS(bd.second.at(1).size(),1)
-        OPERA_TEST_EQUALS(bd.second.at(2).size(),2)
-        OPERA_TEST_EQUALS(bd.second.at(3).size(),1)
-        OPERA_TEST_EQUALS(bd.second.at(4).size(),1)
-        OPERA_TEST_EQUALS(bd.second.at(5).size(),1)
-        OPERA_TEST_EQUALS(bd.second.at(6).size(),1)
-        OPERA_TEST_EQUALS(bd.second.at(7).size(),1)
+        OPERA_TEST_EQUALS(bd.second.at("hip").size(),1)
+        OPERA_TEST_EQUALS(bd.second.at("head").size(),1)
+        OPERA_TEST_EQUALS(bd.second.at("left_wrist").size(),2)
+        OPERA_TEST_EQUALS(bd.second.at("right_wrist").size(),1)
+        OPERA_TEST_EQUALS(bd.second.at("left_knee").size(),1)
+        OPERA_TEST_EQUALS(bd.second.at("right_knee").size(),1)
+        OPERA_TEST_EQUALS(bd.second.at("left_elbow").size(),1)
+        OPERA_TEST_EQUALS(bd.second.at("right_elbow").size(),1)
     }
 
     void test_robotstatemessage_make() {
@@ -112,9 +118,11 @@ public:
         Deserialiser<CollisionNotificationMessage> d(Resources::path("json/examples/notification/notification0.json"));
         auto p = d.make();
         OPERA_TEST_EQUALS(p.human_id(),"h0")
-        OPERA_TEST_EQUALS(p.human_segment_id(),0)
+        OPERA_TEST_EQUALS(p.human_segment_id().first,"nose")
+        OPERA_TEST_EQUALS(p.human_segment_id().second,"neck")
         OPERA_TEST_EQUALS(p.robot_id(),"r0")
-        OPERA_TEST_EQUALS(p.robot_segment_id(),3)
+        OPERA_TEST_EQUALS(p.robot_segment_id().first,"5")
+        OPERA_TEST_EQUALS(p.robot_segment_id().second,"6")
         OPERA_TEST_EQUALS(p.current_time(),32890)
         OPERA_TEST_EQUALS(p.collision_distance().lower(), 72)
         OPERA_TEST_EQUALS(p.collision_distance().upper(), 123)

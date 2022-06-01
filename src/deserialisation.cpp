@@ -34,9 +34,9 @@ namespace Opera {
 using namespace rapidjson;
 
 BodyPresentationMessage Deserialiser<BodyPresentationMessage>::make() const {
-    List<Pair<IdType,IdType>> point_ids;
-    for (auto& extremes : _document["pointIds"].GetArray())
-        point_ids.push_back(std::make_pair(extremes[0].GetUint(),extremes[1].GetUint()));
+    List<Pair<KeypointIdType,KeypointIdType>> point_ids;
+    for (auto& pair : _document["segmentPairs"].GetArray())
+        point_ids.push_back(std::make_pair(pair[0].GetString(),pair[1].GetString()));
 
     List<FloatType> thicknesses;
     for (auto& thickness : _document["thicknesses"].GetArray())
@@ -49,14 +49,14 @@ BodyPresentationMessage Deserialiser<BodyPresentationMessage>::make() const {
 }
 
 HumanStateMessage Deserialiser<HumanStateMessage>::make() const {
-    List<Pair<BodyIdType,List<List<Point>>>> bodies;
+    List<Pair<BodyIdType,Map<KeypointIdType,List<Point>>>> bodies;
     for (auto& body : _document["bodies"].GetArray()) {
-        List<List<Point>> points;
-        for (auto& point_samples : body["continuousState"].GetArray()) {
+        Map<KeypointIdType,List<Point>> points;
+        for (auto& keypoint : body["keypoints"].GetObject()) {
             List<Point> samples;
-            for (auto& pt : point_samples.GetArray())
+            for (auto& pt : keypoint.value.GetArray())
                 samples.emplace_back(pt[0].GetDouble(),pt[1].GetDouble(),pt[2].GetDouble());
-            points.push_back(samples);
+            points.insert(std::make_pair(keypoint.name.GetString(), samples));
         }
         bodies.push_back({body["bodyId"].GetString(),points});
     }
@@ -84,9 +84,9 @@ CollisionNotificationMessage Deserialiser<CollisionNotificationMessage>::make() 
         collision_mode_values.insert(std::make_pair(v.name.GetString(), v.value.GetString()));
 
     return CollisionNotificationMessage(_document["human"]["bodyId"].GetString(),
-                                        _document["human"]["segmentId"].GetUint(),
+                                        {_document["human"]["segmentId"].GetArray()[0].GetString(),_document["human"]["segmentId"].GetArray()[1].GetString()},
                                         _document["robot"]["bodyId"].GetString(),
-                                        _document["robot"]["segmentId"].GetUint(),
+                                        {_document["robot"]["segmentId"].GetArray()[0].GetString(),_document["robot"]["segmentId"].GetArray()[1].GetString()},
                                         _document["currentTime"].GetUint64(),
                                         Interval<TimestampType>(_document["collisionDistance"]["lower"].GetUint64(),
                                        _document["collisionDistance"]["upper"].GetUint64()),

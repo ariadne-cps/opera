@@ -39,8 +39,8 @@ RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const&
     _bp_subscriber(bp_subscriber.first.make_body_presentation_subscriber([&](auto const& msg){
         if (not registry.contains(msg.id())) {
             CONCLOG_PRINTLN_AT(2,"Registering body " << msg.id())
-            if (msg.is_human()) for (auto const& rid : registry.robot_ids()) _pending_human_robot_pairs.push_back({msg.id(),rid});
-            else for (auto const& hid : registry.human_ids()) _pending_human_robot_pairs.push_back({msg.id(),hid});
+            if (msg.is_human()) for (auto const& rid : registry.robot_ids()) _pending_human_robot_pairs.push_back({msg.id(), rid});
+            else for (auto const& hid : registry.human_ids()) _pending_human_robot_pairs.push_back({msg.id(), hid});
             registry.insert(msg);
         }
     },bp_subscriber.second)),
@@ -104,7 +104,9 @@ void RuntimeReceiver::_promote_pairs_to_jobs(BodyRegistry const& registry, Synch
                 auto const& mode = registry.robot_history(p.robot).mode_at(timestamp);
                 for (SizeType i=0; i<human.num_segments(); ++i)
                     for (SizeType j=0; j<robot.num_segments(); ++j) {
-                        auto job = _factory.create_new_job({human.id(), human.segment(i).id(), robot.id(), robot.segment(j).id()}, timestamp, human_latest_instance.samples().at(human.segment(i).id()), ModeTrace().push_back(mode), LookAheadJobPath());
+                        auto job = _factory.create_new_job({human.id(), human.segment(i).index(), robot.id(),
+                                                            robot.segment(j).index()}, timestamp, human_latest_instance.samples().at(
+                                human.segment(i).index()), ModeTrace().push_back(mode), LookAheadJobPath());
                         if (job.human_sample().is_empty()) sleeping_jobs.enqueue(job);
                         else waiting_jobs.enqueue(job);
                     }

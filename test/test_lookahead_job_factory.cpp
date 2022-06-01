@@ -46,11 +46,11 @@ class TestLookAheadJobFactory {
     void test_discard_create_job() {
         LookAheadJobFactory factory = DiscardLookAheadJobFactory();
 
-        Human h0("h0", {{0, 1}}, {1.0});
+        Human h0("h0", {{"nose", "neck"}}, {1.0});
         auto s1 = h0.segment(0).create_sample();
         s1.update({Point(-0.5, 1.0, 1.25)},{});
 
-        Robot r("r0", 1, {{0,1}}, {1.0});
+        Robot r("r0", 1, {{"0","1"}}, {1.0});
         RobotStateHistory history(r);
         Mode original_mode({"phase","running"});
         Mode updated_mode({"phase","sleeping"});
@@ -60,9 +60,9 @@ class TestLookAheadJobFactory {
         TimestampType updated_time = 2000;
         TimestampType final_time = 3000;
 
-        history.acquire(original_mode,{{Point(0,0,0)},{Point(4,4,4)}},original_time);
-        history.acquire(updated_mode,{{Point(0,0,0)},{Point(4,4,4)}},updated_time);
-        history.acquire(final_mode,{{Point(0,0,0)},{Point(4,4,4)}},final_time);
+        history.acquire(original_mode,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}}}},original_time);
+        history.acquire(updated_mode,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}}}},updated_time);
+        history.acquire(final_mode,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}}}},final_time);
 
         LookAheadJobIdentifier id("h0",1,"r0",3);
 
@@ -78,19 +78,19 @@ class TestLookAheadJobFactory {
         OPERA_TEST_EQUALS(woken.size(),1)
         OPERA_TEST_ASSERT(woken.at(0).second == JobAwakeningResult::DIFFERENT)
         auto const& wj = woken.at(0).first;
-        OPERA_TEST_EQUALS(wj.id(),id)
+        OPERA_TEST_EQUALS(wj.id(), id)
         OPERA_TEST_EQUALS(wj.initial_time(),updated_time)
         OPERA_TEST_EQUALS(wj.prediction_trace().ending_mode(),updated_mode)
     }
 
     void test_discard_create_next_jobs() {
 
-        Robot r0("r0",10,{{0, 1},{1, 2}}, {1.0,0.5});
+        Robot r0("r0",10,{{"0", "1"},{"1", "2"}}, {1.0,0.5});
         RobotStateHistory h(r0);
 
         LookAheadJobFactory factory = DiscardLookAheadJobFactory();
 
-        Human h0("h0", {{0, 1}}, {1.0});
+        Human h0("h0", {{"nose", "neck"}}, {1.0});
         auto human_sample = h0.segment(0).create_sample();
         human_sample.update({{-0.5, 1.0, 1.25}},{{1.0,2.0,3.0}});
 
@@ -106,40 +106,40 @@ class TestLookAheadJobFactory {
         Mode fullright({{"s", "fullright"}});
         Mode expand({{"s", "xpand"}});
 
-        h.acquire(contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(10,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(4,0,1)}},{"2",{Point(9,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(3,0,2)}},{"2",{Point(8,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(2,0,3)}},{"2",{Point(7,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(1,0,4)}},{"2",{Point(6,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,0)}}}}, ++time);
 
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 1}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 2}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 3}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 4}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 5}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{4, 0, 6}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{3, 0, 7}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{2, 0, 8}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{1, 0, 9}}}, ++time);
-        h.acquire(endup, {{{0, 0, 0}}, {{0, 0, 5}}, {{0, 0, 10}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,1)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,2)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,3)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,4)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,5)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(4,0,6)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(3,0,7)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(2,0,8)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(1,0,9)}}}}, ++time);
+        h.acquire(endup, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(0,0,10)}}}}, ++time);
 
-        h.acquire(kneedown, {{{0, 0, 0}}, {{1, 0, 4}}, {{1, 0, 9}}}, ++time);
-        h.acquire(kneedown, {{{0, 0, 0}}, {{2, 0, 3}}, {{2, 0, 8}}}, ++time);
-        h.acquire(kneedown, {{{0, 0, 0}}, {{3, 0, 2}}, {{3, 0, 7}}}, ++time);
-        h.acquire(kneedown, {{{0, 0, 0}}, {{4, 0, 1}}, {{4, 0, 6}}}, ++time);
-        h.acquire(kneedown, {{{0, 0, 0}}, {{5, 0, 0}}, {{5, 0, 5}}}, ++time);
+        h.acquire(kneedown, {{{"0",{Point(0,0,0)}},{"1",{Point(1,0,4)}},{"2",{Point(1,0,9)}}}}, ++time);
+        h.acquire(kneedown, {{{"0",{Point(0,0,0)}},{"1",{Point(2,0,3)}},{"2",{Point(2,0,8)}}}}, ++time);
+        h.acquire(kneedown, {{{"0",{Point(0,0,0)}},{"1",{Point(3,0,2)}},{"2",{Point(3,0,7)}}}}, ++time);
+        h.acquire(kneedown, {{{"0",{Point(0,0,0)}},{"1",{Point(4,0,1)}},{"2",{Point(4,0,6)}}}}, ++time);
+        h.acquire(kneedown, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(5,0,5)}}}}, ++time);
 
-        h.acquire(fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{6, 0, 4}}}, ++time);
-        h.acquire(fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{7, 0, 3}}}, ++time);
-        h.acquire(fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{8, 0, 2}}}, ++time);
-        h.acquire(fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{9, 0, 1}}}, ++time);
-        h.acquire(fullright, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time);
+        h.acquire(fullright, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(6,0,4)}}}}, ++time);
+        h.acquire(fullright, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(7,0,3)}}}}, ++time);
+        h.acquire(fullright, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(8,0,2)}}}}, ++time);
+        h.acquire(fullright, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(9,0,1)}}}}, ++time);
+        h.acquire(fullright, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(10,0,0)}}}}, ++time);
 
-        h.acquire(contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(10,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(4,0,1)}},{"2",{Point(9,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(3,0,2)}},{"2",{Point(8,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(2,0,3)}},{"2",{Point(7,0,0)}}}}, ++time);
 
         auto job = factory.create_new_job(id, time, human_sample, ModeTrace().push_back(contract), LookAheadJobPath());
         auto next_jobs = factory.create_next_jobs(job, h);
@@ -147,22 +147,22 @@ class TestLookAheadJobFactory {
         OPERA_TEST_EQUALS(next_jobs.size(),1)
         OPERA_TEST_PRINT(next_jobs)
 
-        h.acquire(contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(1,0,4)}},{"2",{Point(6,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,0)}}}}, ++time);
 
-        h.acquire(expand, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time);
-        h.acquire(expand, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time);
-        h.acquire(expand, {{{0, 0, 2}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time);
-        h.acquire(expand, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time);
-        h.acquire(expand, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time);
-        h.acquire(expand, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time);
+        h.acquire(expand, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,0)}}}}, ++time);
+        h.acquire(expand, {{{"0",{Point(0,0,0)}},{"1",{Point(1,0,4)}},{"2",{Point(6,0,0)}}}}, ++time);
+        h.acquire(expand, {{{"0",{Point(0,0,0)}},{"1",{Point(2,0,3)}},{"2",{Point(7,0,0)}}}}, ++time);
+        h.acquire(expand, {{{"0",{Point(0,0,0)}},{"1",{Point(3,0,2)}},{"2",{Point(8,0,0)}}}}, ++time);
+        h.acquire(expand, {{{"0",{Point(0,0,0)}},{"1",{Point(4,0,1)}},{"2",{Point(9,0,0)}}}}, ++time);
+        h.acquire(expand, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(10,0,0)}}}}, ++time);
 
-        h.acquire(contract, {{{0, 0, 0}}, {{5, 0, 0}}, {{10, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{4, 0, 1}}, {{9, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{3, 0, 2}}, {{8, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{2, 0, 3}}, {{7, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{1, 0, 4}}, {{6, 0, 0}}}, ++time);
-        h.acquire(contract, {{{0, 0, 0}}, {{0, 0, 5}}, {{5, 0, 0}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(5,0,0)}},{"2",{Point(10,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(4,0,1)}},{"2",{Point(9,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(3,0,2)}},{"2",{Point(8,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(2,0,3)}},{"2",{Point(7,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(1,0,4)}},{"2",{Point(6,0,0)}}}}, ++time);
+        h.acquire(contract, {{{"0",{Point(0,0,0)}},{"1",{Point(0,0,5)}},{"2",{Point(5,0,0)}}}}, ++time);
 
         auto woken = factory.awaken(job, time, human_sample, h);
         OPERA_TEST_EQUALS(woken.size(),1)
@@ -192,26 +192,25 @@ class TestLookAheadJobFactory {
         OPERA_TEST_EQUALS(next_jobs6.size(),0)
     }
 
-
     void test_discard_wake_job() {
 
         auto factory = DiscardLookAheadJobFactory();
 
-        Robot r("r0", 1, {{0,1}}, {1.0});
+        Robot r("r0", 1, {{"0","1"}}, {1.0});
         RobotStateHistory history(r);
         Mode original_mode({"phase","running"});
         Mode updated_mode({"phase","sleeping"});
         Mode final_mode({"phase","nothing"});
 
-        Human h("h0", {{0, 1}}, {1.0});
+        Human h("h0", {{"nose", "neck"}}, {1.0});
 
         TimestampType original_time = 1000;
         TimestampType updated_time = 2000;
         TimestampType final_time = 3000;
 
-        history.acquire(original_mode,{{Point(0,0,0)},{Point(4,4,4)}},original_time);
-        history.acquire(updated_mode,{{Point(0,0,0)},{Point(4,4,4)}},updated_time);
-        history.acquire(final_mode,{{Point(0,0,0)},{Point(4,4,4)}},final_time);
+        history.acquire(original_mode,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}}}},original_time);
+        history.acquire(updated_mode,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}}}},updated_time);
+        history.acquire(final_mode,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}}}},final_time);
 
         LookAheadJobIdentifier id("h0",0,"r0",3);
         auto sample = h.segment(0).create_sample({{-0.5, 1.0, 1.25}},{{1.0,2.0,3.0}});
@@ -223,7 +222,7 @@ class TestLookAheadJobFactory {
         OPERA_TEST_EQUALS(woken.size(),1)
         OPERA_TEST_ASSERT(woken.at(0).second == JobAwakeningResult::DIFFERENT)
         auto const& wj = woken.at(0).first;
-        OPERA_TEST_EQUALS(wj.id(),id)
+        OPERA_TEST_EQUALS(wj.id(), id)
         OPERA_TEST_EQUALS(wj.initial_time(),updated_time)
         OPERA_TEST_EQUALS(wj.prediction_trace().ending_mode(),updated_mode)
 
@@ -250,21 +249,20 @@ class TestLookAheadJobFactory {
 
     void test_reuse_wake_job_without_barriersequencesection() {
 
-        Robot r("r0", 1, {{0,1}}, {1.0});
+        Robot r("r0", 1, {{"0","1"}}, {1.0});
         RobotStateHistory history(r);
         Mode original_mode({"phase","running"});
         Mode updated_mode({"phase","sleeping"});
         Mode final_mode({"phase","nothing"});
 
-        Human h("h0", {{0, 1}}, {1.0});
+        Human h("h0", {{"nose","neck"}}, {1.0});
 
-
-        history.acquire(original_mode,{{Point(0,0,0)},{Point(4,4,4)}},1000);
-        history.acquire(updated_mode,{{Point(0,0,0)},{Point(4,4,4)}},2000);
-        history.acquire(final_mode,{{Point(0,0,0)},{Point(4,4,4)}},3000);
-        history.acquire(original_mode,{{Point(0,0,0)},{Point(4,4,4)}},4000);
-        history.acquire(updated_mode,{{Point(0,0,0)},{Point(4,4,4)}},5000);
-        history.acquire(final_mode,{{Point(0,0,0)},{Point(4,4,4)}},6000);
+        history.acquire(original_mode,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}}}},1000);
+        history.acquire(updated_mode,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}}}},2000);
+        history.acquire(final_mode,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}}}},3000);
+        history.acquire(original_mode,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}}}},4000);
+        history.acquire(updated_mode,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}}}},5000);
+        history.acquire(final_mode,{{{"0",{Point(0,0,0)}},{"1",{Point(4,4,4)}}}},6000);
 
         LookAheadJobIdentifier id("h0",0,"r0",0);
         auto sample = h.segment(0).create_sample({{-0.5, 1.0, 1.25}},{{1.0,2.0,3.0}});
@@ -314,37 +312,38 @@ class TestLookAheadJobFactory {
 
     void test_reuse_wake_job_with_barriersequencesection() {
 
-        Robot r("r0", 1000, {{0, 1}}, {0.25});
+        Robot r("r0", 1000, {{"0", "1"}}, {0.25});
         RobotStateHistory history1(r);
         Mode one({"p","1"}), two({"p","2"}), three({"p","3"}), four({"p","4"}), five({"p","5"});
 
-        Human h("h0", {{0, 1}}, {0.25});
+        Human h("h0", {{"nose", "neck"}}, {0.25});
 
         LookAheadJobIdentifier id("h0",0,"r0",0);
 
         TimestampType time = 0;
-        history1.acquire(one, {{Point(1, 0, 0)}, {Point(1, 4, 0)}}, ++time);
-        history1.acquire(one, {{Point(2, 0, 0)}, {Point(2, 4, 0)}}, ++time);
-        history1.acquire(one, {{Point(3, 0, 0)}, {Point(3, 4, 0)}}, ++time);
-        history1.acquire(two, {{Point(4, 0, 0)}, {Point(4, 4, 0)}}, ++time);
-        history1.acquire(three, {{Point(5, 0, 0)}, {Point(5, 4, 0)}}, ++time);
-        history1.acquire(four, {{Point(6, 0, 0)}, {Point(6, 4, 0)}}, ++time);
-        history1.acquire(four, {{Point(7, 0, 0)}, {Point(7, 4, 0)}}, ++time);
-        history1.acquire(five, {{Point(4, 0, 0)}, {Point(4, 4, 0)}}, ++time);
-        history1.acquire(one, {{Point(1, 0, 0)}, {Point(1, 4, 0)}}, ++time);
-        history1.acquire(one, {{Point(2, 0, 0)}, {Point(2, 4, 0)}}, ++time);
-        history1.acquire(one, {{Point(3, 0, 0)}, {Point(3, 4, 0)}}, ++time);
-        history1.acquire(two, {{Point(4, 0, 0)}, {Point(4, 4, 0)}}, ++time);
-        history1.acquire(three, {{Point(5, 0, 0)}, {Point(5, 4, 0)}}, ++time);
-        history1.acquire(four, {{Point(6, 0, 0)}, {Point(6, 4, 0)}}, ++time);
-        history1.acquire(four, {{Point(7, 0, 0)}, {Point(7, 4, 0)}}, ++time);
-        history1.acquire(five, {{Point(4, 0, 0)}, {Point(4, 4, 0)}}, ++time);
-        history1.acquire(one, {{Point(1, 0, 0)}, {Point(1, 4, 0)}}, ++time);
-        history1.acquire(one, {{Point(2, 0, 0)}, {Point(2, 4, 0)}}, ++time);
-        history1.acquire(one, {{Point(3, 0, 0)}, {Point(3, 4, 0)}}, ++time);
-        history1.acquire(two, {{Point(4, 0, 0)}, {Point(4, 4, 0)}}, ++time);
-        history1.acquire(three, {{Point(5, 0, 0)}, {Point(5, 4, 0)}}, ++time);
-        history1.acquire(four, {{Point(6, 0, 0)}, {Point(6, 4, 0)}}, ++time);
+
+        history1.acquire(one,{{{"0",{Point(1,0,0)}},{"1",{Point(1,4,0)}}}},++time);
+        history1.acquire(one,{{{"0",{Point(2,0,0)}},{"1",{Point(2,4,0)}}}},++time);
+        history1.acquire(one,{{{"0",{Point(3,0,0)}},{"1",{Point(3,4,0)}}}},++time);
+        history1.acquire(two,{{{"0",{Point(4,0,0)}},{"1",{Point(4,4,0)}}}},++time);
+        history1.acquire(three,{{{"0",{Point(5,0,0)}},{"1",{Point(5,4,0)}}}},++time);
+        history1.acquire(four,{{{"0",{Point(6,0,0)}},{"1",{Point(6,4,0)}}}},++time);
+        history1.acquire(four,{{{"0",{Point(7,0,0)}},{"1",{Point(7,4,0)}}}},++time);
+        history1.acquire(five,{{{"0",{Point(4,0,0)}},{"1",{Point(4,4,0)}}}},++time);
+        history1.acquire(one,{{{"0",{Point(1,0,0)}},{"1",{Point(1,4,0)}}}},++time);
+        history1.acquire(one,{{{"0",{Point(2,0,0)}},{"1",{Point(2,4,0)}}}},++time);
+        history1.acquire(one,{{{"0",{Point(3,0,0)}},{"1",{Point(3,4,0)}}}},++time);
+        history1.acquire(two,{{{"0",{Point(4,0,0)}},{"1",{Point(4,4,0)}}}},++time);
+        history1.acquire(three,{{{"0",{Point(5,0,0)}},{"1",{Point(5,4,0)}}}},++time);
+        history1.acquire(four,{{{"0",{Point(6,0,0)}},{"1",{Point(6,4,0)}}}},++time);
+        history1.acquire(four,{{{"0",{Point(7,0,0)}},{"1",{Point(7,4,0)}}}},++time);
+        history1.acquire(five,{{{"0",{Point(4,0,0)}},{"1",{Point(4,4,0)}}}},++time);
+        history1.acquire(one,{{{"0",{Point(1,0,0)}},{"1",{Point(1,4,0)}}}},++time);
+        history1.acquire(one,{{{"0",{Point(2,0,0)}},{"1",{Point(2,4,0)}}}},++time);
+        history1.acquire(one,{{{"0",{Point(3,0,0)}},{"1",{Point(3,4,0)}}}},++time);
+        history1.acquire(two,{{{"0",{Point(4,0,0)}},{"1",{Point(4,4,0)}}}},++time);
+        history1.acquire(three,{{{"0",{Point(5,0,0)}},{"1",{Point(5,4,0)}}}},++time);
+        history1.acquire(four,{{{"0",{Point(6,0,0)}},{"1",{Point(6,4,0)}}}},++time);
 
         {
             OPERA_PRINT_TEST_CASE_TITLE("Empty barrier, updating to the same mode and sample")
@@ -529,26 +528,27 @@ class TestLookAheadJobFactory {
 
         time = 0;
         RobotStateHistory history2(r);
-        history2.acquire(one,{{Point(1,0,0)},{Point(1,4,0)}},++time);
-        history2.acquire(one,{{Point(2,0,0)},{Point(2,4,0)}},++time);
-        history2.acquire(one,{{Point(3,0,0)},{Point(3,4,0)}},++time);
-        history2.acquire(two,{{Point(4,0,0)},{Point(4,4,0)}},++time);
-        history2.acquire(three,{{Point(5,0,0)},{Point(5,4,0)}},++time);
-        history2.acquire(four,{{Point(6,0,0)},{Point(6,4,0)}},++time);
-        history2.acquire(four,{{Point(7,0,0)},{Point(7,4,0)}},++time);
-        history2.acquire(five,{{Point(4,0,0)},{Point(4,4,0)}},++time);
-        history2.acquire(two,{{Point(4,0,0)},{Point(4,4,0)}},++time);
-        history2.acquire(three,{{Point(5,0,0)},{Point(5,4,0)}},++time);
-        history2.acquire(one,{{Point(1,0,0)},{Point(1,4,0)}},++time);
-        history2.acquire(one,{{Point(2,0,0)},{Point(2,4,0)}},++time);
-        history2.acquire(one,{{Point(3,0,0)},{Point(3,4,0)}},++time);
-        history2.acquire(two,{{Point(4,0,0)},{Point(4,4,0)}},++time);
-        history2.acquire(three,{{Point(5,0,0)},{Point(5,4,0)}},++time);
-        history2.acquire(four,{{Point(6,0,0)},{Point(6,4,0)}},++time);
-        history2.acquire(four,{{Point(7,0,0)},{Point(7,4,0)}},++time);
-        history2.acquire(five,{{Point(4,0,0)},{Point(4,4,0)}},++time);
-        history2.acquire(two,{{Point(4,0,0)},{Point(4,4,0)}},++time);
-        history2.acquire(three,{{Point(5,0,0)},{Point(5,4,0)}},++time);
+
+        history2.acquire(one,{{{"0",{Point(1,0,0)}},{"1",{Point(1,4,0)}}}},++time);
+        history2.acquire(one,{{{"0",{Point(2,0,0)}},{"1",{Point(2,4,0)}}}},++time);
+        history2.acquire(one,{{{"0",{Point(3,0,0)}},{"1",{Point(3,4,0)}}}},++time);
+        history2.acquire(two,{{{"0",{Point(4,0,0)}},{"1",{Point(4,4,0)}}}},++time);
+        history2.acquire(three,{{{"0",{Point(5,0,0)}},{"1",{Point(5,4,0)}}}},++time);
+        history2.acquire(four,{{{"0",{Point(6,0,0)}},{"1",{Point(6,4,0)}}}},++time);
+        history2.acquire(four,{{{"0",{Point(7,0,0)}},{"1",{Point(7,4,0)}}}},++time);
+        history2.acquire(five,{{{"0",{Point(4,0,0)}},{"1",{Point(4,4,0)}}}},++time);
+        history2.acquire(two,{{{"0",{Point(4,0,0)}},{"1",{Point(4,4,0)}}}},++time);
+        history2.acquire(three,{{{"0",{Point(5,0,0)}},{"1",{Point(5,4,0)}}}},++time);
+        history2.acquire(one,{{{"0",{Point(1,0,0)}},{"1",{Point(1,4,0)}}}},++time);
+        history2.acquire(one,{{{"0",{Point(2,0,0)}},{"1",{Point(2,4,0)}}}},++time);
+        history2.acquire(one,{{{"0",{Point(3,0,0)}},{"1",{Point(3,4,0)}}}},++time);
+        history2.acquire(two,{{{"0",{Point(4,0,0)}},{"1",{Point(4,4,0)}}}},++time);
+        history2.acquire(three,{{{"0",{Point(5,0,0)}},{"1",{Point(5,4,0)}}}},++time);
+        history2.acquire(four,{{{"0",{Point(6,0,0)}},{"1",{Point(6,4,0)}}}},++time);
+        history2.acquire(four,{{{"0",{Point(7,0,0)}},{"1",{Point(7,4,0)}}}},++time);
+        history2.acquire(five,{{{"0",{Point(4,0,0)}},{"1",{Point(4,4,0)}}}},++time);
+        history2.acquire(two,{{{"0",{Point(4,0,0)}},{"1",{Point(4,4,0)}}}},++time);
+        history2.acquire(three,{{{"0",{Point(5,0,0)}},{"1",{Point(5,4,0)}}}},++time);
 
         {
             OPERA_PRINT_TEST_CASE_TITLE("P-loop from within a mode, updating to the same mode and sample")
