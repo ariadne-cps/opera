@@ -66,17 +66,19 @@ class BodyPresentationMessage {
     List<FloatType> const _thicknesses;
 };
 
+using HumanStateMessageBodyType = Pair<BodyIdType,Map<KeypointIdType,List<Point>>>;
+
 //! \brief A representation of an inbound message for the state of a human
 class HumanStateMessage {
   public:
     //! \brief Construct from fields
-    HumanStateMessage(List<Pair<BodyIdType,Map<KeypointIdType,List<Point>>>> const& bodies, TimestampType const& timestamp);
+    HumanStateMessage(List<HumanStateMessageBodyType> const& bodies, TimestampType const& timestamp);
     //! \brief The bodies
     List<Pair<BodyIdType,Map<KeypointIdType,List<Point>>>> const& bodies() const;
     //! \brief The timestamp associated with the message
     TimestampType const& timestamp() const;
   private:
-    List<Pair<BodyIdType,Map<KeypointIdType,List<Point>>>> const _bodies;
+    List<HumanStateMessageBodyType> const _bodies;
     TimestampType const _timestamp;
 };
 

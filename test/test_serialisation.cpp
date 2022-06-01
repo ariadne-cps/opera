@@ -60,7 +60,7 @@ public:
         HumanStateMessage p({{"human0",{{{"nose",{Point(0.4,2.1,0.2)}},{"neck",{Point(0,-1,0.1),Point(0.3,3.1,-1.2)}},{"left_shoulder",{Point(0.4,0.1,1.2)}},{"right_shoulder",{Point(0,0,1)}}}}}},3423235);
         Serialiser<HumanStateMessage> serialiser(p);
         serialiser.to_file(Resources::path("json/examples/state/humans.tmp.json"));
-        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"bodies\":[{\"bodyId\":\"human0\",\"keypoints\":{\"left_shoulder\":[[0.4,0.1,1.2]],\"neck\":[[0.0,-1.0,0.1],[0.3,3.1,-1.2]],\"nose\":[[0.4,2.1,0.2]],\"right_shoulder\":[[0.0,0.0,1.0]]}}],\"timestamp\":3423235}")
+        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"bodies\":[{\"bodyId\":\"human0\",\"keypoints\":{\"left_shoulder\":[{\"x\":0.4,\"y\":0.1,\"z\":1.2}],\"neck\":[{\"x\":0.0,\"y\":-1.0,\"z\":0.1},{\"x\":0.3,\"y\":3.1,\"z\":-1.2}],\"nose\":[{\"x\":0.4,\"y\":2.1,\"z\":0.2}],\"right_shoulder\":[{\"x\":0.0,\"y\":0.0,\"z\":1.0}]}}],\"timestamp\":3423235}")
     }
 
     void test_robotstatemessage() {

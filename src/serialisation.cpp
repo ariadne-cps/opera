@@ -86,10 +86,10 @@ Document Serialiser<HumanStateMessage>::to_document() const {
             samples_array.SetArray();
             for (auto const& point : keypoint_samples.second) {
                 Value coordinates;
-                coordinates.SetArray();
-                coordinates.PushBack(Value().SetDouble(point.x),allocator)
-                        .PushBack(Value().SetDouble(point.y),allocator)
-                        .PushBack(Value().SetDouble(point.z),allocator);
+                coordinates.SetObject();
+                coordinates.AddMember(Value().SetString("x",static_cast<rapidjson::SizeType>(1),allocator),Value().SetDouble(point.x),allocator);
+                coordinates.AddMember(Value().SetString("y",static_cast<rapidjson::SizeType>(1),allocator),Value().SetDouble(point.y),allocator);
+                coordinates.AddMember(Value().SetString("z",static_cast<rapidjson::SizeType>(1),allocator),Value().SetDouble(point.z),allocator);
                 samples_array.PushBack(coordinates,allocator);
             }
             keypoints.AddMember(Value().SetString(keypoint_samples.first.c_str(),static_cast<rapidjson::SizeType>(keypoint_samples.first.length()),allocator),samples_array,allocator);

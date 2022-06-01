@@ -49,13 +49,13 @@ BodyPresentationMessage Deserialiser<BodyPresentationMessage>::make() const {
 }
 
 HumanStateMessage Deserialiser<HumanStateMessage>::make() const {
-    List<Pair<BodyIdType,Map<KeypointIdType,List<Point>>>> bodies;
+    List<HumanStateMessageBodyType> bodies;
     for (auto& body : _document["bodies"].GetArray()) {
         Map<KeypointIdType,List<Point>> points;
         for (auto& keypoint : body["keypoints"].GetObject()) {
             List<Point> samples;
             for (auto& pt : keypoint.value.GetArray())
-                samples.emplace_back(pt[0].GetDouble(),pt[1].GetDouble(),pt[2].GetDouble());
+                samples.emplace_back(pt["x"].GetDouble(),pt["y"].GetDouble(),pt["z"].GetDouble());
             points.insert(std::make_pair(keypoint.name.GetString(), samples));
         }
         bodies.push_back({body["bodyId"].GetString(),points});

@@ -57,10 +57,10 @@ List<FloatType> const& BodyPresentationMessage::thicknesses() const {
     return _thicknesses;
 }
 
-HumanStateMessage::HumanStateMessage(List<Pair<BodyIdType,Map<KeypointIdType,List<Point>>>> const& bodies, TimestampType const& timestamp) :
+HumanStateMessage::HumanStateMessage(List<HumanStateMessageBodyType> const& bodies, TimestampType const& timestamp) :
         _bodies(bodies), _timestamp(timestamp) { }
 
-List<Pair<BodyIdType,Map<KeypointIdType,List<Point>>>> const& HumanStateMessage::bodies() const {
+List<HumanStateMessageBodyType> const& HumanStateMessage::bodies() const {
     return _bodies;
 }
 
