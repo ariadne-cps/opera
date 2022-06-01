@@ -42,8 +42,8 @@ struct ProfileBarrier : public Profiler {
     }
 
     void profile_apply_to_sequence_section() {
-        Robot r("r0", 10, {{0, 1}}, {1.0});
-        Human h("h0", {{0, 1}}, {1.0});
+        Robot r("r0", 10, {{"0", "1"}}, {1.0});
+        Human h("h0", {{"nose", "neck"}}, {1.0});
         auto hs = h.segment(0).create_sample({Point(0,0,0)},{Point(2,0,0)});
 
         Mode first({r.id(), "first"});
@@ -69,8 +69,8 @@ struct ProfileBarrier : public Profiler {
     void profile_sequence_section_reuse_index() {
         const SizeType ns = 1000;
         const SizeType override_num_tries = 100;
-        Robot r("r0", 10, {{0, 1}}, {1.0});
-        Human h("h0", {{0, 1}}, {0.5});
+        Robot r("r0", 10, {{"0", "1"}}, {1.0});
+        Human h("h0", {{"nose", "neck"}}, {0.5});
         auto hs = h.segment(0).create_sample({Point(FloatType(ns),FloatType(ns),0)},{Point(FloatType(ns+2),FloatType(ns),0)});
 
         Mode first({r.id(), "first"});
@@ -109,8 +109,8 @@ struct ProfileBarrier : public Profiler {
     void profile_sequence_section_reuse_or_not() {
         const SizeType ns = 200;
         const SizeType override_num_tries = 1;
-        Robot r("r0", 10, {{0, 1}}, {1.0});
-        Human h("h0", {{0, 1}}, {0.5});
+        Robot r("r0", 10, {{"0", "1"}}, {1.0});
+        Human h("h0", {{"nose", "neck"}}, {0.5});
         auto hs = h.segment(0).create_sample({Point(ns,ns,0)},{Point(ns+2,ns,0)});
 
         Mode first({r.id(), "first"});
@@ -118,9 +118,9 @@ struct ProfileBarrier : public Profiler {
         auto section = SphereMinimumDistanceBarrierSequenceSection(hs);
         RobotStateHistory history(r);
         for (SizeType i=0; i<ns; ++i) {
-            history.acquire(first,{{Point(FloatType(i),0,0)},{Point(FloatType(i),2,0)}},static_cast<TimestampType>(i*100));
+            history.acquire(first,{{{"0",{Point(FloatType(i),0,0)}},{"1",{Point(FloatType(i),2,0)}}}},static_cast<TimestampType>(i*100));
         }
-        history.acquire(second,{{Point(FloatType(ns),0,0)},{Point(FloatType(ns),2,0)}},static_cast<TimestampType>(ns*100));
+        history.acquire(second,{{{"0",{Point(FloatType(ns),0,0)}},{"1",{Point(FloatType(ns),2,0)}}}},static_cast<TimestampType>(ns*100));
 
         List<BodySegmentSample> hss;
         for (SizeType i=ns; i>0; --i) {

@@ -43,13 +43,13 @@ struct ProfileState : public Profiler {
 
     void profile_human_instance_acquirement() {
         FloatType thickness = 1.0;
-        Human h("h0", {{0, 1}}, {thickness});
+        Human h("h0", {{"nose", "neck"}}, {thickness});
 
         List<HumanStateMessage> pkts;
         for (SizeType i=0; i<num_tries(); ++i) {
-            pkts.push_back({{{h.id(),{{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))},
-                                              {Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}}}},
-                                              static_cast<TimestampType>(10*i)});
+            pkts.push_back(HumanStateMessage({{h.id(),{{{"nose",{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}},
+                                      {"neck",{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}}}}}},
+                                              static_cast<TimestampType>(10*i)));
         }
 
         profile("Make human state instance from message fields",[&](SizeType i){ HumanStateInstance hsi(h,pkts.at(i).bodies().at(0).second,pkts.at(i).timestamp()); });
@@ -57,33 +57,29 @@ struct ProfileState : public Profiler {
 
     void profile_robot_history_acquirement_and_update() {
         FloatType thickness = 1.0;
-        Robot r("r0", 10, {{0, 1}}, {thickness});
+        Robot r("r0", 10, {{"0", "1"}}, {thickness});
         RobotStateHistory history(r);
 
-        List<RobotStateMessage> pkts;
+        List<Map<KeypointIdType,List<Point>>> pts;
         for (SizeType i=0; i<num_tries(); ++i) {
-            pkts.push_back({r.id(), Mode({"robot", "first"}),
-                                            {{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))},
-                                                    {Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}},
-                                            static_cast<TimestampType>(10*i)});
+            pts.push_back({{{"0",{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}},
+                            {"1",{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}}}});
         }
 
-        profile("Acquire robot message for new mode",[&](SizeType i){ history.acquire(pkts.at(i).mode(),pkts.at(i).points(),pkts.at(i).timestamp()); });
+        profile("Acquire robot message for new mode",[&](SizeType i){ history.acquire(Mode({"robot", "first"}),pts.at(i),static_cast<TimestampType>(10*i)); });
 
         history.acquire(Mode({"robot", "second"}),
-                        {{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))},
-                                          {Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}},
+                        {{{"0",{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}},
+                         {"1",{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}}}},
                         10000010);
 
-        pkts.clear();
+        pts.clear();
         for (SizeType i=0; i<num_tries(); ++i) {
-            pkts.push_back({r.id(), Mode({"robot", "first"}),
-                                            {{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))},
-                                             {Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}},
-                                            static_cast<TimestampType>(10000020+10*i)});
+            pts.push_back({{{"0",{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}},
+                             {"1",{Point(rnd().get(-5.0,5.0),rnd().get(-5.0,5.0),rnd().get(-5.0,5.0))}}}});
         }
 
-        profile("Acquire robot message for existing mode",[&](SizeType i){ history.acquire(pkts.at(i).mode(),pkts.at(i).points(),pkts.at(i).timestamp()); });
+        profile("Acquire robot message for existing mode",[&](SizeType i){ history.acquire(Mode({"robot", "first"}),pts.at(i),static_cast<TimestampType>(10000020+10*i)); });
     }
 };
 

@@ -43,7 +43,7 @@ struct ProfileBody : public Profiler {
 
     void profile_bodysegment_intersection() {
         FloatType thickness = 1.0;
-        Robot r("r0", 10, {{0, 1}}, {thickness});
+        Robot r("r0", 10, {{"0", "1"}}, {thickness});
         auto segment = r.segment(0);
 
         auto s1 = segment.create_sample();
@@ -65,7 +65,7 @@ struct ProfileBody : public Profiler {
 
     void profile_bodysegment_sample_update() {
         FloatType thickness = 1.0;
-        Robot r("r0", 10, {{0, 1}}, {thickness});
+        Robot r("r0", 10, {{"0", "1"}}, {thickness});
         auto segment = r.segment(0);
 
         auto s = segment.create_sample();
@@ -82,7 +82,7 @@ struct ProfileBody : public Profiler {
 
     void profile_approximation_creation() {
         FloatType thickness = 1.0;
-        Robot r("r0", 10, {{0, 1}}, {thickness});
+        Robot r("r0", 10, {{"0", "1"}}, {thickness});
         auto segment = r.segment(0);
 
         List<BodySegmentSample> samples;
