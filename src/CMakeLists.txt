@@ -11,6 +11,7 @@ add_library(OPERA_SRC OBJECT
    deserialisation.cpp
    memory.cpp
    mqtt.cpp
+   kafka.cpp
    mode.cpp
    trace_sample_range.cpp
    barrier.cpp
