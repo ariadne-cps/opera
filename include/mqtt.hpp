@@ -86,17 +86,6 @@ template<class T> class MqttPublisher : public PublisherInterface<T> {
     struct mosquitto* _publisher;
 };
 
-//! \brief Struct for holding context for a callback, including data for proper registration of the callback thread (otherwise inaccessible)
-template<class T> struct CallbackContext {
-    CallbackContext(CallbackFunction<T> f, int pll, std::string ptn) :
-            function(f), parent_logger_level(pll), parent_thread_name(ptn), thread_id(std::this_thread::get_id()), registered(false) { }
-    CallbackFunction<T> function;
-    int parent_logger_level;
-    std::string parent_thread_name;
-    std::thread::id thread_id;
-    bool registered;
-};
-
 //! \brief Callback for an MQTT message, used for running the actual callback on the deserialised message
 template<class T> void subscriber_on_message(struct mosquitto*, void *obj, const struct mosquitto_message *msg) {
     auto callback_context = static_cast<CallbackContext<T>*>(obj);
