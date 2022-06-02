@@ -53,6 +53,7 @@ message(STATUS "long long int size: ${SIZEOF_LONG_LONG_INT}")
 
 find_package(rapidjson REQUIRED)
 find_package(mqtt REQUIRED)
+find_package(LibRDKafka REQUIRED)
 find_package(Threads REQUIRED)
 
 set(MQTT_HOST "localhost" CACHE STRING "Host for testing MQTT functionality, defaulting to localhost")
