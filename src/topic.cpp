@@ -30,9 +30,9 @@
 
 namespace Opera {
 
-const BodyPresentationTopic BodyPresentationTopic::DEFAULT = BodyPresentationTopic("opera/body_presentation");
-const HumanStateTopic HumanStateTopic::DEFAULT = HumanStateTopic("opera/human_state");
-const RobotStateTopic RobotStateTopic::DEFAULT = RobotStateTopic("opera/robot_state");
-const CollisionNotificationTopic CollisionNotificationTopic::DEFAULT = CollisionNotificationTopic("opera/collision_notification");
+const BodyPresentationTopic BodyPresentationTopic::DEFAULT = BodyPresentationTopic("opera_body_presentation");
+const HumanStateTopic HumanStateTopic::DEFAULT = HumanStateTopic("opera_human_state");
+const RobotStateTopic RobotStateTopic::DEFAULT = RobotStateTopic("opera_robot_state");
+const CollisionNotificationTopic CollisionNotificationTopic::DEFAULT = CollisionNotificationTopic("opera_collision_notification");
 
 }
