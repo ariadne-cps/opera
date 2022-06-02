@@ -14,6 +14,7 @@ set(UNIT_TESTS
     test_deserialisation
     test_memory
     test_mqtt
+    test_kafka
     test_body_registry
     test_barrier
     test_lookahead_job
