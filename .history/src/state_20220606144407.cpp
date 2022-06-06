@@ -551,15 +551,14 @@ void HumanRobotDistance::_compute_distances(){
         }
 
         if (!(initialized_robot && initialized_human)){
-            if (_debug)
-                print "\tcouldnt find coordinates for robot or human";
+            print "\tcouldnt find coordinates for robot or human";
             continue;
         }
 
         FloatType segments_distance = distance(human_head, human_tail, robot_head, robot_tail);
         segments_distance = segments_distance - human_segment_thickness - robot_segment_thickness;
-        if (_debug)
-            print "\tcomputed distance: ", segments_distance;
+
+        print "\tcomputed distance: ", segments_distance;
         _minimum_distances.push_back(segments_distance);
     }
 }
@@ -569,10 +568,8 @@ void HumanRobotDistance::_compute_min_max(){
     FloatType max = -1;
 
     for (FloatType distance : _minimum_distances){
-        if (_debug){
-            print "\texamining distance: ", distance;
-            print "\tcurrent min: ", min, " current max: ", max;
-        }
+        print "\texamining distance: ", distance;
+        print "\tcurrent min: ", min, " current max: ", max;
         if (min == -1){
             min = distance;
             max = distance;
@@ -590,6 +587,7 @@ void HumanRobotDistance::_compute_min_max(){
         min = 0;
     if (max < 0)
         max = 0;
+    //_min_max_distances = Interval<FloatType> (min, max);
     _min_distance = min;
     _max_distance = max;
 }

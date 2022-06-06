@@ -569,10 +569,8 @@ void HumanRobotDistance::_compute_min_max(){
     FloatType max = -1;
 
     for (FloatType distance : _minimum_distances){
-        if (_debug){
-            print "\texamining distance: ", distance;
-            print "\tcurrent min: ", min, " current max: ", max;
-        }
+        print "\texamining distance: ", distance;
+        print "\tcurrent min: ", min, " current max: ", max;
         if (min == -1){
             min = distance;
             max = distance;
@@ -590,6 +588,7 @@ void HumanRobotDistance::_compute_min_max(){
         min = 0;
     if (max < 0)
         max = 0;
+    //_min_max_distances = Interval<FloatType> (min, max);
     _min_distance = min;
     _max_distance = max;
 }

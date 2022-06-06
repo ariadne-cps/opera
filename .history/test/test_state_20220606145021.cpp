@@ -756,11 +756,11 @@ public:
 5) umano e robot raggiungono un minimo locale di distanza, per poi raggiungere più avanti un altro minimo con valore inferiore dell'intervallo uguale, ma valore superiore maggiore (in quel caso ha senso che l'intervallo venga esteso)
         */
         float precision = 1e-4f;
-        test_distance_0(precision);
-        test_distance_1(precision);
-        test_distance_2(precision);
-        test_distance_3(precision);
-        test_distance_4(precision);
+        //test_distance_0(precision);
+        //test_distance_1(precision);
+        //test_distance_2(precision);
+        //test_distance_3(precision);
+        //test_distance_4(precision);
         test_distance_5(precision);
     }
 

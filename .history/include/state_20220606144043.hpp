@@ -340,7 +340,7 @@ class HumanRobotDistance{
         TimestampType const& _lower_timestamp;
         TimestampType const& _higher_timestamp;
 
-        float _debug = false;
+        float _debug = true;
 
         //Interval<FloatType> _min_max_distances;
         FloatType _min_distance = -1;
