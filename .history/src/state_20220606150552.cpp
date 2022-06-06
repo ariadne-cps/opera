@@ -711,6 +711,14 @@ SizeType RobotStateHistorySnapshot::checked_sample_index(Mode const& mode, Times
 
 // #~#v
 
+Mode const& RobotStateHistorySnapshot::mode_at(TimestampType const& time) const{
+    return _history.mode_at(time);
+}
+
+bool RobotStateHistorySnapshot::has_mode_at(TimestampType const& time) const{
+    return _history.has_mode_at(time);
+}
+
 SamplesHistory RobotStateHistorySnapshot::samples_history(Mode const& mode) const {
     return _history.samples_history(mode);
 }

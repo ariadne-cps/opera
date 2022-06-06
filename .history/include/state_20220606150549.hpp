@@ -248,6 +248,12 @@ class RobotStateHistorySnapshot {
     SizeType checked_sample_index(Mode const& mode, TimestampType const& timestamp) const;
 
     // #~#v
+    //! \brief The mode of the robot at the given \a timestamp
+    //! \details If the time is greater than the received last sample, then the current mode is returned
+    Mode const& mode_at(TimestampType const& timestamp) const;
+
+    //! \brief If there is a mode at the given \a timestamp
+    bool has_mode_at(TimestampType const& timestamp) const;
 
     SamplesHistory samples_history(Mode const& mode) const; //#~#
 
