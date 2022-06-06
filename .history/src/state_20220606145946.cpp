@@ -151,13 +151,13 @@ auto SamplesHistory::at(TimestampType const& timestamp) const -> BodySamplesType
 }
 
 //#~#v
-/*
+
 void SamplesHistory::print_timestamps(){
     std::cout << "printing timestamps of the samples\n";
     for (auto const& e : _entries){
         std::cout << e.first << std::endl;
     }
-}*/
+}
 
 bool SamplesHistory::has_samples_exactly_at(TimestampType const& timestamp) const {
     for (auto const& e : _entries) {
@@ -440,7 +440,8 @@ _human_history(human_history), _robot_snapshot(robot_snapshot), _human_segment_i
     }
     print "\tprinting samples with timestamps: ";
     for (auto mode : _robot_snapshot.modes_with_samples()){
-        print "\t\tmode: ", mode, " timestamps: ";
+
+        print "\t\tmode: ", mode, " timestamps: ";*/
         auto sample_hist = _robot_snapshot.samples_history(mode);
         sample_hist.print_timestamps();
 

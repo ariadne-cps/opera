@@ -136,7 +136,7 @@ class SamplesHistory {
 
     bool has_samples_exactly_at(TimestampType const& timestamp) const;
 
-    //void print_timestamps();
+    void print_timestamps();
 
     //! \brief The number of samples at the given \a timestamp
     SizeType size_at(TimestampType const& timestamp) const;
@@ -331,7 +331,7 @@ class HumanRobotDistance{
         void _set_human_instances();
         void _compute_min_max();
 
-        //void _print_robot_instances();
+        void _print_robot_instances();
 
         HumanStateHistory const& _human_history;
         RobotStateHistorySnapshot const& _robot_snapshot;

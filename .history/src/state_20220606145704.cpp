@@ -151,13 +151,13 @@ auto SamplesHistory::at(TimestampType const& timestamp) const -> BodySamplesType
 }
 
 //#~#v
-/*
+
 void SamplesHistory::print_timestamps(){
     std::cout << "printing timestamps of the samples\n";
     for (auto const& e : _entries){
         std::cout << e.first << std::endl;
     }
-}*/
+}
 
 bool SamplesHistory::has_samples_exactly_at(TimestampType const& timestamp) const {
     for (auto const& e : _entries) {
@@ -433,20 +433,22 @@ _human_history(human_history), _robot_snapshot(robot_snapshot), _human_segment_i
         print "done\n";*/
 }
 
-/*void HumanRobotDistance::_print_robot_instances(){
+void HumanRobotDistance::_print_robot_instances(){
     for (auto mode : _robot_snapshot.modes_with_samples()){
         auto samples = _robot_snapshot.samples(mode);
         print samples;
     }
-    print "\tprinting samples with timestamps: ";
+    /*if (_debug)
+        print "\tprinting samples with timestamps: ";*/
     for (auto mode : _robot_snapshot.modes_with_samples()){
-        print "\t\tmode: ", mode, " timestamps: ";
+        /*if (_debug)
+            print "\t\tmode: ", mode, " timestamps: ";*/
         auto sample_hist = _robot_snapshot.samples_history(mode);
         sample_hist.print_timestamps();
-
-        print "\n";
+        /*if (_debug)
+            print "\n";*/
     }
-}*/
+}
 
 Interval<FloatType> HumanRobotDistance::get_min_max_distances() const{
     return Interval<FloatType>(_min_distance, _max_distance);

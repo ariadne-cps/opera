@@ -151,13 +151,13 @@ auto SamplesHistory::at(TimestampType const& timestamp) const -> BodySamplesType
 }
 
 //#~#v
-/*
+
 void SamplesHistory::print_timestamps(){
     std::cout << "printing timestamps of the samples\n";
     for (auto const& e : _entries){
         std::cout << e.first << std::endl;
     }
-}*/
+}
 
 bool SamplesHistory::has_samples_exactly_at(TimestampType const& timestamp) const {
     for (auto const& e : _entries) {
