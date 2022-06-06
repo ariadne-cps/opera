@@ -150,23 +150,6 @@ auto SamplesHistory::at(TimestampType const& timestamp) const -> BodySamplesType
     return _entries.at(i-1).second;
 }
 
-//#~#v
-
-void SamplesHistory::print_timestamps(){
-    std::cout << "printing timestamps of the samples\n";
-    for (auto const& e : _entries){
-        std::cout << e.first << std::endl;
-    }
-}
-
-bool SamplesHistory::has_samples_exactly_at(TimestampType const& timestamp) const {
-    for (auto const& e : _entries) {
-        if (e.first == timestamp) return true;
-    }
-    return false;
-}
-//#~#^
-
 bool SamplesHistory::has_samples_at(TimestampType const& timestamp) const {
     for (auto const& e : _entries) {
         if (e.first <= timestamp) return true;
@@ -284,24 +267,6 @@ RobotStateHistorySnapshot RobotStateHistory::snapshot_at(TimestampType const& ti
 
 
 // #~#v
-namespace __hidden__ {
-    struct print {
-        bool space;
-        print() : space(false) {}
-        ~print() { std::cout << std::endl; }
-
-        template <typename T>
-        print &operator , (const T &t) {
-            if (space) std::cout << ' ';
-            else space = true;
-            std::cout << t;
-            return *this;
-        }
-    };
-}
-
-#define print __hidden__::print(),
-
 
 bool RobotStateHistory::has_mode_at(TimestampType const& time) const {
     for (auto const& p : _mode_presences)
@@ -312,10 +277,9 @@ bool RobotStateHistory::has_mode_at(TimestampType const& time) const {
 
 SamplesHistory RobotStateHistory::samples_history(Mode const& mode) const {
     auto it = _mode_states.cbegin();
-    //print "returning samples history";
+
     for (auto entry : _mode_states){
         if (entry.first == mode){
-            //print "For mode ", entry.first, " samples: ", entry.second.;
             return entry.second;
         }
     }
@@ -409,48 +373,122 @@ void RobotPredictTiming::_predict_timing(){
     nanoseconds_to_mode = n_samples * frequency * conversion_factor;
 }
 
+/*void RobotPredictTiming::_augment_trace(){
+
+        construct trace while making predictions to find the first
+        occurrence of the target mode in the future. If a branch is detected
+        in the prediction, takes the first path and adds the position of the
+        branch and the path taken o the _branch_tracking map.
+        If the target mode is not found in the current path when
+        the counter reaches the max_depth variable, the trace gets
+        deleted from the index of the last branch and the cycle
+        restarts from that index, since that index is going to be present
+        in the _branch tracking map, the next path is taken and the map is updated
+
+    int depth_count = 0;
+    int branch_to_take = 0;
+    SizeType trace_index;
+    std::cout << "Trace before augmentation: " << _mode_trace << std::endl;
+    while (_mode_trace.at(_mode_trace.size()-1).mode != _target){
+        trace_index = _mode_trace.size()-1;
+        depth_count = trace_index - _index_present_mode;
+        std::cout << "Current depth: " << depth_count << std::endl;
+        if (_mode_trace.next_modes().size() != 1){
+                std::cout << "Branch found! trace index: " << trace_index << " branch traking: ";
+                for (auto entry : _branch_tracking){
+                    std::cout << "{" << entry.first << ", " << entry.second << "} ";
+            }
+            std::cout<<std::endl;
+            if(_branch_tracking.has_key(trace_index)){
+                std::cout << "fetching path to take" << std::endl;
+                branch_to_take = _branch_tracking.find(_mode_trace.size()-1)->second + 1;
+                _branch_tracking.erase(trace_index);
+            }else{
+                branch_to_take = 0;
+            }
+            if ((int)_mode_trace.next_modes().size() > branch_to_take + 1){
+                _branch_tracking.insert({trace_index, branch_to_take});
+            }
+
+        }else{
+            branch_to_take = 0;
+        }
+        int branch_tmp_count = 0;
+        Mode entry_to_add;
+        PositiveFloatType probability_to_add;
+        for (auto entry : _mode_trace.next_modes()){
+            if (branch_tmp_count == branch_to_take){
+                std::cout << "Taking branch " << branch_tmp_count << std::endl;
+                entry_to_add = entry.first;
+                probability_to_add = entry.second;
+                break;
+            }
+            branch_tmp_count++;
+        }
+        _mode_trace.push_back(entry_to_add, probability_to_add);
+        if ((_mode_trace.at(_mode_trace.size()-1).mode != _target) && depth_count > _max_depth_search){
+            //_branch_tracking.erase(_branch_tracking.rbegin()->first);
+            SizeType branch_index = _branch_tracking.rbegin()->first;
+            std::cout << "trace index: " << trace_index << " branch index: " << branch_index << std::endl;
+            for (SizeType i = trace_index; i >= branch_index; i--){
+                _mode_trace.remove_at(i);
+                std::cout << "removing trace entry " << i << std::endl;
+            }
+            if (_branch_tracking.size() == 0 && depth_count == _max_depth_search){
+                std::cout << "Max depth reached while predicting the next occurrence of the target mode" << std::endl;
+                break;
+            }
+        }
+    }
+
+    std::cout << "Trace after augmentation: " << _mode_trace << std::endl;
+
+}*/
+
 void RobotPredictTiming::_extract_mode_trace(){
     _mode_trace = _snapshot.mode_trace();
 }
 
 
+namespace __hidden__ {
+    struct print {
+        bool space;
+        print() : space(false) {}
+        ~print() { std::cout << std::endl; }
+
+        template <typename T>
+        print &operator , (const T &t) {
+            if (space) std::cout << ' ';
+            else space = true;
+            std::cout << t;
+            return *this;
+        }
+    };
+}
+
+#define print __hidden__::print(),
+
+
 HumanRobotDistance::HumanRobotDistance(HumanStateHistory const& human_history, RobotStateHistorySnapshot const& robot_snapshot, IdType const& human_segment_id, IdType const& robot_segment_id, TimestampType const& lower_timestamp, TimestampType const& higher_timestamp):
 _human_history(human_history), _robot_snapshot(robot_snapshot), _human_segment_id(human_segment_id), _robot_segment_id(robot_segment_id), _lower_timestamp(lower_timestamp), _higher_timestamp(higher_timestamp), _minimum_distances(List<FloatType>()){
-    //print "setting human instances...";
+    print "setting human instances...";
     _set_human_instances();
-    //print "printing robot instances timestamp";
-    //_print_robot_instances();
-    //print "done\ncomputing distances...";
+    print "done\ncomputing distances...";
     _compute_distances();
     print "done\ncomputing minimim and maximum...";
     _compute_min_max();
-    //print "done\n";
-}
-
-void HumanRobotDistance::_print_robot_instances(){
-    for (auto mode : _robot_snapshot.modes_with_samples()){
-        auto samples = _robot_snapshot.samples(mode);
-        print samples;
-    }
-    print "\tprinting samples with timestamps: ";
-    for (auto mode : _robot_snapshot.modes_with_samples()){
-        print "\t\tmode: ", mode, " timestamps: ";
-        auto sample_hist = _robot_snapshot.samples_history(mode);
-        sample_hist.print_timestamps();
-        print "\n";
-    }
+    print "done\n";
 }
 
 Interval<FloatType> HumanRobotDistance::get_min_max_distances() const{
-    return Interval<FloatType>(_min_distance, _max_distance);
-    //return _min_max_distances;
+    return *_min_max_distances;
 }
 
 void HumanRobotDistance::_set_human_instances(){
     auto idx_list = _human_history.idxs_within(_lower_timestamp, _higher_timestamp);
-    //print "\thuman instance indexes: ";
+    print "\thuman instances: ";
     for (auto idx : idx_list){
-        //print "\t", idx;
+        print "\t", _human_history.at(idx);
         _human_instances.push_back(_human_history.at(idx));
     }
 
@@ -464,31 +502,17 @@ void HumanRobotDistance::_set_human_instances(){
 */
 
 void HumanRobotDistance::_compute_distances(){
-
     for (HumanStateInstance instance : _human_instances){
         TimestampType timestamp = instance.timestamp();
 
-        print "\tcomputing distance at ", timestamp;
-
-        Set<Mode> modes_with_samples = _robot_snapshot.modes_with_samples();
-
-        bool history_found = false;
-        SamplesHistory robot_samples_history;
-
-        //print "\t\t current timestamp: ", timestamp;
-        for (Mode mode : modes_with_samples){
-            SamplesHistory tmp = _robot_snapshot.samples_history(mode);
-
-            if (tmp.has_samples_exactly_at(timestamp)){
-                robot_samples_history = tmp;
-                print "\t\t robot samples found: ", tmp.at(timestamp);
-                history_found = true;
-            }
+        if (! _robot_snapshot.has_mode_at(timestamp)){
+            continue;
         }
 
+        Mode mode = _robot_snapshot.mode_at(timestamp);
+        SamplesHistory robot_samples_history = _robot_snapshot.samples_history(mode);
 
-        if (!history_found){
-            print "\trobot has no samples at this time";
+        if (!robot_samples_history.has_samples_at(timestamp)){
             continue;
         }
 
@@ -502,8 +526,6 @@ void HumanRobotDistance::_compute_distances(){
         Point human_tail = Point(0,0,0);
         FloatType human_segment_thickness = 0;
 
-        print "\trecovering robot's coordinates";
-
         BodySamplesType robot_body_sample = robot_samples_history.at(timestamp);
         for (auto segment_temporal_samples : robot_body_sample){
             for (auto body_segment_sample : segment_temporal_samples){
@@ -511,42 +533,26 @@ void HumanRobotDistance::_compute_distances(){
                     robot_head = body_segment_sample.head_centre();
                     robot_tail = body_segment_sample.tail_centre();
                     robot_segment_thickness = body_segment_sample.thickness();
-
-                    print "\t\tfound coordinate";
-                    print "\t\t\thead: ", robot_head;
-                    print "\t\t\ttail: ", robot_tail;
-                    print "\t\t\tthickness: ", robot_segment_thickness;
-
                     initialized_robot = true;
                  }
             }
         }
 
-        print "\trecovering human coordinates";
-
         for ( BodySegmentSample body_segment_sample : instance.samples()){
             if (body_segment_sample.segment_id() == _human_segment_id){
-                //print "\t\tfound coordinate";
                 human_head = body_segment_sample.head_centre();
                 human_tail = body_segment_sample.tail_centre();
                 human_segment_thickness = body_segment_sample.thickness();
-                print "\t\t\thead: ", human_head;
-                print "\t\t\ttail: ", human_tail;
-                print "\t\t\tthickness: ", human_segment_thickness;
-
                 initialized_human = true;
              }
         }
 
         if (!(initialized_robot && initialized_human)){
-            print "\tcouldnt find coordinates for robot or human";
             continue;
         }
 
         FloatType segments_distance = distance(human_head, human_tail, robot_head, robot_tail);
         segments_distance = segments_distance - human_segment_thickness - robot_segment_thickness;
-
-        print "\tcomputed distance: ", segments_distance;
         _minimum_distances.push_back(segments_distance);
     }
 }
@@ -556,8 +562,6 @@ void HumanRobotDistance::_compute_min_max(){
     FloatType max = -1;
 
     for (FloatType distance : _minimum_distances){
-        print "\texamining distance: ", distance;
-        print "\tcurrent min: ", min, " current max: ", max;
         if (min == -1){
             min = distance;
             max = distance;
@@ -571,13 +575,8 @@ void HumanRobotDistance::_compute_min_max(){
         }
     }
 
-    if (min < 0)
-        min = 0;
-    if (max < 0)
-        max = 0;
-    //_min_max_distances = Interval<FloatType> (min, max);
-    _min_distance = min;
-    _max_distance = max;
+    _min_max_distances->set_lower(min);
+    _min_max_distances->set_upper(max);
 }
 
 

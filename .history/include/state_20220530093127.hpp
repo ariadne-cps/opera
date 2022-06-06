@@ -134,10 +134,6 @@ class SamplesHistory {
     //! \brief Whether there are samples valid at \a timestamp
     bool has_samples_at(TimestampType const& timestamp) const;
 
-    bool has_samples_exactly_at(TimestampType const& timestamp) const;
-
-    void print_timestamps();
-
     //! \brief The number of samples at the given \a timestamp
     SizeType size_at(TimestampType const& timestamp) const;
   private:
@@ -340,9 +336,8 @@ class HumanRobotDistance{
         TimestampType const& _lower_timestamp;
         TimestampType const& _higher_timestamp;
 
-        //Interval<FloatType> _min_max_distances;
-        FloatType _min_distance = -1;
-        FloatType _max_distance = -1;
+        Interval<FloatType> *_min_max_distances;
+
         List <HumanStateInstance> _human_instances;
         List<FloatType> _minimum_distances;
 };

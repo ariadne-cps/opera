@@ -151,19 +151,20 @@ auto SamplesHistory::at(TimestampType const& timestamp) const -> BodySamplesType
 }
 
 //#~#v
+auto SamplesHistory::between(TimestampType const& timestamp_low, TimestampType const& timestamp_high) const -> BodySamplesType const& {
+    OPERA_PRECONDITION(not _entries.empty())
+    SizeType i=0;
+    for (; i<_entries.size(); ++i) {
+        if (_entries.at(i).first > timestamp_high) break;
+    }
+    return _entries.at(i-1).second;
+}
 
 void SamplesHistory::print_timestamps(){
     std::cout << "printing timestamps of the samples\n";
     for (auto const& e : _entries){
         std::cout << e.first << std::endl;
     }
-}
-
-bool SamplesHistory::has_samples_exactly_at(TimestampType const& timestamp) const {
-    for (auto const& e : _entries) {
-        if (e.first == timestamp) return true;
-    }
-    return false;
 }
 //#~#^
 
@@ -416,15 +417,15 @@ void RobotPredictTiming::_extract_mode_trace(){
 
 HumanRobotDistance::HumanRobotDistance(HumanStateHistory const& human_history, RobotStateHistorySnapshot const& robot_snapshot, IdType const& human_segment_id, IdType const& robot_segment_id, TimestampType const& lower_timestamp, TimestampType const& higher_timestamp):
 _human_history(human_history), _robot_snapshot(robot_snapshot), _human_segment_id(human_segment_id), _robot_segment_id(robot_segment_id), _lower_timestamp(lower_timestamp), _higher_timestamp(higher_timestamp), _minimum_distances(List<FloatType>()){
-    //print "setting human instances...";
+    print "setting human instances...";
     _set_human_instances();
-    //print "printing robot instances timestamp";
-    //_print_robot_instances();
-    //print "done\ncomputing distances...";
+    print "printing robot instances timestamp";
+    _print_robot_instances();
+    print "done\ncomputing distances...";
     _compute_distances();
     print "done\ncomputing minimim and maximum...";
     _compute_min_max();
-    //print "done\n";
+    print "done\n";
 }
 
 void HumanRobotDistance::_print_robot_instances(){
@@ -432,25 +433,17 @@ void HumanRobotDistance::_print_robot_instances(){
         auto samples = _robot_snapshot.samples(mode);
         print samples;
     }
-    print "\tprinting samples with timestamps: ";
-    for (auto mode : _robot_snapshot.modes_with_samples()){
-        print "\t\tmode: ", mode, " timestamps: ";
-        auto sample_hist = _robot_snapshot.samples_history(mode);
-        sample_hist.print_timestamps();
-        print "\n";
-    }
 }
 
 Interval<FloatType> HumanRobotDistance::get_min_max_distances() const{
-    return Interval<FloatType>(_min_distance, _max_distance);
-    //return _min_max_distances;
+    return *_min_max_distances;
 }
 
 void HumanRobotDistance::_set_human_instances(){
     auto idx_list = _human_history.idxs_within(_lower_timestamp, _higher_timestamp);
-    //print "\thuman instance indexes: ";
+    print "\thuman instance indexes: ";
     for (auto idx : idx_list){
-        //print "\t", idx;
+        print "\t", idx;
         _human_instances.push_back(_human_history.at(idx));
     }
 
@@ -464,31 +457,25 @@ void HumanRobotDistance::_set_human_instances(){
 */
 
 void HumanRobotDistance::_compute_distances(){
-
     for (HumanStateInstance instance : _human_instances){
         TimestampType timestamp = instance.timestamp();
 
         print "\tcomputing distance at ", timestamp;
 
-        Set<Mode> modes_with_samples = _robot_snapshot.modes_with_samples();
-
-        bool history_found = false;
-        SamplesHistory robot_samples_history;
-
-        //print "\t\t current timestamp: ", timestamp;
-        for (Mode mode : modes_with_samples){
-            SamplesHistory tmp = _robot_snapshot.samples_history(mode);
-
-            if (tmp.has_samples_exactly_at(timestamp)){
-                robot_samples_history = tmp;
-                print "\t\t robot samples found: ", tmp.at(timestamp);
-                history_found = true;
-            }
+        if (! _robot_snapshot.has_mode_at(timestamp)){
+            print "\tno robot instance at this time";
+            continue;
         }
 
+        Mode mode = _robot_snapshot.mode_at(timestamp);
 
-        if (!history_found){
-            print "\trobot has no samples at this time";
+        print "\tmode: ", mode;
+
+        SamplesHistory robot_samples_history = _robot_snapshot.samples_history(mode);
+
+        if (!robot_samples_history.has_samples_at(timestamp)){
+            print "\trobot has no samples at this time and mode";
+            print "\tavailable samples: ", robot_samples_history.print_timestamps;
             continue;
         }
 
@@ -516,7 +503,6 @@ void HumanRobotDistance::_compute_distances(){
                     print "\t\t\thead: ", robot_head;
                     print "\t\t\ttail: ", robot_tail;
                     print "\t\t\tthickness: ", robot_segment_thickness;
-
                     initialized_robot = true;
                  }
             }
@@ -526,14 +512,13 @@ void HumanRobotDistance::_compute_distances(){
 
         for ( BodySegmentSample body_segment_sample : instance.samples()){
             if (body_segment_sample.segment_id() == _human_segment_id){
-                //print "\t\tfound coordinate";
+                print "\t\tfound coordinate";
                 human_head = body_segment_sample.head_centre();
                 human_tail = body_segment_sample.tail_centre();
                 human_segment_thickness = body_segment_sample.thickness();
                 print "\t\t\thead: ", human_head;
                 print "\t\t\ttail: ", human_tail;
                 print "\t\t\tthickness: ", human_segment_thickness;
-
                 initialized_human = true;
              }
         }
@@ -556,8 +541,6 @@ void HumanRobotDistance::_compute_min_max(){
     FloatType max = -1;
 
     for (FloatType distance : _minimum_distances){
-        print "\texamining distance: ", distance;
-        print "\tcurrent min: ", min, " current max: ", max;
         if (min == -1){
             min = distance;
             max = distance;
@@ -571,13 +554,8 @@ void HumanRobotDistance::_compute_min_max(){
         }
     }
 
-    if (min < 0)
-        min = 0;
-    if (max < 0)
-        max = 0;
-    //_min_max_distances = Interval<FloatType> (min, max);
-    _min_distance = min;
-    _max_distance = max;
+    _min_max_distances->set_lower(min);
+    _min_max_distances->set_upper(max);
 }
 
 

@@ -340,9 +340,9 @@ class HumanRobotDistance{
         TimestampType const& _lower_timestamp;
         TimestampType const& _higher_timestamp;
 
-        //Interval<FloatType> _min_max_distances;
-        FloatType _min_distance = -1;
-        FloatType _max_distance = -1;
+        Interval<FloatType> _min_max_distances;
+        FloatType _min_distance;
+        FloatType _max_distance;
         List <HumanStateInstance> _human_instances;
         List<FloatType> _minimum_distances;
 };

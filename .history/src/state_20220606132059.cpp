@@ -422,7 +422,7 @@ _human_history(human_history), _robot_snapshot(robot_snapshot), _human_segment_i
     //_print_robot_instances();
     //print "done\ncomputing distances...";
     _compute_distances();
-    print "done\ncomputing minimim and maximum...";
+    //print "done\ncomputing minimim and maximum...";
     _compute_min_max();
     //print "done\n";
 }
@@ -450,7 +450,7 @@ void HumanRobotDistance::_set_human_instances(){
     auto idx_list = _human_history.idxs_within(_lower_timestamp, _higher_timestamp);
     //print "\thuman instance indexes: ";
     for (auto idx : idx_list){
-        //print "\t", idx;
+        print "\t", idx;
         _human_instances.push_back(_human_history.at(idx));
     }
 
@@ -468,7 +468,7 @@ void HumanRobotDistance::_compute_distances(){
     for (HumanStateInstance instance : _human_instances){
         TimestampType timestamp = instance.timestamp();
 
-        print "\tcomputing distance at ", timestamp;
+        //print "\tcomputing distance at ", timestamp;
 
         Set<Mode> modes_with_samples = _robot_snapshot.modes_with_samples();
 
@@ -481,7 +481,7 @@ void HumanRobotDistance::_compute_distances(){
 
             if (tmp.has_samples_exactly_at(timestamp)){
                 robot_samples_history = tmp;
-                print "\t\t robot samples found: ", tmp.at(timestamp);
+                //print "\t\t robot samples found: ", tmp.at(timestamp);
                 history_found = true;
             }
         }
@@ -502,7 +502,7 @@ void HumanRobotDistance::_compute_distances(){
         Point human_tail = Point(0,0,0);
         FloatType human_segment_thickness = 0;
 
-        print "\trecovering robot's coordinates";
+        //print "\trecovering robot's coordinates";
 
         BodySamplesType robot_body_sample = robot_samples_history.at(timestamp);
         for (auto segment_temporal_samples : robot_body_sample){
@@ -512,17 +512,17 @@ void HumanRobotDistance::_compute_distances(){
                     robot_tail = body_segment_sample.tail_centre();
                     robot_segment_thickness = body_segment_sample.thickness();
 
-                    print "\t\tfound coordinate";
+                    /*print "\t\tfound coordinate";
                     print "\t\t\thead: ", robot_head;
                     print "\t\t\ttail: ", robot_tail;
                     print "\t\t\tthickness: ", robot_segment_thickness;
-
+                    */
                     initialized_robot = true;
                  }
             }
         }
 
-        print "\trecovering human coordinates";
+        //print "\trecovering human coordinates";
 
         for ( BodySegmentSample body_segment_sample : instance.samples()){
             if (body_segment_sample.segment_id() == _human_segment_id){
@@ -530,10 +530,10 @@ void HumanRobotDistance::_compute_distances(){
                 human_head = body_segment_sample.head_centre();
                 human_tail = body_segment_sample.tail_centre();
                 human_segment_thickness = body_segment_sample.thickness();
-                print "\t\t\thead: ", human_head;
+                /*print "\t\t\thead: ", human_head;
                 print "\t\t\ttail: ", human_tail;
                 print "\t\t\tthickness: ", human_segment_thickness;
-
+                */
                 initialized_human = true;
              }
         }
@@ -546,7 +546,7 @@ void HumanRobotDistance::_compute_distances(){
         FloatType segments_distance = distance(human_head, human_tail, robot_head, robot_tail);
         segments_distance = segments_distance - human_segment_thickness - robot_segment_thickness;
 
-        print "\tcomputed distance: ", segments_distance;
+        //print "\tcomputed distance: ", segments_distance;
         _minimum_distances.push_back(segments_distance);
     }
 }
@@ -556,8 +556,8 @@ void HumanRobotDistance::_compute_min_max(){
     FloatType max = -1;
 
     for (FloatType distance : _minimum_distances){
-        print "\texamining distance: ", distance;
-        print "\tcurrent min: ", min, " current max: ", max;
+        //print "\texamining distance: ", distance;
+        //print "\tcurrent min: ", min, " current max: ", max;
         if (min == -1){
             min = distance;
             max = distance;
@@ -573,8 +573,6 @@ void HumanRobotDistance::_compute_min_max(){
 
     if (min < 0)
         min = 0;
-    if (max < 0)
-        max = 0;
     //_min_max_distances = Interval<FloatType> (min, max);
     _min_distance = min;
     _max_distance = max;

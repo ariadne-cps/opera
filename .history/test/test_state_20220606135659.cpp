@@ -554,6 +554,7 @@ public:
 
         RobotStateHistorySnapshot robot_snapshot = robot_history.snapshot_at(ts);
         HumanRobotDistance hrd = HumanRobotDistance(human_history, robot_snapshot, 0, 0, 0, ts);
+        std::cout << hrd << std::endl << precision;
 
         // results checking section
         // 3.464102 - thickness = 3.464102 - (1.0 + 0.5) = 1.9641

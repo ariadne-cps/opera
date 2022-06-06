@@ -481,14 +481,14 @@ void HumanRobotDistance::_compute_distances(){
 
             if (tmp.has_samples_exactly_at(timestamp)){
                 robot_samples_history = tmp;
-                print "\t\t robot samples found: ", tmp.at(timestamp);
+                //print "\t\t robot samples found: ", tmp.at(timestamp);
                 history_found = true;
             }
         }
 
 
         if (!history_found){
-            print "\trobot has no samples at this time";
+            //print "\trobot has no samples at this time";
             continue;
         }
 
@@ -539,7 +539,7 @@ void HumanRobotDistance::_compute_distances(){
         }
 
         if (!(initialized_robot && initialized_human)){
-            print "\tcouldnt find coordinates for robot or human";
+            //print "\tcouldnt find coordinates for robot or human";
             continue;
         }
 
