@@ -739,6 +739,7 @@ public:
 
         RobotStateHistorySnapshot robot_snapshot = robot_history.snapshot_at(ts);
         HumanRobotDistance hrd = HumanRobotDistance(human_history, robot_snapshot, 0, 0, 0, ts);
+        std::cout << hrd << std::endl << precision;
 
         // results checking section
         Interval<FloatType> theoric_result = Interval<FloatType>(21.0167, 173.437);

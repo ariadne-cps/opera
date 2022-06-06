@@ -685,72 +685,6 @@ public:
         }
     }
 
-    void test_distance_5(float precision){
-        // 5) umano e robot raggiungono un minimo locale di distanza, per poi raggiungere più avanti un altro minimo con valore inferiore dell'intervallo uguale, ma valore superiore maggiore (in quel caso ha senso che l'intervallo venga esteso)
-
-
-        // Standard test section (adjusting parameters)
-        String robot("robot");
-        Robot r("r0", 10, {{0,1}}, {1.0});
-        RobotStateHistory robot_history(r);
-        Human h("h0", {{3,2},{1,0}}, {0.5,1.0});
-        HumanStateHistory human_history(h);
-
-        Mode first({robot, "first"}), second({robot, "second"}), third({robot, "third"}), fourth({robot, "fourth"}), fifth({robot, "fifth"});
-
-        TimestampType ts = 0;
-
-                                                        // 0
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(100,100,100)},{Point(101,101,101)}},ts);
-        robot_history.acquire(first,{{Point(0,0,0)},{Point(1,1,1)}},ts); ts+= 100000000;
-
-                                                        // 10
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(55,55,55)},{Point(56,56,56)}},ts);
-        robot_history.acquire(second,{{Point(10,10,10)},{Point(11,11,11)}},ts); ts+= 100000000;
-
-                                                        // 20
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(40,40,40)},{Point(41,41,41)}},ts);
-        robot_history.acquire(third,{{Point(0,0,0)},{Point(1,1,1)}},ts); ts+= 100000000;
-
-                                                        // 30
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(101,101,201)},{Point(102,102,102)}},ts);
-        robot_history.acquire(fourth,{{Point(0,0,0)},{Point(1,1,1)}},ts); ts+= 100000000;
-
-                                                        // 40
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(15,15,15)},{Point(16,16,16)}},ts);
-        robot_history.acquire(fifth,{{Point(0,0,0)},{Point(2,2,2)}},ts); ts+= 100000000;
-
-        human_history.acquire({{Point(0,0,0)},{Point(4,4,4)},{Point(15,15,15)},{Point(16,16,16)}},ts);
-        robot_history.acquire(first,{{Point(12,12,12)},{Point(13,13,13)}},ts); ts+= 100000000;
-
-
-        /*
-            distances:
-                93.5307 -> local maximum
-                50.2295 -> local minimum
-                174.937  -> absolute maximum
-                24.2487 -> local minimum
-                22.5167  -> absolute minimum where the max minimum distance is the same but the min minimum distance is lower, so it becomes the new lower bound
-        */
-        // EXPECTED RESULTS:
-        // minimum = 22.5167 - 1,5 = 21.0167
-        // maximum = 174.937 - 1,5 = 173.437
-
-
-        RobotStateHistorySnapshot robot_snapshot = robot_history.snapshot_at(ts);
-        HumanRobotDistance hrd = HumanRobotDistance(human_history, robot_snapshot, 0, 0, 0, ts);
-
-        // results checking section
-        Interval<FloatType> theoric_result = Interval<FloatType>(21.0167, 173.437);
-        Interval<FloatType> sixth_result = hrd.get_min_max_distances();
-
-        {
-            OPERA_TEST_ASSERT(abs(theoric_result.lower() - sixth_result.lower()) < precision);
-            OPERA_TEST_ASSERT(abs(theoric_result.lower() - sixth_result.lower()) < precision);
-        }
-
-    }
-
     void test_human_robot_distance(){
         /*
 1) umano e robot collidono ad un certo punto (restituisce distanza nulla)
@@ -764,8 +698,8 @@ public:
         //test_distance_1(precision);
         //test_distance_2(precision);
         //test_distance_3(precision);
-        //test_distance_4(precision);
-        test_distance_5(precision);
+        test_distance_4(precision);
+
     }
 
 };
