@@ -26,8 +26,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef OPERA_BROKER_HPP
-#define OPERA_BROKER_HPP
+#ifndef OPERA_BROKER_ACCESS_HPP
+#define OPERA_BROKER_ACCESS_HPP
 
 #include <iostream>
 #include <string>
@@ -105,4 +105,4 @@ class BrokerAccess : public Handle<BrokerAccessInterface> {
 
 }
 
-#endif // OPERA_BROKER_HPP
+#endif // OPERA_BROKER_ACCESS_HPP

@@ -39,7 +39,7 @@
 #include <thread>
 #include <mosquitto.h>
 
-#include "broker.hpp"
+#include "broker_access.hpp"
 #include "serialisation.hpp"
 #include "deserialisation.hpp"
 #include "conclog/include/logging.hpp"

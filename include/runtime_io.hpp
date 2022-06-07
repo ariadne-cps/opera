@@ -40,7 +40,7 @@
 #include "thread.hpp"
 #include "macros.hpp"
 
-#include "broker.hpp"
+#include "broker_access.hpp"
 #include "body_registry.hpp"
 #include "lookahead_job_factory.hpp"
 #include "synchronised_queue.hpp"

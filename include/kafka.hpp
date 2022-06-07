@@ -39,7 +39,7 @@
 #include <thread>
 #include <librdkafka/rdkafkacpp.h>
 
-#include "broker.hpp"
+#include "broker_access.hpp"
 #include "serialisation.hpp"
 #include "deserialisation.hpp"
 #include "thread.hpp"
