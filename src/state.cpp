@@ -37,7 +37,6 @@ using namespace ConcLog;
 namespace Opera {
 
 HumanStateInstance::HumanStateInstance(Human const& human, Map<KeypointIdType,List<Point>> const& points, TimestampType const& timestamp) : _timestamp(timestamp) {
-    OPERA_PRECONDITION(human.num_points() == points.size())
     for (SizeType i=0; i<human.num_segments(); ++i) {
         auto const& segment = human.segment(i);
         auto head = points.find(segment.head_id());
