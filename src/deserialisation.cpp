@@ -58,7 +58,7 @@ HumanStateMessage Deserialiser<HumanStateMessage>::make() const {
                 samples.emplace_back(pt["x"].GetDouble(),pt["y"].GetDouble(),pt["z"].GetDouble());
             points.insert(std::make_pair(keypoint.name.GetString(), samples));
         }
-        bodies.push_back({body["bodyId"].GetString(),points});
+        bodies.push_back({body["body_id"].GetString(),points});
     }
     return HumanStateMessage(bodies, _document["timestamp"].GetUint64());
 }

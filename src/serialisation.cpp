@@ -77,7 +77,7 @@ Document Serialiser<HumanStateMessage>::to_document() const {
 
         Value id;
         id.SetString(bd.first.c_str(),static_cast<rapidjson::SizeType>(bd.first.length()));
-        entry.AddMember("bodyId",id,allocator);
+        entry.AddMember("body_id",id,allocator);
 
         Value keypoints;
         keypoints.SetObject();
