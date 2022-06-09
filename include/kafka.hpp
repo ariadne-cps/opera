@@ -67,6 +67,7 @@ template<class T> class KafkaPublisher : public PublisherInterface<T> {
     }
 
     ~KafkaPublisher() {
+        _producer->flush(10000);
         delete _producer;
     }
 
