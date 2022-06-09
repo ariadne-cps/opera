@@ -43,7 +43,7 @@ String construct_thread_name(String prefix, SizeType number, SizeType max_number
 }
 
 Runtime::Runtime(BrokerAccess const& access, LookAheadJobFactory const& factory, SizeType const& concurrency) :
-    Runtime({access,BodyPresentationTopic::DEFAULT},{access,RobotStateTopic::DEFAULT},{access,HumanStateTopic::DEFAULT},{access,CollisionNotificationTopic::DEFAULT},factory,concurrency) { }
+    Runtime({access,BodyPresentationTopic::DEFAULT},{access,HumanStateTopic::DEFAULT},{access,RobotStateTopic::DEFAULT},{access,CollisionNotificationTopic::DEFAULT},factory,concurrency) { }
 
 Runtime::Runtime(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, Pair<BrokerAccess,HumanStateTopic> const& hs_subscriber,
                  Pair<BrokerAccess,RobotStateTopic> const& rs_subscriber, Pair<BrokerAccess,CollisionNotificationTopic> const& cn_publisher,

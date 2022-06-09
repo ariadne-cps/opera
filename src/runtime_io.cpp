@@ -73,8 +73,7 @@ RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const&
             CONCLOG_PRINTLN_AT(2,"Discarded robot state message from " << msg.id() << " since the body is not registered")
         }
         ++_num_state_messages_received;
-    },hs_subscriber.second))
-
+    },rs_subscriber.second))
 {
 }
 
