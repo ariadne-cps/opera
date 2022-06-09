@@ -45,6 +45,7 @@ RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const&
         }
     },bp_subscriber.second)),
     _hs_subscriber(hs_subscriber.first.make_human_state_subscriber([&](auto const& msg){
+        std::lock_guard<std::mutex> lock(_state_received_mux);
         for (auto const& bd : msg.bodies()) {
             if (registry.contains(bd.first)) {
                 CONCLOG_PRINTLN_AT(2,"Received human state message from " << bd.first << " at " << msg.timestamp())
@@ -53,22 +54,18 @@ RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const&
                 CONCLOG_PRINTLN_AT(2,"Discarded human state message from " << bd.first << " since the body is not registered")
             }
         }
-        {
-            std::lock_guard<std::mutex> lock(_state_received_mux);
-            _move_sleeping_jobs_to_waiting_jobs(registry, sleeping_jobs, waiting_jobs);
-            _promote_pairs_to_jobs(registry, sleeping_jobs, waiting_jobs);
-        }
+        _move_sleeping_jobs_to_waiting_jobs(registry, sleeping_jobs, waiting_jobs);
+        _promote_pairs_to_jobs(registry, sleeping_jobs, waiting_jobs);
         ++_num_state_messages_received;
     },hs_subscriber.second)),
     _rs_subscriber(rs_subscriber.first.make_robot_state_subscriber([&](auto const& msg){
+        std::lock_guard<std::mutex> lock(_state_received_mux);
         if (registry.contains(msg.id())) {
             CONCLOG_PRINTLN_AT(2,"Received robot state message from " << msg.id() << " at " << msg.timestamp())
             registry.acquire_state(msg);
-            {
-                std::lock_guard<std::mutex> lock(_state_received_mux);
-                _move_sleeping_jobs_to_waiting_jobs(registry, sleeping_jobs, waiting_jobs);
-                _promote_pairs_to_jobs(registry, sleeping_jobs, waiting_jobs);
-            }
+
+            _move_sleeping_jobs_to_waiting_jobs(registry, sleeping_jobs, waiting_jobs);
+            _promote_pairs_to_jobs(registry, sleeping_jobs, waiting_jobs);
         } else {
             CONCLOG_PRINTLN_AT(2,"Discarded robot state message from " << msg.id() << " since the body is not registered")
         }
