@@ -118,11 +118,11 @@ public:
         Deserialiser<CollisionNotificationMessage> d(Resources::path("json/examples/notification/notification0.json"));
         auto p = d.make();
         OPERA_TEST_EQUALS(p.human_id(),"h0")
-        OPERA_TEST_EQUALS(p.human_segment_id().first,"nose")
-        OPERA_TEST_EQUALS(p.human_segment_id().second,"neck")
+        OPERA_TEST_EQUALS(p.human_segment().first, "nose")
+        OPERA_TEST_EQUALS(p.human_segment().second, "neck")
         OPERA_TEST_EQUALS(p.robot_id(),"r0")
-        OPERA_TEST_EQUALS(p.robot_segment_id().first,"5")
-        OPERA_TEST_EQUALS(p.robot_segment_id().second,"6")
+        OPERA_TEST_EQUALS(p.robot_segment().first, "5")
+        OPERA_TEST_EQUALS(p.robot_segment().second, "6")
         OPERA_TEST_EQUALS(p.current_time(),32890)
         OPERA_TEST_EQUALS(p.collision_distance().lower(), 72)
         OPERA_TEST_EQUALS(p.collision_distance().upper(), 123)

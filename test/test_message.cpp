@@ -82,11 +82,11 @@ public:
         CollisionNotificationMessage p("h0",{"left_wrist","left_elbow"},"r0",{"nose","neck"},200,Interval<TimestampType>(1000,2000),loc,1.0);
 
         OPERA_TEST_EQUALS(p.human_id(),"h0")
-        OPERA_TEST_EQUALS(p.human_segment_id().first,"left_wrist")
-        OPERA_TEST_EQUALS(p.human_segment_id().second,"left_elbow")
+        OPERA_TEST_EQUALS(p.human_segment().first, "left_wrist")
+        OPERA_TEST_EQUALS(p.human_segment().second, "left_elbow")
         OPERA_TEST_EQUALS(p.robot_id(),"r0")
-        OPERA_TEST_EQUALS(p.robot_segment_id().first,"nose")
-        OPERA_TEST_EQUALS(p.robot_segment_id().second,"neck")
+        OPERA_TEST_EQUALS(p.robot_segment().first, "nose")
+        OPERA_TEST_EQUALS(p.robot_segment().second, "neck")
         OPERA_TEST_EQUALS(p.current_time(),200)
         OPERA_TEST_EQUALS(p.collision_distance().lower(), 1000)
         OPERA_TEST_EQUALS(p.collision_distance().upper(), 2000)

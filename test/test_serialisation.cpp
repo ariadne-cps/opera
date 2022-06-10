@@ -74,7 +74,7 @@ public:
         CollisionNotificationMessage p("h0", {"nose","neck"}, "r0", {"0","1"}, 32890, Interval<TimestampType>(72, 123), Mode({{"origin", "3"}, {"destination", "2"}, {"phase", "pre"}}), 0.5);
         Serialiser<CollisionNotificationMessage> serialiser(p);
         serialiser.to_file(Resources::path("json/examples/notification/notification0.tmp.json"));
-        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"human\":{\"bodyId\":\"h0\",\"segmentId\":[\"nose\",\"neck\"]},\"robot\":{\"bodyId\":\"r0\",\"segmentId\":[\"0\",\"1\"]},\"currentTime\":32890,\"collisionDistance\":{\"lower\":72,\"upper\":123},\"collisionMode\":{\"destination\":\"2\",\"origin\":\"3\",\"phase\":\"pre\"},\"likelihood\":0.5}")
+        OPERA_TEST_EQUALS(serialiser.to_string(),"{\"human\":{\"bodyId\":\"h0\",\"segment\":[\"nose\",\"neck\"]},\"robot\":{\"bodyId\":\"r0\",\"segment\":[\"0\",\"1\"]},\"currentTime\":32890,\"collisionDistance\":{\"lower\":72,\"upper\":123},\"collisionMode\":{\"destination\":\"2\",\"origin\":\"3\",\"phase\":\"pre\"},\"likelihood\":0.5}")
     }
 };
 
