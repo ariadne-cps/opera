@@ -154,9 +154,9 @@ Document Serialiser<CollisionNotificationMessage>::to_document() const {
     human.AddMember("bodyId",Value().SetString(obj.human_id().c_str(),static_cast<rapidjson::SizeType>(obj.human_id().length()),allocator),allocator);
     Value human_segment_id;
     human_segment_id.SetArray();
-    human_segment_id.PushBack(Value().SetString(obj.human_segment_id().first.c_str(),static_cast<rapidjson::SizeType>(obj.human_segment_id().first.length()),allocator),allocator);
-    human_segment_id.PushBack(Value().SetString(obj.human_segment_id().second.c_str(),static_cast<rapidjson::SizeType>(obj.human_segment_id().second.length()),allocator),allocator);
-    human.AddMember("segmentId",human_segment_id,allocator);
+    human_segment_id.PushBack(Value().SetString(obj.human_segment().first.c_str(), static_cast<rapidjson::SizeType>(obj.human_segment().first.length()), allocator), allocator);
+    human_segment_id.PushBack(Value().SetString(obj.human_segment().second.c_str(), static_cast<rapidjson::SizeType>(obj.human_segment().second.length()), allocator), allocator);
+    human.AddMember("segment",human_segment_id,allocator);
     document.AddMember("human",human,allocator);
 
     Value robot;
@@ -164,9 +164,9 @@ Document Serialiser<CollisionNotificationMessage>::to_document() const {
     robot.AddMember("bodyId",Value().SetString(obj.robot_id().c_str(),static_cast<rapidjson::SizeType>(obj.robot_id().length()),allocator),allocator);
     Value robot_segment_id;
     robot_segment_id.SetArray();
-    robot_segment_id.PushBack(Value().SetString(obj.robot_segment_id().first.c_str(),static_cast<rapidjson::SizeType>(obj.robot_segment_id().first.length()),allocator),allocator);
-    robot_segment_id.PushBack(Value().SetString(obj.robot_segment_id().second.c_str(),static_cast<rapidjson::SizeType>(obj.robot_segment_id().second.length()),allocator),allocator);
-    robot.AddMember("segmentId",robot_segment_id,allocator);
+    robot_segment_id.PushBack(Value().SetString(obj.robot_segment().first.c_str(), static_cast<rapidjson::SizeType>(obj.robot_segment().first.length()), allocator), allocator);
+    robot_segment_id.PushBack(Value().SetString(obj.robot_segment().second.c_str(), static_cast<rapidjson::SizeType>(obj.robot_segment().second.length()), allocator), allocator);
+    robot.AddMember("segment",robot_segment_id,allocator);
     document.AddMember("robot",robot,allocator);
 
     document.AddMember("currentTime", Value().SetUint64(obj.current_time()), allocator);

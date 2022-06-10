@@ -87,25 +87,25 @@ TimestampType const& RobotStateMessage::timestamp() const {
     return _timestamp;
 }
 
-CollisionNotificationMessage::CollisionNotificationMessage(BodyIdType const& human_id, Pair<KeypointIdType,KeypointIdType> const& human_segment_id, BodyIdType const& robot_id, Pair<KeypointIdType,KeypointIdType> const& robot_segment_id,
+CollisionNotificationMessage::CollisionNotificationMessage(BodyIdType const& human_id, Pair<KeypointIdType,KeypointIdType> const& human_segment, BodyIdType const& robot_id, Pair<KeypointIdType,KeypointIdType> const& robot_segment,
                                                            TimestampType const& current_time, Interval<TimestampType> const& collision_distance, Mode const& collision_mode, PositiveFloatType const& likelihood) :
-        _human_id(human_id), _human_segment_id(human_segment_id), _robot_id(robot_id), _robot_segment_id(robot_segment_id),
+        _human_id(human_id), _human_segment(human_segment), _robot_id(robot_id), _robot_segment(robot_segment),
         _current_time(current_time), _collision_distance(collision_distance), _collision_mode(collision_mode), _likelihood(likelihood) { }
 
 BodyIdType const& CollisionNotificationMessage::human_id() const {
     return _human_id;
 }
 
-Pair<KeypointIdType,KeypointIdType> const& CollisionNotificationMessage::human_segment_id() const {
-    return _human_segment_id;
+Pair<KeypointIdType,KeypointIdType> const& CollisionNotificationMessage::human_segment() const {
+    return _human_segment;
 }
 
 BodyIdType const& CollisionNotificationMessage::robot_id() const {
     return _robot_id;
 }
 
-Pair<KeypointIdType,KeypointIdType> const& CollisionNotificationMessage::robot_segment_id() const {
-    return _robot_segment_id;
+Pair<KeypointIdType,KeypointIdType> const& CollisionNotificationMessage::robot_segment() const {
+    return _robot_segment;
 }
 
 Mode const& CollisionNotificationMessage::collision_mode() const {

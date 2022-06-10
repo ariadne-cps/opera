@@ -84,9 +84,9 @@ CollisionNotificationMessage Deserialiser<CollisionNotificationMessage>::make() 
         collision_mode_values.insert(std::make_pair(v.name.GetString(), v.value.GetString()));
 
     return CollisionNotificationMessage(_document["human"]["bodyId"].GetString(),
-                                        {_document["human"]["segmentId"].GetArray()[0].GetString(),_document["human"]["segmentId"].GetArray()[1].GetString()},
+                                        {_document["human"]["segment"].GetArray()[0].GetString(),_document["human"]["segment"].GetArray()[1].GetString()},
                                         _document["robot"]["bodyId"].GetString(),
-                                        {_document["robot"]["segmentId"].GetArray()[0].GetString(),_document["robot"]["segmentId"].GetArray()[1].GetString()},
+                                        {_document["robot"]["segment"].GetArray()[0].GetString(),_document["robot"]["segment"].GetArray()[1].GetString()},
                                         _document["currentTime"].GetUint64(),
                                         Interval<TimestampType>(_document["collisionDistance"]["lower"].GetUint64(),
                                        _document["collisionDistance"]["upper"].GetUint64()),
