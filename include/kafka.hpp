@@ -49,12 +49,28 @@ using namespace ConcLog;
 
 namespace Opera {
 
+void get_auth_env(RdKafka::Conf *conf)  {
+    std::string errstr;
+
+    std::string sasl_mechanism = getenv("KAFKA_SASL_MECHANISM");
+    conf->set("sasl.mechanism", sasl_mechanism, errstr);
+    std::string security_protocol = getenv("KAFKA_SECURITY_PROTOCOL");
+    conf->set("security.protocol", security_protocol, errstr);
+    std::string kafka_username = getenv("KAFKA_USERNAME");
+    conf->set("sasl.username", kafka_username, errstr);
+    std::string kafka_password = getenv("KAFKA_PASSWORD");
+    conf->set("sasl.password", kafka_password, errstr);
+}
+
 //! \brief The publisher of objects to the Kafka broker
 template<class T> class KafkaPublisher : public PublisherInterface<T> {
   public:
     KafkaPublisher(std::string const& topic, std::string const& brokers) : _topic(topic), _brokers(brokers) {
         RdKafka::Conf *conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         std::string errstr;
+
+        get_auth_env(conf);
+
         conf->set("metadata.broker.list", brokers, errstr);
         _producer = RdKafka::Producer::create(conf, errstr);
         OPERA_ASSERT_MSG(_producer,"Failed to create producer: " << errstr)
@@ -88,6 +104,8 @@ template<class T> class KafkaSubscriber : public SubscriberInterface<T> {
         RdKafka::Conf *tconf = RdKafka::Conf::create(RdKafka::Conf::CONF_TOPIC);
 
         std::string errstr;
+
+        get_auth_env(conf);
 
         conf->set("metadata.broker.list", brokers, errstr);
 
