@@ -34,7 +34,14 @@
 using namespace Opera;
 
 int main() {
-    BrokerAccess access = KafkaBrokerAccess(0,"localhost",RdKafka::Topic::OFFSET_END);
+    
+    BrokerAccess access = KafkaBrokerAccessBuilder(getenv("KAFKA_BROKERS"))
+                          .set_topic_prefix(getenv("KAFKA_TOPIC_PREFIX"))
+                          .set_sasl_mechanism(getenv("KAFKA_SASL_MECHANISM"))
+                          .set_security_protocol(getenv("KAFKA_SECURITY_PROTOCOL"))
+                          .set_sasl_username(getenv("KAFKA_SASL_USERNAME"))
+                          .set_sasl_password(getenv("KAFKA_SASL_PASSWORD"))
+                          .build();
     TestBrokerAccess(access).test();
     return OPERA_TEST_FAILURES;
 }

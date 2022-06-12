@@ -30,38 +30,87 @@
 
 namespace Opera {
 
-KafkaBrokerAccess::KafkaBrokerAccess(int partition, std::string brokers, int start_offset) : _partition(partition), _brokers(brokers), _start_offset(start_offset) { }
+KafkaBrokerAccessBuilder::KafkaBrokerAccessBuilder(std::string const& brokers) : _brokers(brokers), _partition(0), _start_offset(RdKafka::Topic::OFFSET_END) { }
+
+KafkaBrokerAccessBuilder& KafkaBrokerAccessBuilder::set_partition(int partition) {
+    _partition = partition;
+    return *this;
+}
+
+KafkaBrokerAccessBuilder& KafkaBrokerAccessBuilder::set_start_offset(int start_offset) {
+    _start_offset = start_offset;
+    return *this;
+}
+
+KafkaBrokerAccessBuilder& KafkaBrokerAccessBuilder::set_topic_prefix(std::string const& topic_prefix) {
+    _topic_prefix = topic_prefix;
+    return *this;
+}
+
+KafkaBrokerAccessBuilder& KafkaBrokerAccessBuilder::set_sasl_mechanism(std::string const& sasl_mechanism) {
+    _sasl_mechanism = sasl_mechanism;
+    return *this;
+}
+
+KafkaBrokerAccessBuilder& KafkaBrokerAccessBuilder::set_security_protocol(std::string const& security_protocol) {
+    _security_protocol = security_protocol;
+    return *this;
+}
+
+KafkaBrokerAccessBuilder& KafkaBrokerAccessBuilder::set_sasl_username(std::string const& sasl_username) {
+    _sasl_username = sasl_username;
+    return *this;
+}
+
+KafkaBrokerAccessBuilder& KafkaBrokerAccessBuilder::set_sasl_password(std::string const& sasl_password) {
+    _sasl_password = sasl_password;
+    return *this;
+}
+
+KafkaBrokerAccess KafkaBrokerAccessBuilder::build() const {
+    if (_sasl_mechanism != "" or _security_protocol != "" or _sasl_username != "" or _sasl_password != "") {
+        OPERA_ASSERT(_sasl_mechanism != "" and _security_protocol != "" and _sasl_username != "" and _sasl_password != "");
+    }
+    return KafkaBrokerAccess(_brokers,_partition,_start_offset,_topic_prefix,_sasl_mechanism,_security_protocol,_sasl_username,_sasl_password);
+}
+
+KafkaBrokerAccess::KafkaBrokerAccess(std::string const& brokers, int partition, int start_offset, std::string const& topic_prefix,
+                                     std::string const& sasl_mechanism, std::string const& security_protocol,
+                                     std::string const& sasl_username, std::string const& sasl_password) :
+                                     _brokers(brokers), _partition(partition), _start_offset(start_offset), _topic_prefix(topic_prefix),
+                                     _sasl_mechanism(sasl_mechanism), _security_protocol(security_protocol),
+                                     _sasl_username(sasl_username), _sasl_password(sasl_password) { }
 
 PublisherInterface<BodyPresentationMessage>* KafkaBrokerAccess::make_body_presentation_publisher(BodyPresentationTopic const& topic) const {
-    return new KafkaPublisher<BodyPresentationMessage>(topic, _brokers);
+    return new KafkaPublisher<BodyPresentationMessage>(_topic_prefix+topic, _brokers, _sasl_mechanism, _security_protocol, _sasl_username, _sasl_password);
 }
 
 PublisherInterface<HumanStateMessage>* KafkaBrokerAccess::make_human_state_publisher(HumanStateTopic const& topic) const {
-    return new KafkaPublisher<HumanStateMessage>(topic, _brokers);
+    return new KafkaPublisher<HumanStateMessage>(_topic_prefix+topic, _brokers, _sasl_mechanism, _security_protocol, _sasl_username, _sasl_password);
 }
 
 PublisherInterface<RobotStateMessage>* KafkaBrokerAccess::make_robot_state_publisher(RobotStateTopic const& topic) const {
-    return new KafkaPublisher<RobotStateMessage>(topic, _brokers);
+    return new KafkaPublisher<RobotStateMessage>(_topic_prefix+topic, _brokers, _sasl_mechanism, _security_protocol, _sasl_username, _sasl_password);
 }
 
 PublisherInterface<CollisionNotificationMessage>* KafkaBrokerAccess::make_collision_notification_publisher(CollisionNotificationTopic const& topic) const {
-    return new KafkaPublisher<CollisionNotificationMessage>(topic, _brokers);
+    return new KafkaPublisher<CollisionNotificationMessage>(_topic_prefix+topic, _brokers, _sasl_mechanism, _security_protocol, _sasl_username, _sasl_password);
 }
 
 SubscriberInterface<BodyPresentationMessage>* KafkaBrokerAccess::make_body_presentation_subscriber(CallbackFunction<BodyPresentationMessage> const& callback, BodyPresentationTopic const& topic) const {
-    return new KafkaSubscriber<BodyPresentationMessage>(topic, _partition, _brokers, _start_offset, callback);
+    return new KafkaSubscriber<BodyPresentationMessage>(_topic_prefix+topic, _partition, _start_offset, callback, _brokers, _sasl_mechanism, _security_protocol, _sasl_username, _sasl_password);
 }
 
 SubscriberInterface<HumanStateMessage>* KafkaBrokerAccess::make_human_state_subscriber(CallbackFunction<HumanStateMessage> const& callback, HumanStateTopic const& topic) const {
-    return new KafkaSubscriber<HumanStateMessage>(topic, _partition, _brokers, _start_offset, callback);
+    return new KafkaSubscriber<HumanStateMessage>(_topic_prefix+topic, _partition, _start_offset, callback, _brokers, _sasl_mechanism, _security_protocol, _sasl_username, _sasl_password);
 }
 
 SubscriberInterface<RobotStateMessage>* KafkaBrokerAccess::make_robot_state_subscriber(CallbackFunction<RobotStateMessage> const& callback, RobotStateTopic const& topic) const {
-    return new KafkaSubscriber<RobotStateMessage>(topic, _partition, _brokers, _start_offset, callback);
+    return new KafkaSubscriber<RobotStateMessage>(_topic_prefix+topic, _partition, _start_offset, callback, _brokers, _sasl_mechanism, _security_protocol, _sasl_username, _sasl_password);
 }
 
 SubscriberInterface<CollisionNotificationMessage>* KafkaBrokerAccess::make_collision_notification_subscriber(CallbackFunction<CollisionNotificationMessage> const& callback, CollisionNotificationTopic const& topic) const {
-    return new KafkaSubscriber<CollisionNotificationMessage>(topic, _partition, _brokers, _start_offset, callback);
+    return new KafkaSubscriber<CollisionNotificationMessage>(_topic_prefix+topic, _partition, _start_offset, callback, _brokers, _sasl_mechanism, _security_protocol, _sasl_username, _sasl_password);
 }
 
 }
