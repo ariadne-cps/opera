@@ -71,7 +71,7 @@ class TestBrokerAccess {
         auto bp_subscriber = _access.make_body_presentation_subscriber([&](auto p){ bp_received.push_back(p);
             OPERA_PRINT_TEST_COMMENT("Message received: " << Serialiser<BodyPresentationMessage>(p).to_string()) });
         auto bp_publisher = _access.make_body_presentation_publisher();
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
         bp_publisher->put(hp);
         SizeType i=0;
         while (bp_received.size() != 1) {
@@ -106,7 +106,7 @@ class TestBrokerAccess {
         auto hs_publisher = _access.make_human_state_publisher();
         auto rs_publisher = _access.make_robot_state_publisher();
         auto cn_publisher = _access.make_collision_notification_publisher();
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
         bp_publisher->put(hp);
         bp_publisher->put(rp);
         hs_publisher->put(hs);

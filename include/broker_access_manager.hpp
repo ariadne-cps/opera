@@ -50,8 +50,8 @@ class BrokerAccessManager {
 
     //! \brief Configure to assign the access
     void configure(std::string broker_type, std::string address, int arg) {
-        if (broker_type == "kafka") _access = new BrokerAccess(KafkaBrokerAccess(arg,address,RdKafka::Topic::OFFSET_END));
-        else if (broker_type == "memory") _access = new BrokerAccess(MemoryBrokerAccess());
+        //if (broker_type == "kafka") _access = new BrokerAccess(KafkaBrokerAccess(arg,address,RdKafka::Topic::OFFSET_END));
+        if (broker_type == "memory") _access = new BrokerAccess(MemoryBrokerAccess());
         else if (broker_type == "mqtt") _access = new BrokerAccess(MqttBrokerAccess(address,arg));
     }
 
