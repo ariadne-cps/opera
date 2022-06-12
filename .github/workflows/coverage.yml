@@ -19,7 +19,7 @@ jobs:
       run: echo NPROC="nproc" >> $GITHUB_ENV
 
     - name: Set Up Dependencies
-      run: sudo apt install -y cmake ninja-build pkg-config lcov clang-11 g++-10 mosquitto libmosquitto-dev rapidjson-dev
+      run: sudo apt install -y cmake ninja-build pkg-config lcov clang-11 g++-10 mosquitto libmosquitto-dev rapidjson-dev librdkafka-dev
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
