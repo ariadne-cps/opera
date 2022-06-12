@@ -59,9 +59,15 @@ jobs:
     - name: Set Up macOS Dependencies
       if: runner.os == 'macOS'
       run: |
-        brew install ninja gcc@10 rapidjson mosquitto librdkafka
+        brew install ninja gcc@10 rapidjson mosquitto
         export PKG_CONFIG_PATH=/usr/local/opt/libffi/lib/pkgconfig
         brew services start mosquitto
+        if [ ${{matrix.config.cxx}} == "g++-10" ]
+        then
+          HOMEBREW_CXX=g++-10 HOMEBREW_CC=gcc-10 brew install librdkafka --build-from-source
+        else
+          brew install librdkafka
+        fi
 
     - name: Set Up Linux Dependencies
       if: runner.os == 'Linux'
