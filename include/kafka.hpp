@@ -49,11 +49,6 @@ using namespace ConcLog;
 
 namespace Opera {
 
-void get_auth_env(RdKafka::Conf *conf, std::string const& sas)  {
-    std::string errstr;
-
-}
-
 //! \brief The publisher of objects to the Kafka broker
 template<class T> class KafkaPublisher : public PublisherInterface<T> {
   public:
@@ -93,7 +88,7 @@ template<class T> class KafkaPublisher : public PublisherInterface<T> {
 template<class T> class KafkaSubscriber : public SubscriberInterface<T> {
   public:
     //! \brief Connects and starts the main asynchronous loop for getting messages
-    KafkaSubscriber(std::string const& topic, int partition, int start_offset, CallbackFunction<T> const& callback,
+    KafkaSubscriber(std::string const& topic, int partition, int64_t start_offset, CallbackFunction<T> const& callback,
                     std::string const& brokers, std::string const& sasl_mechanism, std::string const& security_protocol,
                     std::string const& sasl_username, std::string const& sasl_password)
         : _stopped(false), _partition(partition)
@@ -159,7 +154,7 @@ class KafkaBrokerAccessBuilder {
     //! \brief Set partition (default: 0)
     KafkaBrokerAccessBuilder& set_partition(int partition);
     //! \brief Set start offset (default: RdKafka::Topic::OFFSET_END)
-    KafkaBrokerAccessBuilder& set_start_offset(int start_offset);
+    KafkaBrokerAccessBuilder& set_start_offset(int64_t start_offset);
     //! \brief Set a prefix for topics with respect to the provided value when making a publisher or subscriber
     KafkaBrokerAccessBuilder& set_topic_prefix(std::string const& topic_prefix);
     //! \brief Set the SASL mechanism
@@ -177,7 +172,7 @@ class KafkaBrokerAccessBuilder {
   private:
     std::string const _brokers;
     int _partition;
-    int _start_offset;
+    int64_t _start_offset;
     std::string _topic_prefix;
     std::string _sasl_mechanism;
     std::string _security_protocol;
@@ -189,7 +184,7 @@ class KafkaBrokerAccessBuilder {
 class KafkaBrokerAccess : public BrokerAccessInterface {
     friend class KafkaBrokerAccessBuilder;
   protected:
-    KafkaBrokerAccess(std::string const& brokers, int partition, int start_offset, std::string const& topic_prefix,
+    KafkaBrokerAccess(std::string const& brokers, int partition, int64_t start_offset, std::string const& topic_prefix,
                       std::string const& sasl_mechanism, std::string const& security_protocol, std::string const& sasl_username, std::string const& sasl_password);
   public:
     PublisherInterface<BodyPresentationMessage>* make_body_presentation_publisher(BodyPresentationTopic const& topic = BodyPresentationTopic::DEFAULT) const override;
@@ -204,7 +199,7 @@ class KafkaBrokerAccess : public BrokerAccessInterface {
   private:
     std::string const _brokers;
     int const _partition;
-    int const _start_offset;
+    int64_t const _start_offset;
     std::string const _topic_prefix;
     std::string const _sasl_mechanism;
     std::string const _security_protocol;

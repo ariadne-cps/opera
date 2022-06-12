@@ -37,7 +37,7 @@ KafkaBrokerAccessBuilder& KafkaBrokerAccessBuilder::set_partition(int partition)
     return *this;
 }
 
-KafkaBrokerAccessBuilder& KafkaBrokerAccessBuilder::set_start_offset(int start_offset) {
+KafkaBrokerAccessBuilder& KafkaBrokerAccessBuilder::set_start_offset(int64_t start_offset) {
     _start_offset = start_offset;
     return *this;
 }
@@ -74,7 +74,7 @@ KafkaBrokerAccess KafkaBrokerAccessBuilder::build() const {
     return KafkaBrokerAccess(_brokers,_partition,_start_offset,_topic_prefix,_sasl_mechanism,_security_protocol,_sasl_username,_sasl_password);
 }
 
-KafkaBrokerAccess::KafkaBrokerAccess(std::string const& brokers, int partition, int start_offset, std::string const& topic_prefix,
+KafkaBrokerAccess::KafkaBrokerAccess(std::string const& brokers, int partition, int64_t start_offset, std::string const& topic_prefix,
                                      std::string const& sasl_mechanism, std::string const& security_protocol,
                                      std::string const& sasl_username, std::string const& sasl_password) :
                                      _brokers(brokers), _partition(partition), _start_offset(start_offset), _topic_prefix(topic_prefix),
