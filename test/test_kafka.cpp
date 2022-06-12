@@ -42,6 +42,6 @@ int main() {
                           .set_sasl_username(Environment::get("KAFKA_SASL_USERNAME"))
                           .set_sasl_password(Environment::get("KAFKA_SASL_PASSWORD"))
                           .build();
-    TestBrokerAccess(access).test();
+    TestBrokerAccess(access,2500).test();
     return OPERA_TEST_FAILURES;
 }
