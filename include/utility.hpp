@@ -43,7 +43,10 @@ class Environment {
   public:
     static char* get(const char* var) {
         #ifdef _WIN32
-        return _dupenv_s(var);
+        char* result;
+        size_t len;
+        _dupenv_s(&result,&len,var);
+        return result;
         #else
         return getenv(var);
         #endif
