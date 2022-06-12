@@ -34,7 +34,7 @@ jobs:
             C:/vcpkg/buildtrees
             C:/vcpkg/installed
             C:/vcpkg/packages
-          key: vcpkg-${{matrix.config.os}}
+          key: vcpkg--${{matrix.config.os}}
 
     - name: Set Up Dependencies
       if: steps.cache-deps.outputs.cache-hit != 'true'
