@@ -34,7 +34,7 @@
 using namespace Opera;
 
 int main() {
-    
+
     BrokerAccess access = KafkaBrokerAccessBuilder(getenv("KAFKA_BROKERS"))
                           .set_topic_prefix(getenv("KAFKA_TOPIC_PREFIX"))
                           .set_sasl_mechanism(getenv("KAFKA_SASL_MECHANISM"))

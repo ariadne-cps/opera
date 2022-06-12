@@ -59,13 +59,13 @@ jobs:
     - name: Set Up macOS Dependencies
       if: runner.os == 'macOS'
       run: |
-        brew install ninja gcc@10 rapidjson mosquitto
+        brew install ninja gcc@10 rapidjson mosquitto librdkafka
         export PKG_CONFIG_PATH=/usr/local/opt/libffi/lib/pkgconfig
         brew services start mosquitto
 
     - name: Set Up Linux Dependencies
       if: runner.os == 'Linux'
-      run: sudo apt install -y cmake ninja-build pkg-config clang-11 g++-10 mosquitto libmosquitto-dev rapidjson-dev
+      run: sudo apt install -y cmake ninja-build pkg-config clang-11 g++-10 mosquitto libmosquitto-dev rapidjson-dev librdkafka-dev
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
