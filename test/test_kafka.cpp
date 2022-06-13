@@ -35,12 +35,12 @@ using namespace Opera;
 
 int main() {
 
-    BrokerAccess access = KafkaBrokerAccessBuilder(Environment::get("KAFKA_BROKERS"))
+    BrokerAccess access = KafkaBrokerAccessBuilder(Environment::get("KAFKA_BROKER_URI"))
                           .set_topic_prefix(Environment::get("KAFKA_TOPIC_PREFIX"))
                           .set_sasl_mechanism(Environment::get("KAFKA_SASL_MECHANISM"))
                           .set_security_protocol(Environment::get("KAFKA_SECURITY_PROTOCOL"))
-                          .set_sasl_username(Environment::get("KAFKA_SASL_USERNAME"))
-                          .set_sasl_password(Environment::get("KAFKA_SASL_PASSWORD"))
+                          .set_sasl_username(Environment::get("KAFKA_USERNAME"))
+                          .set_sasl_password(Environment::get("KAFKA_PASSWORD"))
                           .build();
     TestBrokerAccess(access,2500).test();
     return OPERA_TEST_FAILURES;
