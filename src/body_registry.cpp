@@ -31,8 +31,8 @@
 
 namespace Opera {
 
-HumanRegistryEntry::HumanRegistryEntry(BodyIdType const& id, List<Pair<KeypointIdType,KeypointIdType>> const& points_ids, List<FloatType> const& thicknesses)
-    : _body({id,points_ids,thicknesses}), _history(_body) { }
+HumanRegistryEntry::HumanRegistryEntry(BodyIdType const& id, List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs, List<FloatType> const& thicknesses)
+    : _body({id,segment_pairs,thicknesses}), _history(_body) { }
 
 Human const& HumanRegistryEntry::body() const {
     return _body;
@@ -62,8 +62,8 @@ void HumanRegistryEntry::add(Map<KeypointIdType,List<Point>> const& points, Time
     _history.acquire(points,timestamp);
 }
 
-RobotRegistryEntry::RobotRegistryEntry(BodyIdType const& id, SizeType const& message_frequency, List<Pair<KeypointIdType,KeypointIdType>> const& points_ids, List<FloatType> const& thicknesses)
-    : _body({id,message_frequency,points_ids,thicknesses}), _history(_body) { }
+RobotRegistryEntry::RobotRegistryEntry(BodyIdType const& id, SizeType const& message_frequency, List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs, List<FloatType> const& thicknesses)
+    : _body({id,message_frequency,segment_pairs,thicknesses}), _history(_body) { }
 
 Robot const& RobotRegistryEntry::body() const {
     return _body;
@@ -172,11 +172,17 @@ void BodyRegistry::acquire_state(RobotStateMessage const& msg) {
 
 void BodyRegistry::insert(BodyPresentationMessage const& presentation) {
     if (not contains(presentation.id())) {
-        if (presentation.is_human())
-            _humans.insert(std::make_pair(presentation.id(),new HumanRegistryEntry(presentation.id(),presentation.segment_pairs(),presentation.thicknesses())));
-        else
-            _robots.insert(std::make_pair(presentation.id(),new RobotRegistryEntry(presentation.id(),presentation.message_frequency(),presentation.segment_pairs(),presentation.thicknesses())));
+        if (presentation.is_human()) insert_human(presentation.id(),presentation.segment_pairs(),presentation.thicknesses());
+        else insert_robot(presentation.id(),presentation.message_frequency(),presentation.segment_pairs(),presentation.thicknesses());
     }
+}
+
+void BodyRegistry::insert_human(BodyIdType const& id, List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs, List<FloatType> const& thicknesses) {
+    _humans.insert(std::make_pair(id,new HumanRegistryEntry(id,segment_pairs,thicknesses)));
+}
+
+void BodyRegistry::insert_robot(BodyIdType const& id, SizeType const& message_frequency, List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs, List<FloatType> const& thicknesses) {
+    _robots.insert(std::make_pair(id,new RobotRegistryEntry(id,message_frequency,segment_pairs,thicknesses)));
 }
 
 void BodyRegistry::remove(BodyIdType const& id) {
