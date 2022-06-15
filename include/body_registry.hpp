@@ -38,7 +38,7 @@ namespace Opera {
 class HumanRegistryEntry {
   public:
     //! \brief Construct from human fields
-    HumanRegistryEntry(BodyIdType const& id, List<Pair<KeypointIdType,KeypointIdType>> const& points_ids, List<FloatType> const& thicknesses);
+    HumanRegistryEntry(BodyIdType const& id, List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs, List<FloatType> const& thicknesses);
 
     //! \brief Return the body
     Human const& body() const;
@@ -68,7 +68,7 @@ class HumanRegistryEntry {
 struct RobotRegistryEntry {
   public:
     //! \brief Construct from robot fields
-    RobotRegistryEntry(BodyIdType const& id, SizeType const& message_frequency, List<Pair<KeypointIdType,KeypointIdType>> const& points_ids, List<FloatType> const& thicknesses);
+    RobotRegistryEntry(BodyIdType const& id, SizeType const& message_frequency, List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs, List<FloatType> const& thicknesses);
 
     //! \brief Return the body
     Robot const& body() const;
@@ -135,6 +135,11 @@ class BodyRegistry {
 
     //! \brief Insert a new body from a \a presentation message
     void insert(BodyPresentationMessage const& presentation);
+    //! \brief Insert a new human from fields
+    void insert_human(BodyIdType const& id, List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs, List<FloatType> const& thicknesses);
+    //! \brief Insert a new robot from fields
+    void insert_robot(BodyIdType const& id, SizeType const& message_frequency, List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs, List<FloatType> const& thicknesses);
+
     //! \brief Remove the body given the \a id
     void remove(BodyIdType const& id);
     //! \brief Remove all bodies

@@ -106,20 +106,20 @@ class RobotStateMessage {
 class CollisionNotificationMessage {
   public:
     //! \brief Construct from fields
-    CollisionNotificationMessage(BodyIdType const& human_id, Pair<KeypointIdType,KeypointIdType> const& human_segment_id, BodyIdType const& robot_id, Pair<KeypointIdType,KeypointIdType> const& robot_segment_id,
+    CollisionNotificationMessage(BodyIdType const& human_id, Pair<KeypointIdType,KeypointIdType> const& human_segment, BodyIdType const& robot_id, Pair<KeypointIdType,KeypointIdType> const& robot_segment,
                                  TimestampType const& current_time, Interval<TimestampType> const& collision_distance, Mode const& collision_mode, PositiveFloatType const& likelihood);
 
     //! \brief The identifier of the human
     BodyIdType const& human_id() const;
-    //! \brief The identifier of the segment for the human
-    Pair<KeypointIdType,KeypointIdType> const& human_segment_id() const;
+    //! \brief The segment for the human
+    Pair<KeypointIdType,KeypointIdType> const& human_segment() const;
     //! \brief The identifier of the robot
     BodyIdType const& robot_id() const;
-    //! \brief The identifier of the segment for the robot
-    Pair<KeypointIdType,KeypointIdType> const& robot_segment_id() const;
+    //! \brief The segment for the robot
+    Pair<KeypointIdType,KeypointIdType> const& robot_segment() const;
     //! \brief The current time according to the message
     TimestampType const& current_time() const;
-    //! \brief The collision segment_distance (in ns)
+    //! \brief The collision segment_distance (in ms)
     Interval<TimestampType> const& collision_distance() const;
     //! \brief The mode of the robot in the collision
     Mode const& collision_mode() const;
@@ -128,9 +128,9 @@ class CollisionNotificationMessage {
 
   private:
     BodyIdType const _human_id;
-    Pair<KeypointIdType,KeypointIdType> const _human_segment_id;
+    Pair<KeypointIdType,KeypointIdType> const _human_segment;
     BodyIdType const _robot_id;
-    Pair<KeypointIdType,KeypointIdType> const _robot_segment_id;
+    Pair<KeypointIdType,KeypointIdType> const _robot_segment;
     TimestampType const _current_time;
     Interval<TimestampType> const _collision_distance;
     Mode const _collision_mode;

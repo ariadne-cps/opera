@@ -53,13 +53,14 @@ message(STATUS "long long int size: ${SIZEOF_LONG_LONG_INT}")
 
 find_package(rapidjson REQUIRED)
 find_package(mqtt REQUIRED)
+find_package(LibRDKafka REQUIRED)
 find_package(Threads REQUIRED)
 
 set(MQTT_HOST "localhost" CACHE STRING "Host for testing MQTT functionality, defaulting to localhost")
 set(RESOURCES_PATH ${PROJECT_SOURCE_DIR}/resources/)
 configure_file(${PROJECT_SOURCE_DIR}/cmake/config.hpp.cmake ${PROJECT_SOURCE_DIR}/include/config.hpp)
 
-include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/dependencies ${mqtt_INCLUDE_DIR} ${RAPIDJSON_INCLUDEDIR})
+include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/dependencies ${mqtt_INCLUDE_DIR} ${RAPIDJSON_INCLUDEDIR} ${LibRDKafka_INCLUDE_DIR})
 
 add_subdirectory(src)
 
@@ -71,7 +72,7 @@ add_subdirectory(dependencies)
 add_subdirectory(profile)
 
 add_library(opera ${LIBRARY_KIND} $<TARGET_OBJECTS:OPERA_SRC>)
-target_link_libraries(opera conclog ${mqtt_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(opera conclog ${mqtt_LIBRARY} ${LibRDKafka_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(operad src/operad.cpp)
 target_link_libraries(operad opera)

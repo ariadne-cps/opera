@@ -40,7 +40,7 @@
 #include "thread.hpp"
 #include "macros.hpp"
 
-#include "broker.hpp"
+#include "broker_access.hpp"
 #include "body_registry.hpp"
 #include "lookahead_job_factory.hpp"
 #include "synchronised_queue.hpp"
@@ -88,6 +88,7 @@ class RuntimeReceiver {
 
     LookAheadJobFactory const& _factory;
 
+    PublisherInterface<BodyPresentationMessage>* _bp_publisher;
     SubscriberInterface<BodyPresentationMessage>* _bp_subscriber;
     SubscriberInterface<HumanStateMessage>* _hs_subscriber;
     SubscriberInterface<RobotStateMessage>* _rs_subscriber;

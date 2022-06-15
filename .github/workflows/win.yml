@@ -6,6 +6,16 @@ on:
       - main
   pull_request:
 
+env:
+  MQTT_BROKER_URI: ${{ secrets.MQTT_BROKER_URI }}
+  MQTT_BROKER_PORT: ${{ secrets.MQTT_BROKER_PORT }}
+  KAFKA_BROKER_URI: ${{ secrets.KAFKA_BROKER_URI }}
+  KAFKA_TOPIC_PREFIX: ${{ secrets.KAFKA_TOPIC_PREFIX }}
+  KAFKA_SASL_MECHANISM: ${{ secrets.KAFKA_SASL_MECHANISM }}
+  KAFKA_SECURITY_PROTOCOL: ${{ secrets.KAFKA_SECURITY_PROTOCOL }}
+  KAFKA_USERNAME: ${{ secrets.KAFKA_USERNAME }}
+  KAFKA_PASSWORD: ${{ secrets.KAFKA_PASSWORD }}
+
 jobs:
   build:
 
@@ -19,7 +29,7 @@ jobs:
             name: "Windows Server 2019 [Release]",
             os: windows-2019,
             build-type: "Release",
-            vcpkg-deps: "mosquitto:x64-windows rapidjson:x64-windows"
+            vcpkg-deps: "mosquitto:x64-windows rapidjson:x64-windows librdkafka:x64-windows"
           }
     steps:
     - uses: actions/checkout@v2
@@ -34,7 +44,7 @@ jobs:
             C:/vcpkg/buildtrees
             C:/vcpkg/installed
             C:/vcpkg/packages
-          key: vcpkg-${{matrix.config.os}}
+          key: vcpkg--${{matrix.config.os}}
 
     - name: Set Up Dependencies
       if: steps.cache-deps.outputs.cache-hit != 'true'
@@ -53,4 +63,4 @@ jobs:
 
     - name: Test
       working-directory: ${{runner.workspace}}/build
-      run: ctest --output-on-failure
+      run: ctest --output-on-failure -E kafka

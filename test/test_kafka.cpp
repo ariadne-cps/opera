@@ -1,7 +1,7 @@
 /***************************************************************************
- *            topic.cpp
+ *            test_kafka.cpp
  *
- *  Copyright  2022  Luca Geretti
+ *  Copyright  2021  Luca Geretti
  *
  ****************************************************************************/
 
@@ -26,13 +26,22 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "topic.hpp"
+#include "test.hpp"
+#include "config.hpp"
+#include "test_broker_access.hpp"
+#include "kafka.hpp"
 
-namespace Opera {
+using namespace Opera;
 
-const BodyPresentationTopic BodyPresentationTopic::DEFAULT = BodyPresentationTopic("opera_body_presentation");
-const HumanStateTopic HumanStateTopic::DEFAULT = HumanStateTopic("opera_human_state");
-const RobotStateTopic RobotStateTopic::DEFAULT = RobotStateTopic("opera_robot_state");
-const CollisionNotificationTopic CollisionNotificationTopic::DEFAULT = CollisionNotificationTopic("opera_collision_notification");
+int main() {
 
+    BrokerAccess access = KafkaBrokerAccessBuilder(Environment::get("KAFKA_BROKER_URI"))
+                          .set_topic_prefix(Environment::get("KAFKA_TOPIC_PREFIX"))
+                          .set_sasl_mechanism(Environment::get("KAFKA_SASL_MECHANISM"))
+                          .set_security_protocol(Environment::get("KAFKA_SECURITY_PROTOCOL"))
+                          .set_sasl_username(Environment::get("KAFKA_USERNAME"))
+                          .set_sasl_password(Environment::get("KAFKA_PASSWORD"))
+                          .build();
+    TestBrokerAccess(access,2500).test();
+    return OPERA_TEST_FAILURES;
 }

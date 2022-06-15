@@ -39,6 +39,20 @@ using FilePath = std::filesystem::path;
 
 namespace Opera {
 
+class Environment {
+  public:
+    static char* get(const char* var) {
+        #ifdef _WIN32
+        char* result;
+        size_t len;
+        _dupenv_s(&result,&len,var);
+        return result;
+        #else
+        return getenv(var);
+        #endif
+    }
+};
+
 class Resources {
   public:
     static FilePath path(std::string const& filename) {

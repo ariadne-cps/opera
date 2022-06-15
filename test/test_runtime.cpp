@@ -498,7 +498,7 @@ class TestRuntime {
             notifications.reserve();
             auto msg = notifications.dequeue();
             std::stringstream ss;
-            ss << "Collision for {" << msg.human_id() << "@(" << msg.human_segment_id().first << "," << msg.human_segment_id().second << ")+" << msg.robot_id() << "@(" << msg.robot_segment_id().first << "," << msg.robot_segment_id().second << ")} at " << msg.collision_distance() << " in mode " << msg.collision_mode();
+            ss << "Collision for {" << msg.human_id() << "@(" << msg.human_segment().first << "," << msg.human_segment().second << ")+" << msg.robot_id() << "@(" << msg.robot_segment().first << "," << msg.robot_segment().second << ")} at " << msg.collision_distance() << " in mode " << msg.collision_mode();
             OPERA_TEST_PRINT(ss.str())
         }
 

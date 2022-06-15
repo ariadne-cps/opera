@@ -1,7 +1,7 @@
 /***************************************************************************
- *            topic.cpp
+ *            broker_access_manager.hpp
  *
- *  Copyright  2022  Luca Geretti
+ *  Copyright  2021  Luca Geretti
  *
  ****************************************************************************/
 
@@ -26,13 +26,44 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "topic.hpp"
+#ifndef OPERA_BROKER_ACCESS_MANAGER_HPP
+#define OPERA_BROKER_ACCESS_MANAGER_HPP
+
+#include "memory.hpp"
+#include "mqtt.hpp"
+#include "kafka.hpp"
 
 namespace Opera {
 
-const BodyPresentationTopic BodyPresentationTopic::DEFAULT = BodyPresentationTopic("opera_body_presentation");
-const HumanStateTopic HumanStateTopic::DEFAULT = HumanStateTopic("opera_human_state");
-const RobotStateTopic RobotStateTopic::DEFAULT = RobotStateTopic("opera_robot_state");
-const CollisionNotificationTopic CollisionNotificationTopic::DEFAULT = CollisionNotificationTopic("opera_collision_notification");
+//! \brief A static manager for the broker access to use
+class BrokerAccessManager {
+  public:
+
+    //! \brief Destructor removes the access
+    ~BrokerAccessManager() { delete _access; };
+
+    //! \brief Singleton object
+    static BrokerAccessManager& instance() {
+        static BrokerAccessManager manager;
+        return manager;
+    }
+
+    //! \brief Configure to assign the access
+    void configure(std::string broker_type, std::string address, int arg) {
+        //if (broker_type == "kafka") _access = new BrokerAccess(KafkaBrokerAccess(arg,address,RdKafka::Topic::OFFSET_END));
+        if (broker_type == "memory") _access = new BrokerAccess(MemoryBrokerAccess());
+        else if (broker_type == "mqtt") _access = new BrokerAccess(MqttBrokerAccess(address,arg));
+    }
+
+    BrokerAccess const& get_access() const {
+        OPERA_ASSERT_MSG(_access != nullptr,"First configure the broker access manager.")
+        return *_access;
+    }
+
+  private:
+    BrokerAccess* _access;
+};
 
 }
+
+#endif // OPERA_BROKER_ACCESS_MANAGER_HPP

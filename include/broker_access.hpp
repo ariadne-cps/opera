@@ -26,8 +26,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef OPERA_BROKER_HPP
-#define OPERA_BROKER_HPP
+#ifndef OPERA_BROKER_ACCESS_HPP
+#define OPERA_BROKER_ACCESS_HPP
 
 #include <iostream>
 #include <string>
@@ -44,6 +44,17 @@
 namespace Opera {
 
 template<class T> using CallbackFunction = std::function<void(T const&)>;
+
+//! \brief Struct for holding context for a callback, including data for proper registration of the callback thread (otherwise inaccessible)
+template<class T> struct CallbackContext {
+    CallbackContext(CallbackFunction<T> f, int pll, std::string ptn) :
+            function(f), parent_logger_level(pll), parent_thread_name(ptn), thread_id(std::this_thread::get_id()), registered(false) { }
+    CallbackFunction<T> function;
+    int parent_logger_level;
+    std::string parent_thread_name;
+    std::thread::id thread_id;
+    bool registered;
+};
 
 //! \brief An interface for publishing objects
 template<class T> class PublisherInterface {
@@ -94,4 +105,4 @@ class BrokerAccess : public Handle<BrokerAccessInterface> {
 
 }
 
-#endif // OPERA_BROKER_HPP
+#endif // OPERA_BROKER_ACCESS_HPP

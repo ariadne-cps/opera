@@ -28,7 +28,8 @@
 
 #include <thread>
 #include "utility.hpp"
-#include "broker.hpp"
+#include "broker_access.hpp"
+#include "serialisation.hpp"
 
 #include "test.hpp"
 
@@ -37,8 +38,9 @@ using namespace Opera;
 class TestBrokerAccess {
   private:
     BrokerAccess const& _access;
+    unsigned int const _wait_time;
   public:
-    TestBrokerAccess(BrokerAccess const& access) : _access(access) { }
+    TestBrokerAccess(BrokerAccess const& access, unsigned int wait_time = 100) : _access(access), _wait_time(wait_time) { }
 
     void test() {
         OPERA_TEST_CALL(test_create_destroy())
@@ -67,8 +69,10 @@ class TestBrokerAccess {
         BodyPresentationMessage hp("human1", {{"nose", "neck"},{"left_shoulder", "right_shoulder"}}, {1.0,0.5});
         List<BodyPresentationMessage> bp_received;
 
-        auto bp_subscriber = _access.make_body_presentation_subscriber([&](auto p){ bp_received.push_back(p); });
+        auto bp_subscriber = _access.make_body_presentation_subscriber([&](auto p){ bp_received.push_back(p);
+            OPERA_PRINT_TEST_COMMENT("Message received: " << Serialiser<BodyPresentationMessage>(p).to_string()) });
         auto bp_publisher = _access.make_body_presentation_publisher();
+        std::this_thread::sleep_for(std::chrono::milliseconds(_wait_time));
         bp_publisher->put(hp);
         SizeType i=0;
         while (bp_received.size() != 1) {
@@ -95,14 +99,15 @@ class TestBrokerAccess {
         List<RobotStateMessage> rs_received;
         List<CollisionNotificationMessage> cn_received;
 
-        auto bp_subscriber = _access.make_body_presentation_subscriber([&](auto p){ bp_received.push_back(p); });
-        auto hs_subscriber = _access.make_human_state_subscriber([&](auto p){ hs_received.push_back(p); });
-        auto rs_subscriber = _access.make_robot_state_subscriber([&](auto p){ rs_received.push_back(p); });
-        auto cn_subscriber = _access.make_collision_notification_subscriber([&](auto p){ cn_received.push_back(p); });
+        auto bp_subscriber = _access.make_body_presentation_subscriber([&](auto p){ bp_received.push_back(p); OPERA_PRINT_TEST_COMMENT("Message received: " << Serialiser<BodyPresentationMessage>(p).to_string()) });
+        auto hs_subscriber = _access.make_human_state_subscriber([&](auto p){ hs_received.push_back(p); OPERA_PRINT_TEST_COMMENT("Message received: " << Serialiser<HumanStateMessage>(p).to_string()) });
+        auto rs_subscriber = _access.make_robot_state_subscriber([&](auto p){ rs_received.push_back(p); OPERA_PRINT_TEST_COMMENT("Message received: " << Serialiser<RobotStateMessage>(p).to_string()) });
+        auto cn_subscriber = _access.make_collision_notification_subscriber([&](auto p){ cn_received.push_back(p); OPERA_PRINT_TEST_COMMENT("Message received: " << Serialiser<CollisionNotificationMessage>(p).to_string()) });
         auto bp_publisher = _access.make_body_presentation_publisher();
         auto hs_publisher = _access.make_human_state_publisher();
         auto rs_publisher = _access.make_robot_state_publisher();
         auto cn_publisher = _access.make_collision_notification_publisher();
+        std::this_thread::sleep_for(std::chrono::milliseconds(_wait_time));
         bp_publisher->put(hp);
         bp_publisher->put(rp);
         hs_publisher->put(hs);

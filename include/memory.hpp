@@ -39,7 +39,7 @@
 #include <thread>
 #include "thread.hpp"
 
-#include "broker.hpp"
+#include "broker_access.hpp"
 
 namespace Opera {
 
