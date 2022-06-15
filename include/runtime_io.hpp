@@ -88,6 +88,7 @@ class RuntimeReceiver {
 
     LookAheadJobFactory const& _factory;
 
+    PublisherInterface<BodyPresentationMessage>* _bp_publisher;
     SubscriberInterface<BodyPresentationMessage>* _bp_subscriber;
     SubscriberInterface<HumanStateMessage>* _hs_subscriber;
     SubscriberInterface<RobotStateMessage>* _rs_subscriber;

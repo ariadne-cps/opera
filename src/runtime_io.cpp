@@ -37,32 +37,36 @@ namespace Opera {
 RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, Pair<BrokerAccess,HumanStateTopic> const& hs_subscriber, Pair<BrokerAccess,RobotStateTopic> const& rs_subscriber,
                                  LookAheadJobFactory const& factory, BodyRegistry& registry, SynchronisedQueue<LookAheadJob>& waiting_jobs, SynchronisedQueue<LookAheadJob>& sleeping_jobs) :
     _factory(factory),
+    _bp_publisher(bp_subscriber.first.make_body_presentation_publisher(bp_subscriber.second)),
     _bp_subscriber(bp_subscriber.first.make_body_presentation_subscriber([&](auto const& msg){
+        std::lock_guard<std::mutex> lock(_state_received_mux);
         if (not registry.contains(msg.id())) {
             CONCLOG_PRINTLN_AT(2,"Registering body " << msg.id())
             if (msg.is_human()) for (auto const& rid : registry.robot_ids()) _pending_human_robot_pairs.push_back({msg.id(), rid});
-            else for (auto const& hid : registry.human_ids()) _pending_human_robot_pairs.push_back({msg.id(), hid});
+            else for (auto const& hid : registry.human_ids()) _pending_human_robot_pairs.push_back({hid, msg.id()});
             registry.insert(msg);
         }
     },bp_subscriber.second)),
     _hs_subscriber(hs_subscriber.first.make_human_state_subscriber([&](auto const& msg){
-        std::lock_guard<std::mutex> lock(_state_received_mux);
+        std::lock_guard<std::mutex> lck(_state_received_mux);
+        bool new_humans = false;
         for (auto const& bd : msg.bodies()) {
             auto const& hid = bd.first;
             if (registry.contains(hid)) {
                 CONCLOG_PRINTLN_AT(2,"Received human state for " << hid << " from message at " << msg.timestamp())
-                registry.acquire_state(msg);
             } else {
-                CONCLOG_PRINTLN_AT(2,"Received human state for unknown " << hid << " from message at " << msg.timestamp() << ", registering it using the default human")
-                for (auto const& rid : registry.robot_ids()) _pending_human_robot_pairs.push_back({hid, rid});
-                auto pr = Deserialiser<BodyPresentationMessage>(Resources::path("json/default_human.json")).make();
-                registry.insert_human(hid,pr.segment_pairs(),pr.thicknesses());
+                new_humans = true;
+                CONCLOG_PRINTLN_AT(2,"Received human state for unknown " << hid << " from message at " << msg.timestamp() << ", presenting it using the default human")
+                auto def = Deserialiser<BodyPresentationMessage>(Resources::path("json/default_human.json")).make();
+                _bp_publisher->put(BodyPresentationMessage(hid,def.segment_pairs(),def.thicknesses()));
             }
         }
-        registry.acquire_state(msg);
-        _move_sleeping_jobs_to_waiting_jobs(registry, sleeping_jobs, waiting_jobs);
-        _promote_pairs_to_jobs(registry, sleeping_jobs, waiting_jobs);
-        ++_num_state_messages_received;
+        if (not new_humans) {
+            registry.acquire_state(msg);
+            _move_sleeping_jobs_to_waiting_jobs(registry, sleeping_jobs, waiting_jobs);
+            _promote_pairs_to_jobs(registry, sleeping_jobs, waiting_jobs);
+            ++_num_state_messages_received;
+        }
     },hs_subscriber.second)),
     _rs_subscriber(rs_subscriber.first.make_robot_state_subscriber([&](auto const& msg){
         std::lock_guard<std::mutex> lock(_state_received_mux);
@@ -81,6 +85,7 @@ RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const&
 }
 
 RuntimeReceiver::~RuntimeReceiver() noexcept {
+    delete _bp_publisher;
     delete _bp_subscriber;
     delete _hs_subscriber;
     delete _rs_subscriber;
