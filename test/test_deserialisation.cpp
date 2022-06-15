@@ -84,7 +84,7 @@ public:
         auto const& bd = p.bodies().at(0);
         OPERA_TEST_EQUALS(bd.first,"h0")
         OPERA_TEST_EQUALS(bd.second.size(),8)
-        OPERA_TEST_EQUALS(bd.second.at("hip").size(),1)
+        OPERA_TEST_EQUALS(bd.second.at("hip").size(),0)
         OPERA_TEST_EQUALS(bd.second.at("head").size(),1)
         OPERA_TEST_EQUALS(bd.second.at("left_wrist").size(),2)
         OPERA_TEST_EQUALS(bd.second.at("right_wrist").size(),1)

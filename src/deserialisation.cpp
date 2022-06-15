@@ -55,7 +55,8 @@ HumanStateMessage Deserialiser<HumanStateMessage>::make() const {
         for (auto& keypoint : body["keypoints"].GetObject()) {
             List<Point> samples;
             for (auto& pt : keypoint.value.GetArray())
-                samples.emplace_back(pt["x"].GetDouble(),pt["y"].GetDouble(),pt["z"].GetDouble());
+                if ((not pt["x"].IsNull()) and (not pt["y"].IsNull()) and (not pt["z"].IsNull()))
+                    samples.emplace_back(pt["x"].GetDouble(),pt["y"].GetDouble(),pt["z"].GetDouble());
             points.insert(std::make_pair(keypoint.name.GetString(), samples));
         }
         bodies.push_back({body["body_id"].GetString(),points});
