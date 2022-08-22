@@ -63,7 +63,9 @@ class TestBodyRegistry {
         OPERA_TEST_EQUALS(registry.robot_ids().size(),1)
         OPERA_TEST_FAIL(registry.human("h"))
         OPERA_TEST_FAIL(registry.robot("r"))
-        OPERA_TEST_FAIL(registry.latest_human_instance_within("h",0))
+        OPERA_TEST_FAIL(registry.latest_human_instance_within("h0",0))
+        OPERA_TEST_FAIL(registry.latest_human_timestamp("h0"))
+        OPERA_TEST_EQUALS(registry.human_history_size("h0"),0)
         OPERA_TEST_FAIL(registry.robot_history("r"))
         auto const& human = registry.human(h.id());
         auto const& robot = registry.robot(r.id());

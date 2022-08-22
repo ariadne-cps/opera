@@ -62,6 +62,15 @@ void HumanRegistryEntry::add(Map<KeypointIdType,List<Point>> const& points, Time
     _history.acquire(points,timestamp);
 }
 
+SizeType HumanRegistryEntry::size() const {
+    return _history.size();
+}
+
+TimestampType HumanRegistryEntry::latest_timestamp() const {
+    OPERA_PRECONDITION(_history.size() > 0)
+    return _history.at(_history.size()-1).timestamp();
+}
+
 RobotRegistryEntry::RobotRegistryEntry(BodyIdType const& id, SizeType const& message_frequency, List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs, List<FloatType> const& thicknesses)
     : _body({id,message_frequency,segment_pairs,thicknesses}), _history(_body) { }
 
@@ -132,6 +141,11 @@ RobotStateHistory const& BodyRegistry::robot_history(BodyIdType const& id) const
     return _robots.at(id)->history();
 }
 
+SizeType BodyRegistry::human_history_size(BodyIdType const& id) const {
+    OPERA_PRECONDITION(contains(id))
+    return _humans.at(id)->size();
+}
+
 bool BodyRegistry::has_human_instances_within(BodyIdType const& id, TimestampType const& timestamp) const {
     OPERA_PRECONDITION(contains(id))
     return _humans.at(id)->has_instances_within(timestamp);
@@ -139,6 +153,11 @@ bool BodyRegistry::has_human_instances_within(BodyIdType const& id, TimestampTyp
 
 HumanStateInstance const& BodyRegistry::latest_human_instance_within(BodyIdType const& id, TimestampType const& timestamp) const {
     return _humans.at(id)->latest_instance_within(timestamp);
+}
+
+TimestampType BodyRegistry::latest_human_timestamp(BodyIdType const& id) const {
+    OPERA_PRECONDITION(contains(id))
+    return _humans.at(id)->latest_timestamp();
 }
 
 SizeType BodyRegistry::instance_distance(BodyIdType const& id, TimestampType const& lower, TimestampType const& upper) const {

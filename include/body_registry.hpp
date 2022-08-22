@@ -54,6 +54,12 @@ class HumanRegistryEntry {
     //! \details Fails if no instance exists
     SizeType instance_number(TimestampType const& timestamp) const;
 
+    //! \brief The number of states in the history
+    SizeType size() const;
+
+    //! \brief The most recent timestamp from the history
+    TimestampType latest_timestamp() const;
+
     //! \brief Return the instance at \a idx
     HumanStateInstance const& at(SizeType const& idx) const;
 
@@ -117,6 +123,12 @@ class BodyRegistry {
     //! \brief The most recent instance of the human having the given \a id within a \a timestamp
     //! \details There is no check for the existence of instances, since it would be performed before using this method
     HumanStateInstance const& latest_human_instance_within(BodyIdType const& id, TimestampType const& timestamp) const;
+
+    //! \brief Return the size of the human history for the given \a id
+    SizeType human_history_size(BodyIdType const& id) const;
+
+    //! \brief Return the timestamp of the latest instance for the given human
+    TimestampType latest_human_timestamp(BodyIdType const& id) const;
 
     //! \brief Get the number of human instances between two timestamps \a lower and \a upper
     SizeType instance_distance(BodyIdType const& id, TimestampType const& lower, TimestampType const& upper) const;
