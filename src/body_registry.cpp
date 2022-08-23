@@ -174,7 +174,8 @@ HumanStateInstance const& BodyRegistry::instance_at(BodyIdType const& id, SizeTy
 
 void BodyRegistry::_add_human_instance(BodyIdType const& id, Map<KeypointIdType,List<Point>> const& points, TimestampType const& timestamp) {
     OPERA_PRECONDITION(contains(id))
-    _humans.at(id)->add(points,timestamp);
+    if (_humans.at(id)->size() == 0 or timestamp > latest_human_timestamp(id))
+        _humans.at(id)->add(points,timestamp);
 }
 
 void BodyRegistry::acquire_state(HumanStateMessage const& msg) {

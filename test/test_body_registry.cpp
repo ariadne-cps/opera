@@ -83,6 +83,14 @@ class TestBodyRegistry {
         OPERA_TEST_EQUALS(registry.instance_number(h.id(),34289023),0)
         OPERA_TEST_EQUALS(registry.instance_at(h.id(),0).timestamp(),34289023)
 
+        registry.acquire_state({{{h.id(), {{{"nose",{Point(0,0,0)}},{"neck",{Point(4,4,4)}},{"mid_hip",{Point(0,2,0)}}}}}}, 34289022});
+        auto const& last_state2 = registry.latest_human_instance_within(h.id(),34289023);
+        OPERA_TEST_EQUALS(last_state2.timestamp(),34289023)
+
+        registry.acquire_state({{{h.id(), {{{"nose",{Point(0,0,0)}},{"neck",{Point(4,4,4)}},{"mid_hip",{Point(0,2,0)}}}}}}, 34289024});
+        auto const& last_state3 = registry.latest_human_instance_within(h.id(),34289024);
+        OPERA_TEST_EQUALS(last_state3.timestamp(),34289024)
+
         registry.insert(h);
         registry.insert(r);
         OPERA_TEST_EQUALS(registry.num_humans(),1)
