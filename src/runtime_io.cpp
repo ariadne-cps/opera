@@ -51,7 +51,6 @@ RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const&
             auto const& hid = bd.first;
             if (registry.contains(hid)) {
                 CONCLOG_PRINTLN_AT(2,"Received human state for " << hid << " from message at " << msg.timestamp())
-                registry.acquire_state(msg);
             } else {
                 CONCLOG_PRINTLN_AT(2,"Received human state for unknown " << hid << " from message at " << msg.timestamp() << ", registering it using the default human")
                 for (auto const& rid : registry.robot_ids()) _pending_human_robot_pairs.push_back({hid, rid});
