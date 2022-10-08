@@ -103,7 +103,11 @@ void Runtime::_process_one_working_job() {
     CONCLOG_SCOPE_CREATE
     auto job = _waiting_jobs.dequeue();
     auto const& robot_history = _registry.robot_history(job.id().robot());
-    auto const& human = _registry.human(job.id().human());
+    auto human_keypoint_data = _registry.get_human_keypoint_ids(job.id().human(),job.id().human_segment());
+    if (not get<0>(human_keypoint_data)) {
+        CONCLOG_PRINTLN("Aborting working job since human has been removed")
+        return;
+    }
     auto const& robot = _registry.robot(job.id().robot());
     auto const& message_frequency = _registry.robot(job.id().robot()).message_frequency();
 
@@ -128,7 +132,7 @@ void Runtime::_process_one_working_job() {
         auto lower_collision_distance = static_cast<TimestampType>(std::round(static_cast<FloatType>(1000*samples_between_modes.lower())/message_frequency));
         auto upper_collision_distance = static_cast<TimestampType>(std::round(static_cast<FloatType>(1000*samples_between_modes.upper())/message_frequency));
 
-        Pair<KeypointIdType,KeypointIdType> human_segment = {human.segment(job.id().human_segment()).head_id(),human.segment(job.id().human_segment()).tail_id()};
+        Pair<KeypointIdType,KeypointIdType> human_segment = {get<1>(human_keypoint_data),get<2>(human_keypoint_data)};
         Pair<KeypointIdType,KeypointIdType> robot_segment = {robot.segment(job.id().robot_segment()).head_id(),robot.segment(job.id().robot_segment()).tail_id()};
 
         _sender.put(CollisionNotificationMessage(job.id().human(), human_segment, job.id().robot(), robot_segment, job.initial_time(), {lower_collision_distance,upper_collision_distance}, job.prediction_trace().ending_mode(), job.prediction_trace().likelihood()));
@@ -142,8 +146,9 @@ void Runtime::_process_one_working_job() {
         CONCLOG_PRINTLN("Notification sent for {" << job.id() << ":" << job.path() << "} from " << job.initial_time() << collision_ss.str() << " (~" << job.prediction_trace().likelihood() << ")")
         ++_num_completed;
         ++_num_collisions;
-        _sleeping_jobs.enqueue(job);
-    } else {
+        if (_registry.has_human(job.id().human()))
+            _sleeping_jobs.enqueue(job);
+    } else if (_registry.has_human(job.id().human())) {
         auto next_jobs = _receiver.factory().create_next_jobs(job, robot_history);
         CONCLOG_PRINTLN("No collision found, handling " << next_jobs.size() << " next jobs")
         if (next_jobs.empty()) { ++_num_completed; _sleeping_jobs.enqueue(job); }

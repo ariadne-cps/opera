@@ -205,7 +205,26 @@ void BodyRegistry::insert_robot(BodyIdType const& id, SizeType const& message_fr
     _robots.insert(std::make_pair(id,new RobotRegistryEntry(id,message_frequency,segment_pairs,thicknesses)));
 }
 
+std::tuple<bool,KeypointIdType, KeypointIdType> BodyRegistry::get_human_keypoint_ids(BodyIdType const& human_id, IdType const& segment_id) const {
+    std::lock_guard<std::mutex> lock(_content_mux);
+    if (_humans.has_key(human_id)) {
+        auto const& segment = _humans.at(human_id)->body().segment(segment_id);
+        return std::make_tuple(true,segment.head_id(),segment.tail_id());
+    } else return std::make_tuple(false,std::string(),std::string());
+}
+
+bool BodyRegistry::has_human(BodyIdType const& id) const {
+    std::lock_guard<std::mutex> lock(_content_mux);
+    return _humans.has_key(id);
+}
+
+bool BodyRegistry::has_robot(BodyIdType const& id) const {
+    std::lock_guard<std::mutex> lock(_content_mux);
+    return _robots.has_key(id);
+}
+
 void BodyRegistry::remove(BodyIdType const& id) {
+    std::lock_guard<std::mutex> lock(_content_mux);
     if (_humans.has_key(id)) _humans.erase(id);
     else if (_robots.has_key(id)) _robots.erase(id);
     else {

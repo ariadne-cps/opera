@@ -113,6 +113,11 @@ class BodyRegistry {
     //! \brief The human having the given \a id
     Human const& human(BodyIdType const& id) const;
 
+    //! \brief Whether the registry has the human with given \a id
+    bool has_human(BodyIdType const& id) const;
+    //! \brief Whether the registry has the robot with given \a id
+    bool has_robot(BodyIdType const& id) const;
+
     //! \brief The history of the robot having the given \a id
     RobotStateHistory& robot_history(BodyIdType const& id);
     RobotStateHistory const & robot_history(BodyIdType const& id) const;
@@ -152,6 +157,10 @@ class BodyRegistry {
     //! \brief Insert a new robot from fields
     void insert_robot(BodyIdType const& id, SizeType const& message_frequency, List<Pair<KeypointIdType,KeypointIdType>> const& segment_pairs, List<FloatType> const& thicknesses);
 
+    //! \brief Try to get the human \a human_id head/tail keypoint ids for a given \a segment_id
+    //! \details The human may not be found if it has been removed, in that case the first field is false
+    std::tuple<bool,KeypointIdType, KeypointIdType> get_human_keypoint_ids(BodyIdType const& human_id, IdType const& segment_id) const;
+
     //! \brief Remove the body given the \a id
     void remove(BodyIdType const& id);
     //! \brief Remove all bodies
@@ -164,6 +173,7 @@ class BodyRegistry {
   private:
     Map<BodyIdType,SharedPointer<RobotRegistryEntry>> _robots;
     Map<BodyIdType,SharedPointer<HumanRegistryEntry>> _humans;
+    mutable std::mutex _content_mux;
 };
 
 }

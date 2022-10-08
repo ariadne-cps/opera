@@ -59,6 +59,7 @@ RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const&
             }
         }
         registry.acquire_state(msg);
+        _remove_unresponding_humans(msg.timestamp(),registry,sleeping_jobs);
         _move_sleeping_jobs_to_waiting_jobs(registry, sleeping_jobs, waiting_jobs);
         _promote_pairs_to_jobs(registry, sleeping_jobs, waiting_jobs);
         ++_num_state_messages_received;
@@ -68,7 +69,7 @@ RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const&
         if (registry.contains(msg.id())) {
             CONCLOG_PRINTLN_AT(2,"Received robot state for " << msg.id() << " from message at " << msg.timestamp())
             registry.acquire_state(msg);
-
+            _remove_unresponding_humans(msg.timestamp(),registry,sleeping_jobs);
             _move_sleeping_jobs_to_waiting_jobs(registry, sleeping_jobs, waiting_jobs);
             _promote_pairs_to_jobs(registry, sleeping_jobs, waiting_jobs);
         } else {
@@ -116,6 +117,43 @@ void RuntimeReceiver::_promote_pairs_to_jobs(BodyRegistry const& registry, Synch
         } else new_pairs.emplace_back(p);
     }
     _pending_human_robot_pairs = new_pairs;
+}
+
+void RuntimeReceiver::_remove_unresponding_humans(TimestampType const& latest_msg_timestamp, BodyRegistry& registry, SynchronisedQueue<LookAheadJob>& sleeping_jobs) {
+
+    auto hids = registry.human_ids();
+    List<BodyIdType> hids_to_remove;
+    for (auto const& hid : hids) {
+        if (registry.human_history_size(hid) > 0) {
+            const TimestampType latest_human_timestamp = registry.latest_human_timestamp(hid);
+            if (latest_msg_timestamp > latest_human_timestamp and (latest_msg_timestamp - latest_human_timestamp) > HUMAN_RETENTION_TIMEOUT) {
+                registry.remove(hid);
+                CONCLOG_PRINTLN("Removed human " << hid << " due to no state messages received in the last " << HUMAN_RETENTION_TIMEOUT << " ms")
+                hids_to_remove.push_back(hid);
+            }
+        }
+    }
+
+    if (not hids_to_remove.empty()) {
+        {
+            std::lock_guard<std::mutex> lock(_pairs_mux);
+            List<HumanRobotIdPair> new_pending_human_robot_pairs;
+            for (auto const& pair : _pending_human_robot_pairs) {
+                if (find(hids_to_remove.cbegin(),hids_to_remove.cend(),pair.human) == hids_to_remove.cend())
+                    new_pending_human_robot_pairs.push_back(pair);
+            }
+            _pending_human_robot_pairs = new_pending_human_robot_pairs;
+        }
+
+        List<LookAheadJob> new_jobs;
+        while (sleeping_jobs.size() > 0) {
+            sleeping_jobs.reserve();
+            auto job = sleeping_jobs.dequeue();
+            if (find(hids_to_remove.cbegin(),hids_to_remove.cend(),job.id().human()) == hids_to_remove.cend())
+                new_jobs.emplace_back(job);
+        }
+        for (auto const& job : new_jobs) sleeping_jobs.enqueue(job);
+    }
 }
 
 void RuntimeReceiver::_move_sleeping_jobs_to_waiting_jobs(BodyRegistry const& registry, SynchronisedQueue<LookAheadJob>& sleeping_jobs, SynchronisedQueue<LookAheadJob>& waiting_jobs) {

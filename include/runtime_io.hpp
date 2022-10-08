@@ -47,6 +47,9 @@
 
 namespace Opera {
 
+//! \brief The time without state updates over which a human is removed (in ms)
+const TimestampType HUMAN_RETENTION_TIMEOUT = 10000;
+
 //! \brief Utility class to receive messages and apply them
 class RuntimeReceiver {
     struct HumanRobotIdPair {
@@ -78,6 +81,9 @@ class RuntimeReceiver {
   private:
     //! \brief Possibly move any human-robot pair into a mix of sleeping jobs (if the specific human sample is empty) or waiting jobs (otherwise)
     void _promote_pairs_to_jobs(BodyRegistry const& registry, SynchronisedQueue<LookAheadJob>& sleeping_jobs, SynchronisedQueue<LookAheadJob>& waiting_jobs);
+    //! \brief Remove all humans and their sleeping jobs if no human messages have been received for enough time with respect to \a latest_msg_timestamp
+    //! \details The current time is not used since this would not work when simulating
+    void _remove_unresponding_humans(TimestampType const& latest_msg_timestamp, BodyRegistry& registry, SynchronisedQueue<LookAheadJob>& sleeping_jobs);
     //! \brief Move sleeping jobs to waiting jobs or discard them, as a result of a new human state
     void _move_sleeping_jobs_to_waiting_jobs(BodyRegistry const& registry, SynchronisedQueue<LookAheadJob>& sleeping_jobs, SynchronisedQueue<LookAheadJob>& waiting_jobs);
 
