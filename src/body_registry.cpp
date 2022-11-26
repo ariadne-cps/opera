@@ -38,6 +38,10 @@ Human const& HumanRegistryEntry::body() const {
     return _body;
 }
 
+HumanStateHistory& HumanRegistryEntry::history() {
+    return _history;
+}
+
 bool HumanRegistryEntry::has_instances_within(TimestampType const& timestamp) const {
     return _history.has_instances_within(timestamp);
 }
@@ -60,10 +64,6 @@ HumanStateInstance const& HumanRegistryEntry::at(SizeType const& idx) const {
 
 void HumanRegistryEntry::add(Map<KeypointIdType,List<Point>> const& points, TimestampType const& timestamp) {
     _history.acquire(points,timestamp);
-}
-
-void HumanRegistryEntry::remove_before(TimestampType const& timestamp) {
-    _history.remove_older_than(timestamp);
 }
 
 SizeType HumanRegistryEntry::size() const {
@@ -145,9 +145,14 @@ RobotStateHistory const& BodyRegistry::robot_history(BodyIdType const& id) const
     return _robots.at(id)->history();
 }
 
-void BodyRegistry::remove_history_before(BodyIdType const& id, TimestampType const& timestamp) {
+HumanStateHistory& BodyRegistry::human_history(BodyIdType const& id) {
     OPERA_PRECONDITION(contains(id))
-    robot_history(id).remove_older_than(timestamp);
+    return _humans.at(id)->history();
+}
+
+    HumanStateHistory const& BodyRegistry::human_history(BodyIdType const& id) const {
+    OPERA_PRECONDITION(contains(id))
+    return _humans.at(id)->history();
 }
 
 SizeType BodyRegistry::human_history_size(BodyIdType const& id) const {

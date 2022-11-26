@@ -60,7 +60,7 @@ RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const&
             }
         }
         registry.acquire_state(msg);
-        _remove_old_history(msg);
+        _remove_old_history(registry,msg);
         _remove_unresponding_humans(msg.timestamp(),registry,sleeping_jobs);
         _move_sleeping_jobs_to_waiting_jobs(registry, sleeping_jobs, waiting_jobs);
         _promote_pairs_to_jobs(registry, sleeping_jobs, waiting_jobs);
@@ -71,7 +71,7 @@ RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const&
         if (registry.contains(msg.id())) {
             CONCLOG_PRINTLN_AT(2,"Received robot state for " << msg.id() << " from message at " << msg.timestamp())
             registry.acquire_state(msg);
-            _remove_old_history(msg);
+            _remove_old_history(registry,msg);
             _remove_unresponding_humans(msg.timestamp(),registry,sleeping_jobs);
             _move_sleeping_jobs_to_waiting_jobs(registry, sleeping_jobs, waiting_jobs);
             _promote_pairs_to_jobs(registry, sleeping_jobs, waiting_jobs);
@@ -94,12 +94,18 @@ SizeType RuntimeReceiver::num_pending_human_robot_pairs() const {
     return _pending_human_robot_pairs.size();
 }
 
-void RuntimeReceiver::_remove_old_history(HumanStateMessage const& ) {
-
+void RuntimeReceiver::_remove_old_history(BodyRegistry& registry, HumanStateMessage const& msg) {
+    for (auto const& bd : msg.bodies()) {
+        auto& history = registry.human_history(bd.first);
+        if (msg.timestamp() - history.earliest_time() > _history_retention+_history_purge_period)
+            history.remove_older_than(msg.timestamp()-_history_retention);
+    }
 }
 
-void RuntimeReceiver::_remove_old_history(RobotStateMessage const& ) {
-
+void RuntimeReceiver::_remove_old_history(BodyRegistry& registry, RobotStateMessage const& msg) {
+    auto& history = registry.robot_history(msg.id());
+    if (msg.timestamp() - history.earliest_time() > _history_retention+_history_purge_period)
+        history.remove_older_than(msg.timestamp()-_history_retention);
 }
 
 void RuntimeReceiver::_promote_pairs_to_jobs(BodyRegistry const& registry, SynchronisedQueue<LookAheadJob>& sleeping_jobs, SynchronisedQueue<LookAheadJob>& waiting_jobs) {

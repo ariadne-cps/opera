@@ -42,6 +42,9 @@ class HumanRegistryEntry {
 
     //! \brief Return the body
     Human const& body() const;
+    //! \brief Return the history
+    HumanStateHistory& history();
+
     //! \brief Whether there are instances with a given \a timestamp
     bool has_instances_within(TimestampType const& timestamp) const;
     //! \brief Return the instance within a given \a timestamp
@@ -62,9 +65,6 @@ class HumanRegistryEntry {
 
     //! \brief Return the instance at \a idx
     HumanStateInstance const& at(SizeType const& idx) const;
-
-    //! \brief Remove instances before \a timestamp
-    void remove_before(TimestampType const& timestamp);
 
     //! \brief Add a new instance from \a points and \a timestamp
     void add(Map<KeypointIdType,List<Point>> const& points, TimestampType const& timestamp);
@@ -125,6 +125,10 @@ class BodyRegistry {
     RobotStateHistory& robot_history(BodyIdType const& id);
     RobotStateHistory const & robot_history(BodyIdType const& id) const;
 
+    //! \brief The history of the human having the given \a id
+    HumanStateHistory& human_history(BodyIdType const& id);
+    HumanStateHistory const & human_history(BodyIdType const& id) const;
+
     //! \brief Whether the human with given \a id has instances within a given \a timestamp
     bool has_human_instances_within(BodyIdType const& id, TimestampType const& timestamp) const;
 
@@ -163,9 +167,6 @@ class BodyRegistry {
     //! \brief Try to get the human \a human_id head/tail keypoint ids for a given \a segment_id
     //! \details The human may not be found if it has been removed, in that case the first field is false
     std::tuple<bool,KeypointIdType, KeypointIdType> get_human_keypoint_ids(BodyIdType const& human_id, IdType const& segment_id) const;
-
-    //! \brief Remove all history for \a id before \a timestamp
-    void remove_history_before(BodyIdType const& id, TimestampType const& timestamp);
 
     //! \brief Remove the body given the \a id
     void remove(BodyIdType const& id);

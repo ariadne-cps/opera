@@ -79,10 +79,10 @@ class RuntimeReceiver {
     ~RuntimeReceiver() noexcept;
 
   private:
-    //! \brief Remove old history for humans in the \a msg
-    void _remove_old_history(HumanStateMessage const& msg);
-    //! \brief Remove old history for robot in the \a msg
-    void _remove_old_history(RobotStateMessage const& msg);
+    //! \brief Remove old history from \a registry for humans in the \a msg
+    void _remove_old_history(BodyRegistry& registry, HumanStateMessage const& msg);
+    //! \brief Remove old history from \a registry for robot in the \a msg
+    void _remove_old_history(BodyRegistry& registry, RobotStateMessage const& msg);
     //! \brief Possibly move any human-robot pair into a mix of sleeping jobs (if the specific human sample is empty) or waiting jobs (otherwise)
     void _promote_pairs_to_jobs(BodyRegistry const& registry, SynchronisedQueue<LookAheadJob>& sleeping_jobs, SynchronisedQueue<LookAheadJob>& waiting_jobs);
     //! \brief Remove all humans and their sleeping jobs if no human messages have been received for enough time with respect to \a latest_msg_timestamp
