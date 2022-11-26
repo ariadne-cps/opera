@@ -37,6 +37,7 @@ class TestRuntime {
   public:
 
     void test() {
+        OPERA_TEST_CALL(test_configuration())
         OPERA_TEST_CALL(test_discard_manual_singleplan())
         OPERA_TEST_CALL(test_capsulereuse_manual_singleplan())
         OPERA_TEST_CALL(test_discard_manual_multipleplans_differentsamples())
@@ -44,6 +45,28 @@ class TestRuntime {
         OPERA_TEST_CALL(test_automatic_multipleplans_differentsamples(DiscardLookAheadJobFactory()))
         OPERA_TEST_CALL(test_automatic_simple(ReuseLookAheadJobFactory(KeepOneMinimumDistanceBarrierSequenceUpdatePolicy(),ReuseEquivalence::STRONG)))
         OPERA_TEST_CALL(test_automatic_multipleplans_differentsamples(ReuseLookAheadJobFactory(KeepOneMinimumDistanceBarrierSequenceUpdatePolicy(),ReuseEquivalence::STRONG)))
+    }
+
+    void test_configuration() {
+        RuntimeConfiguration configuration;
+        OPERA_TEST_EQUALS(configuration.get_history_retention(),3600)
+        OPERA_TEST_EQUALS(configuration.get_history_purge_period(),300)
+        OPERA_TEST_EQUALS(configuration.get_concurrency(),std::thread::hardware_concurrency())
+
+        OPERA_TEST_FAIL(configuration.set_history_purge_period(3600))
+        OPERA_TEST_FAIL(configuration.set_history_retention(300))
+        OPERA_TEST_FAIL(configuration.set_concurrency(0))
+        OPERA_TEST_FAIL(configuration.set_concurrency(std::thread::hardware_concurrency()+1))
+
+        configuration.set_history_retention(1000);
+        configuration.set_history_purge_period(200);
+        configuration.set_concurrency(1);
+
+        OPERA_TEST_EQUALS(configuration.get_history_retention(),1000)
+        OPERA_TEST_EQUALS(configuration.get_history_purge_period(),200)
+        OPERA_TEST_EQUALS(configuration.get_concurrency(),1)
+
+        OPERA_TEST_EXECUTE(configuration.set_job_factory(DiscardLookAheadJobFactory()))
     }
 
     void test_discard_manual_singleplan() {

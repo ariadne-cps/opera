@@ -36,6 +36,36 @@
 
 namespace Opera {
 
+//! \brief The configuration of the runtime
+class RuntimeConfiguration {
+  public:
+    //! \brief Default configuration
+    RuntimeConfiguration();
+
+    LookAheadJobFactory const& get_job_factory() const;
+    TimestampType const& get_history_retention() const;
+    TimestampType const& get_history_purge_period() const;
+    SizeType const& get_concurrency() const;
+
+    RuntimeConfiguration& set_job_factory(LookAheadJobFactory const& factory);
+    RuntimeConfiguration& set_history_retention(TimestampType const& retention);
+    RuntimeConfiguration& set_history_purge_period(TimestampType const& purge_period);
+    RuntimeConfiguration& set_concurrency(SizeType const& concurrency);
+
+  private:
+    //! \brief The factory for look-ahead jobs
+    LookAheadJobFactory _job_factory;
+
+    //! \brief The time length (in seconds) for history to remain stored
+    //! \details This value is added to history_purge_period to get the actual length
+    TimestampType _history_retention;
+
+    //! \brief The periodicity (in seconds) with which the history is cleared
+    TimestampType _history_purge_period;
+
+    SizeType _concurrency;
+};
+
 //! \brief The runtime for performing collision detection
 class Runtime {
   public:

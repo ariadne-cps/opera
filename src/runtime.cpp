@@ -42,6 +42,52 @@ String construct_thread_name(String prefix, SizeType number, SizeType max_number
     return ss.str();
 }
 
+RuntimeConfiguration::RuntimeConfiguration() :
+    _job_factory(ReuseLookAheadJobFactory(AddWhenDifferentMinimumDistanceBarrierSequenceUpdatePolicy(),ReuseEquivalence::STRONG)),
+    _history_retention(3600),
+    _history_purge_period(300),
+    _concurrency(std::thread::hardware_concurrency()) { }
+
+LookAheadJobFactory const& RuntimeConfiguration::get_job_factory() const {
+    return _job_factory;
+}
+
+TimestampType const& RuntimeConfiguration::get_history_retention() const {
+    return _history_retention;
+}
+
+TimestampType const& RuntimeConfiguration::get_history_purge_period() const {
+    return _history_purge_period;
+}
+
+SizeType const& RuntimeConfiguration::get_concurrency() const {
+    return _concurrency;
+}
+
+RuntimeConfiguration& RuntimeConfiguration::set_job_factory(LookAheadJobFactory const& factory) {
+    _job_factory = factory;
+    return *this;
+}
+
+RuntimeConfiguration& RuntimeConfiguration::set_history_retention(TimestampType const& retention) {
+    OPERA_PRECONDITION(retention > _history_purge_period)
+    _history_retention = retention;
+    return *this;
+}
+
+RuntimeConfiguration& RuntimeConfiguration::set_history_purge_period(TimestampType const& purge_period) {
+    OPERA_PRECONDITION(purge_period < _history_retention)
+    _history_purge_period = purge_period;
+    return *this;
+}
+
+RuntimeConfiguration& RuntimeConfiguration::set_concurrency(SizeType const& concurrency) {
+    OPERA_PRECONDITION(concurrency > 0)
+    OPERA_PRECONDITION(concurrency <= std::thread::hardware_concurrency())
+    _concurrency = concurrency;
+    return *this;
+}
+
 Runtime::Runtime(BrokerAccess const& access, LookAheadJobFactory const& factory, SizeType const& concurrency) :
     Runtime({access,BodyPresentationTopic::DEFAULT},{access,HumanStateTopic::DEFAULT},{access,RobotStateTopic::DEFAULT},{access,CollisionNotificationTopic::DEFAULT},factory,concurrency) { }
 

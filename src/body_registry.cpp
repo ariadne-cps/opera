@@ -62,6 +62,10 @@ void HumanRegistryEntry::add(Map<KeypointIdType,List<Point>> const& points, Time
     _history.acquire(points,timestamp);
 }
 
+void HumanRegistryEntry::remove_before(TimestampType const& timestamp) {
+    _history.remove_older_than(timestamp);
+}
+
 SizeType HumanRegistryEntry::size() const {
     return _history.size();
 }
@@ -139,6 +143,11 @@ RobotStateHistory& BodyRegistry::robot_history(BodyIdType const& id) {
 RobotStateHistory const& BodyRegistry::robot_history(BodyIdType const& id) const {
     OPERA_PRECONDITION(contains(id))
     return _robots.at(id)->history();
+}
+
+void BodyRegistry::remove_history_before(BodyIdType const& id, TimestampType const& timestamp) {
+    OPERA_PRECONDITION(contains(id))
+    robot_history(id).remove_older_than(timestamp);
 }
 
 SizeType BodyRegistry::human_history_size(BodyIdType const& id) const {
