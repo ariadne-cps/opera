@@ -63,6 +63,9 @@ class RuntimeConfiguration {
     //! \brief The periodicity (in seconds) with which the history is cleared
     TimestampType _history_purge_period;
 
+    //! \brief The number of threads used for concurrent execution
+    //! \details A value of zero is allowed for testing purposes, where no processing
+    //! can be done automatically
     SizeType _concurrency;
 };
 

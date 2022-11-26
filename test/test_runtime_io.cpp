@@ -60,7 +60,7 @@ class TestRuntimeIO {
         BodyRegistry registry;
         SynchronisedQueue<LookAheadJob> waiting_jobs, sleeping_jobs;
         RuntimeReceiver receiver({access,BodyPresentationTopic::DEFAULT},{access,HumanStateTopic::DEFAULT},{access,RobotStateTopic::DEFAULT},
-                                 job_factory, registry, waiting_jobs, sleeping_jobs);
+                                 job_factory, 3600,300, registry, waiting_jobs, sleeping_jobs);
         String id = "h0";
         BodyPresentationMessage hp(id,{{"nose","neck"},{"neck","mid_hip"}},{1.0,0.5});
         HumanStateMessage hs({{id,{{{"nose",{Point(0,0,0)}},{"neck",{Point(0,2,0)}},{"mid_hip",{Point(0,4,0)}}}}}},300);
@@ -87,7 +87,7 @@ class TestRuntimeIO {
         BodyRegistry registry;
         SynchronisedQueue<LookAheadJob> waiting_jobs, sleeping_jobs;
         RuntimeReceiver receiver({access,BodyPresentationTopic::DEFAULT},{access,HumanStateTopic::DEFAULT},{access,RobotStateTopic::DEFAULT},
-                                 job_factory, registry, waiting_jobs, sleeping_jobs);
+                                 job_factory, 3600, 300, registry, waiting_jobs, sleeping_jobs);
         String id = "r0";
         Mode mode({"phase", "waiting"});
         BodyPresentationMessage rp(id,10,{{"0","1"},{"1","2"}},{1.0,0.5});
@@ -115,7 +115,7 @@ class TestRuntimeIO {
         BodyRegistry registry;
         SynchronisedQueue<LookAheadJob> waiting_jobs, sleeping_jobs;
         RuntimeReceiver receiver({access,BodyPresentationTopic::DEFAULT},{access,HumanStateTopic::DEFAULT},{access,RobotStateTopic::DEFAULT},
-                                 job_factory, registry, waiting_jobs, sleeping_jobs);
+                                 job_factory, 3600, 300, registry, waiting_jobs, sleeping_jobs);
         String rid = "r0";
         String hid = "h0";
         Mode waiting({"phase", "waiting"}), running({"phase","running"});

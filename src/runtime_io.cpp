@@ -35,8 +35,9 @@ using namespace ConcLog;
 namespace Opera {
 
 RuntimeReceiver::RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, Pair<BrokerAccess,HumanStateTopic> const& hs_subscriber, Pair<BrokerAccess,RobotStateTopic> const& rs_subscriber,
-                                 LookAheadJobFactory const& factory, BodyRegistry& registry, SynchronisedQueue<LookAheadJob>& waiting_jobs, SynchronisedQueue<LookAheadJob>& sleeping_jobs) :
-    _factory(factory),
+                                 LookAheadJobFactory const& factory, TimestampType const& history_retention, TimestampType  const& history_purge_period,
+                                 BodyRegistry& registry, SynchronisedQueue<LookAheadJob>& waiting_jobs, SynchronisedQueue<LookAheadJob>& sleeping_jobs) :
+    _factory(factory), _history_retention(history_retention), _history_purge_period(history_purge_period),
     _bp_subscriber(bp_subscriber.first.make_body_presentation_subscriber([&](auto const& msg){
         if (not registry.contains(msg.id())) {
             CONCLOG_PRINTLN_AT(2,"Registering body " << msg.id())

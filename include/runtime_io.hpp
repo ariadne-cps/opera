@@ -63,8 +63,8 @@ class RuntimeReceiver {
     //! to move to waiting_jobs as soon as a new human state is received
     RuntimeReceiver(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, Pair<BrokerAccess,HumanStateTopic> const& hs_subscriber,
                     Pair<BrokerAccess,RobotStateTopic> const& rs_subscriber,
-                    LookAheadJobFactory const& factory, BodyRegistry& registry,
-                    SynchronisedQueue<LookAheadJob>& waiting_jobs, SynchronisedQueue<LookAheadJob>& sleeping_jobs);
+                    LookAheadJobFactory const& factory, TimestampType const& history_retention, TimestampType  const& history_purge_period,
+                    BodyRegistry& registry, SynchronisedQueue<LookAheadJob>& waiting_jobs, SynchronisedQueue<LookAheadJob>& sleeping_jobs);
 
     //! \brief The current number of created human-robot pairs, not yet put into the waiting jobs
     SizeType num_pending_human_robot_pairs() const;
@@ -92,7 +92,9 @@ class RuntimeReceiver {
     mutable std::mutex _pairs_mux;
     mutable std::mutex _state_received_mux;
 
-    LookAheadJobFactory const& _factory;
+    LookAheadJobFactory const _factory;
+    TimestampType const _history_retention;
+    TimestampType const _history_purge_period;
 
     SubscriberInterface<BodyPresentationMessage>* _bp_subscriber;
     SubscriberInterface<HumanStateMessage>* _hs_subscriber;
