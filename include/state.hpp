@@ -73,10 +73,10 @@ class HumanStateHistory {
     //! \details This is necessary to choose an instance for which we have a defined
     //! robot mode to check against, instead of an unbounded one
     HumanStateInstance const& latest_within(TimestampType const& timestamp) const;
-    //! \brief Return the latest instance
-    HumanStateInstance const& latest() const;
-    //! \brief Return the oldest instance
-    HumanStateInstance const& oldest() const;
+    //! \brief Return the latest time
+    TimestampType const& latest_time() const;
+    //! \brief Return the earliest time
+    TimestampType const& earliest_time() const;
 
     //! \brief Get the number of instances between two timestamps \a lower and \a upper
     SizeType instance_distance(TimestampType const& lower, TimestampType const& upper) const;
@@ -158,6 +158,8 @@ class RobotStateHistory {
 
     //! \brief The most recent time of a state acquired
     TimestampType const& latest_time() const;
+    //! brief The least recent time of a state acquired
+    TimestampType const& earliest_time() const;
 
     //! \brief The most recent mode according to the latest time
     Mode const& latest_mode() const;
@@ -173,8 +175,10 @@ class RobotStateHistory {
     //! \brief Return a snapshot at the given \a timestamp
     RobotStateHistorySnapshot snapshot_at(TimestampType const& timestamp) const;
 
+
+
   public:
-    std::deque<RobotModePresence> _mode_presences;
+    Deque<RobotModePresence> _mode_presences;
   private:
     ModeSamplesHistoryType _mode_states;
     Mode _latest_mode;
@@ -184,7 +188,7 @@ class RobotStateHistory {
     std::mutex mutable _states_mux;
     std::mutex mutable _presences_mux;
 
-    List<Pair<TimestampType,ModeTrace>> _mode_traces;
+    Deque<Pair<TimestampType,ModeTrace>> _mode_traces;
 
   protected:
     Robot const _robot;

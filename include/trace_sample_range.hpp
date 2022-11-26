@@ -78,7 +78,7 @@ class TraceSampleRange {
 
   private:
     TraceSampleIndex _initial;
-    std::deque<SizeType> _upper_bounds;
+    Deque<SizeType> _upper_bounds;
 };
 
 }

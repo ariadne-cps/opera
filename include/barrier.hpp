@@ -165,7 +165,7 @@ class MinimumDistanceBarrierSequenceSectionBase : public MinimumDistanceBarrierS
 
   private:
     BodySegmentSample const _human_sample;
-    std::deque<MinimumDistanceBarrier> _barriers;
+    Deque<MinimumDistanceBarrier> _barriers;
 };
 
 //! \brief A barrier sequence where the bounding sphere of human samples are used to compute segment_distance

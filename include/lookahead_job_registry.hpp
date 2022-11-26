@@ -113,7 +113,7 @@ class LookAheadJobRegistry {
     //! \brief Check if the \a path is registered at the given \a id and \a timestamp
     bool has_registered(TimestampType const& timestamp, LookAheadJobIdentifier const& id, LookAheadJobPath const& path) const;
   private:
-    std::deque<LookAheadJobRegistryEntry> _entries;
+    Deque<LookAheadJobRegistryEntry> _entries;
     std::mutex mutable _mux;
 };
 

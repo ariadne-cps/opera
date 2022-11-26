@@ -70,14 +70,14 @@ HumanStateInstance const& HumanStateHistory::latest_within(TimestampType const& 
     OPERA_FAIL_MSG("No human instance could be found for timestamp " << timestamp)
 }
 
-HumanStateInstance const& HumanStateHistory::latest() const {
+TimestampType const& HumanStateHistory::latest_time() const {
     OPERA_PRECONDITION(not _instances.empty())
-    return _instances.back();
+    return _instances.back().timestamp();
 }
 
-HumanStateInstance const& HumanStateHistory::oldest() const {
+TimestampType const& HumanStateHistory::earliest_time() const {
     OPERA_PRECONDITION(not _instances.empty())
-    return _instances.front();
+    return _instances.front().timestamp();
 }
 
 bool HumanStateHistory::has_instances_within(TimestampType const& timestamp) const {
@@ -114,7 +114,7 @@ SizeType HumanStateHistory::size() const {
 }
 
 void HumanStateHistory::remove_older_than(TimestampType const& timestamp) {
-    while(not _instances.empty() and oldest().timestamp() < timestamp) {
+    while(not _instances.empty() and earliest_time() < timestamp) {
         _instances.pop_front();
     }
 }

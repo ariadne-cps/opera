@@ -129,7 +129,7 @@ int ModeTrace::backward_index(Mode const& mode) const {
 }
 
 void ModeTrace::reduce_between(Mode const& initial, Mode const& final) {
-    OPERA_ASSERT_MSG(_entries.size()>0, "Cannot reduce an empty mode trace")
+    OPERA_ASSERT_MSG(not _entries.empty(), "Cannot reduce an empty mode trace")
 
     int bottom = forward_index(initial);
     OPERA_ASSERT_MSG(bottom != -1, "Initial mode " << initial << " not found in the mode trace "  << *this)
@@ -141,10 +141,10 @@ void ModeTrace::reduce_between(Mode const& initial, Mode const& final) {
 }
 
 void ModeTrace::reduce_between(SizeType const& lower, SizeType const& upper) {
-    OPERA_ASSERT_MSG(_entries.size()>0, "Cannot reduce an empty mode trace")
+    OPERA_ASSERT_MSG(not _entries.empty(), "Cannot reduce an empty mode trace")
     OPERA_ASSERT_MSG(lower<=upper, "The reduction bounds are inconsistent: " << lower << " vs " << upper)
 
-    std::deque<ModeTraceEntry> new_entries;
+    Deque<ModeTraceEntry> new_entries;
     for (SizeType i=lower; i<=upper; ++i) new_entries.push_back(_entries.at(i));
     _entries = new_entries;
 }
@@ -180,7 +180,7 @@ Mode const& ModeTrace::ending_mode() const {
 }
 
 PositiveFloatType ModeTrace::likelihood() const {
-    if (_entries.size() == 0) return 1.0;
+    if (_entries.empty()) return 1.0;
     return _entries.at(_entries.size()-1).likelihood;
 }
 

@@ -129,7 +129,7 @@ class ModeTrace {
     friend std::ostream& operator<<(std::ostream& os, ModeTrace const& t);
 
 private:
-    std::deque<ModeTraceEntry> _entries;
+    Deque<ModeTraceEntry> _entries;
     mutable Map<Mode,PositiveFloatType> _next_modes;
 };
 
