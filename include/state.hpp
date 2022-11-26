@@ -78,6 +78,9 @@ class HumanStateHistory {
     //! \brief Return the earliest time
     TimestampType const& earliest_time() const;
 
+    //! \brief Remove all history previous than \a timestamp
+    void remove_older_than(TimestampType const& timestamp);
+
     //! \brief Get the number of instances between two timestamps \a lower and \a upper
     SizeType instance_distance(TimestampType const& lower, TimestampType const& upper) const;
 
@@ -87,9 +90,6 @@ class HumanStateHistory {
 
     //! \brief Return the instance at \a idx
     HumanStateInstance const& at(SizeType const& idx) const;
-
-    //! \brief Remove all instances older than the given time
-    void remove_older_than(TimestampType const& timestamp);
 
     //! \brief The number of instances
     SizeType size() const;
@@ -175,7 +175,12 @@ class RobotStateHistory {
     //! \brief Return a snapshot at the given \a timestamp
     RobotStateHistorySnapshot snapshot_at(TimestampType const& timestamp) const;
 
+    //! \brief Remove all entries timed previously from \a timestamp
+    //! \details Mode states are not modified, since they are a fusion of the continuous values
+    void remove_older_than(TimestampType const& timestamp);
 
+    //! \brief Return the number of presences
+    SizeType size() const;
 
   public:
     Deque<RobotModePresence> _mode_presences;

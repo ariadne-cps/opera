@@ -178,6 +178,34 @@ TimestampType const& RobotStateHistory::latest_time() const {
     return _latest_time;
 }
 
+TimestampType const& RobotStateHistory::earliest_time() const {
+    OPERA_PRECONDITION(not _mode_presences.empty())
+    return _mode_presences.front().from();
+}
+
+void RobotStateHistory::remove_older_than(TimestampType const& timestamp) {
+    OPERA_PRECONDITION(timestamp > 0)
+    while (not _mode_presences.empty() and _mode_presences.front().to() < timestamp) {
+        _mode_presences.pop_front();
+    }
+    while (not _mode_traces.empty() and _mode_traces.front().first < timestamp) {
+        _mode_traces.pop_front();
+    }
+    SizeType desired_size = 1;
+    SizeType current_size = _mode_traces.front().second.size();
+    for (auto& t : _mode_traces) {
+        if (t.second.size() > current_size) {
+            current_size = t.second.size();
+            ++desired_size;
+        }
+        t.second.reduce_between(current_size-desired_size,current_size-1);
+    }
+}
+
+SizeType RobotStateHistory::size() const {
+    return _mode_presences.size();
+}
+
 Mode const& RobotStateHistory::latest_mode() const {
     return _latest_mode;
 }

@@ -166,6 +166,8 @@ public:
             auto expected_trace = ModeTrace().push_back(first, 1.0).push_back(second, 1.0).push_back(first, 1.0);
             OPERA_TEST_EQUALS(history_trace, expected_trace)
         }
+
+        OPERA_TEST_EQUALS(history.size(),4)
     }
 
     void test_robot_state_history_analytics() {
@@ -225,6 +227,18 @@ public:
         OPERA_TEST_EQUALS(snapshot.range_of_num_samples_in(first, second), Interval<SizeType>(2u, 2u))
         OPERA_TEST_EQUALS(snapshot.range_of_num_samples_in(first, third), Interval<SizeType>(3u, 3u))
         OPERA_TEST_EQUALS(snapshot.range_of_num_samples_in(third, second), Interval<SizeType>(1u, 2u))
+
+        OPERA_TEST_FAIL(history.remove_older_than(0))
+        history.remove_older_than(1);
+        OPERA_TEST_EQUALS(history.size(),7)
+        history.remove_older_than(200);
+        OPERA_TEST_EQUALS(history.size(),7)
+        history.remove_older_than(201);
+        OPERA_TEST_EQUALS(history.size(),6)
+        history.remove_older_than(1300);
+        OPERA_TEST_EQUALS(history.size(),2)
+        history.remove_older_than(1301);
+        OPERA_TEST_EQUALS(history.size(),1)
     }
 
     void test_robot_state_history_can_look_ahead() {
