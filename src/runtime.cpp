@@ -82,29 +82,29 @@ RuntimeConfiguration& RuntimeConfiguration::set_history_purge_period(TimestampTy
 }
 
 RuntimeConfiguration& RuntimeConfiguration::set_concurrency(SizeType const& concurrency) {
-    OPERA_PRECONDITION(concurrency > 0)
     OPERA_PRECONDITION(concurrency <= std::thread::hardware_concurrency())
     _concurrency = concurrency;
     return *this;
 }
 
-Runtime::Runtime(BrokerAccess const& access, LookAheadJobFactory const& factory, SizeType const& concurrency) :
-    Runtime({access,BodyPresentationTopic::DEFAULT},{access,HumanStateTopic::DEFAULT},{access,RobotStateTopic::DEFAULT},{access,CollisionNotificationTopic::DEFAULT},factory,concurrency) { }
+Runtime::Runtime(BrokerAccess const& access, RuntimeConfiguration const& configuration) :
+    Runtime({access,BodyPresentationTopic::DEFAULT},{access,HumanStateTopic::DEFAULT},{access,RobotStateTopic::DEFAULT},{access,CollisionNotificationTopic::DEFAULT},configuration) { }
 
 Runtime::Runtime(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, Pair<BrokerAccess,HumanStateTopic> const& hs_subscriber,
                  Pair<BrokerAccess,RobotStateTopic> const& rs_subscriber, Pair<BrokerAccess,CollisionNotificationTopic> const& cn_publisher,
-                 LookAheadJobFactory const& factory, SizeType const& concurrency) :
+                 RuntimeConfiguration const& configuration) :
     _waiting_jobs([&]{ _availability_condition.notify_one(); }),
     _sleeping_jobs([]{}),
     _stop(false),
-    _receiver(bp_subscriber,hs_subscriber,rs_subscriber,factory,_registry,_waiting_jobs, _sleeping_jobs),
+    _receiver(bp_subscriber,hs_subscriber,rs_subscriber,configuration.get_job_factory(),_registry,_waiting_jobs, _sleeping_jobs),
     _sender(cn_publisher),
     _num_processing(0),
     _num_processed(0),
     _num_completed(0),
-    _num_collisions(0)
+    _num_collisions(0),
+    _configuration(configuration)
 {
-    for (SizeType i=0; i<concurrency; ++i)
+    for (SizeType i=0; i<_configuration.get_concurrency(); ++i)
         _threads.emplace_back(new Thread([&]{
             CONCLOG_SCOPE_CREATE
             while(true) {
@@ -120,7 +120,7 @@ Runtime::Runtime(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, 
                 --_num_processing;
                 CONCLOG_SCOPE_PRINTHOLD("#w=" << _waiting_jobs.size() << ", #s=" << _sleeping_jobs.size())
             }
-        }, construct_thread_name("la-",i,concurrency)));
+        }, construct_thread_name("la-",i,_configuration.get_concurrency())));
 }
 
 SizeType Runtime::num_segment_pairs() const {

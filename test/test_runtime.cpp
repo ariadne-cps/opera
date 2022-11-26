@@ -55,7 +55,6 @@ class TestRuntime {
 
         OPERA_TEST_FAIL(configuration.set_history_purge_period(3600))
         OPERA_TEST_FAIL(configuration.set_history_retention(300))
-        OPERA_TEST_FAIL(configuration.set_concurrency(0))
         OPERA_TEST_FAIL(configuration.set_concurrency(std::thread::hardware_concurrency()+1))
 
         configuration.set_history_retention(1000);
@@ -71,8 +70,9 @@ class TestRuntime {
 
     void test_discard_manual_singleplan() {
         BrokerAccess access = MemoryBrokerAccess();
-        LookAheadJobFactory job_factory = DiscardLookAheadJobFactory();
-        Runtime runtime(access,job_factory,0);
+        RuntimeConfiguration configuration;
+        configuration.set_job_factory(DiscardLookAheadJobFactory()).set_concurrency(0);
+        Runtime runtime(access,configuration);
 
         OPERA_TEST_EQUALS(runtime.num_pending_human_robot_pairs(),0)
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),0)
@@ -214,7 +214,9 @@ class TestRuntime {
     void test_capsulereuse_manual_singleplan() {
         BrokerAccess access = MemoryBrokerAccess();
         LookAheadJobFactory job_factory = ReuseLookAheadJobFactory(KeepOneMinimumDistanceBarrierSequenceUpdatePolicy(),ReuseEquivalence::STRONG);
-        Runtime runtime(access,job_factory,0);
+        RuntimeConfiguration configuration;
+        configuration.set_job_factory(job_factory).set_concurrency(0);
+        Runtime runtime(access,configuration);
 
         OPERA_TEST_EQUALS(runtime.num_pending_human_robot_pairs(),0)
         OPERA_TEST_EQUALS(runtime.num_waiting_jobs(),0)
@@ -339,8 +341,9 @@ class TestRuntime {
 
     void test_discard_manual_multipleplans_differentsamples() {
         BrokerAccess access = MemoryBrokerAccess();
-        LookAheadJobFactory job_factory = DiscardLookAheadJobFactory();
-        Runtime runtime(access,job_factory,0);
+        RuntimeConfiguration configuration;
+        configuration.set_job_factory(DiscardLookAheadJobFactory()).set_concurrency(0);
+        Runtime runtime(access,configuration);
 
         String rid = "r0";
         String hid = "h0";
@@ -487,7 +490,9 @@ class TestRuntime {
 
     void test_automatic_simple(LookAheadJobFactory const& job_factory) {
         BrokerAccess access = MemoryBrokerAccess();
-        Runtime runtime(access,job_factory,1);
+        RuntimeConfiguration configuration;
+        configuration.set_job_factory(job_factory).set_concurrency(1);
+        Runtime runtime(access,configuration);
         SynchronisedQueue<CollisionNotificationMessage> notifications;
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
@@ -534,7 +539,9 @@ class TestRuntime {
 
     void test_automatic_multipleplans_differentsamples(LookAheadJobFactory const& job_factory) {
         BrokerAccess access = MemoryBrokerAccess();
-        Runtime runtime(access,job_factory,1);
+        RuntimeConfiguration configuration;
+        configuration.set_job_factory(job_factory).set_concurrency(1);
+        Runtime runtime(access,configuration);
 
         String rid = "r0";
         String hid = "h0";

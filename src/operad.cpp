@@ -37,9 +37,7 @@ int main(int argc, const char* argv[]) {
 
     //BrokerAccess access = KafkaBrokerAccess(0,"localhost",RdKafka::Topic::OFFSET_END);
     BrokerAccess access = MqttBrokerAccess("localhost",1883);
-    LookAheadJobFactory job_factory = ReuseLookAheadJobFactory(AddWhenDifferentMinimumDistanceBarrierSequenceUpdatePolicy(),ReuseEquivalence::STRONG);
-    SizeType concurrency = std::thread::hardware_concurrency();
-    Runtime runtime(BrokerAccessManager::instance().get_access(),job_factory,concurrency);
+    Runtime runtime(BrokerAccessManager::instance().get_access());
 
     std::this_thread::sleep_until(std::chrono::system_clock::now() + std::chrono::hours(std::numeric_limits<int>::max()));
 }

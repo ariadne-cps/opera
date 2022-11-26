@@ -69,12 +69,12 @@ class RuntimeConfiguration {
 //! \brief The runtime for performing collision detection
 class Runtime {
   public:
-    //! \brief Create using a generic broker access and a \a factory for job manipulation
-    Runtime(BrokerAccess const& access, LookAheadJobFactory const& factory, SizeType const& concurrency = std::thread::hardware_concurrency());
-    //! \brief Create using specific accesses/topics and a \a factory for job manipulation
+    //! \brief Create using a generic broker access and a \a configuration
+    Runtime(BrokerAccess const& access, RuntimeConfiguration const& configuration = RuntimeConfiguration());
+    //! \brief Create using specific accesses/topics and a \a configuration
     Runtime(Pair<BrokerAccess,BodyPresentationTopic> const& bp_subscriber, Pair<BrokerAccess,HumanStateTopic> const& hs_subscriber,
             Pair<BrokerAccess,RobotStateTopic> const& rs_subscriber, Pair<BrokerAccess,CollisionNotificationTopic> const& cn_publisher,
-            LookAheadJobFactory const& factory, SizeType const& concurrency = std::thread::hardware_concurrency());
+            RuntimeConfiguration const& configuration = RuntimeConfiguration());
 
     Runtime(Runtime const&) = delete;
     void operator=(Runtime const&) = delete;
@@ -129,6 +129,8 @@ class Runtime {
     std::atomic<SizeType> _num_processed;
     std::atomic<SizeType> _num_completed;
     std::atomic<SizeType> _num_collisions;
+
+    RuntimeConfiguration const _configuration;
 };
 
 }
