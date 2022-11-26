@@ -73,6 +73,10 @@ class HumanStateHistory {
     //! \details This is necessary to choose an instance for which we have a defined
     //! robot mode to check against, instead of an unbounded one
     HumanStateInstance const& latest_within(TimestampType const& timestamp) const;
+    //! \brief Return the latest instance
+    HumanStateInstance const& latest() const;
+    //! \brief Return the oldest instance
+    HumanStateInstance const& oldest() const;
 
     //! \brief Get the number of instances between two timestamps \a lower and \a upper
     SizeType instance_distance(TimestampType const& lower, TimestampType const& upper) const;
@@ -84,11 +88,14 @@ class HumanStateHistory {
     //! \brief Return the instance at \a idx
     HumanStateInstance const& at(SizeType const& idx) const;
 
+    //! \brief Remove all instances older than the given time
+    void remove_older_than(TimestampType const& timestamp);
+
     //! \brief The number of instances
     SizeType size() const;
   private:
     Human const _human;
-    List<HumanStateInstance> _instances;
+    Deque<HumanStateInstance> _instances;
 };
 
 //! \brief The presence of a robot in a given mode

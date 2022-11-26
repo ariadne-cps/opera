@@ -33,6 +33,7 @@
 #include <numeric>
 #include <vector>
 #include <set>
+#include <deque>
 #include <memory>
 
 namespace Opera {
@@ -42,6 +43,7 @@ typedef FloatType PositiveFloatType;
 template<class T> using List = std::vector<T>;
 template<class T1, class T2> using Pair = std::pair<T1,T2>;
 template<class T> using Set = std::set<T>;
+template<class T> using Deque = std::deque<T>;
 
 using SizeType = size_t;
 template<class T> using SharedPointer = std::shared_ptr<T>;

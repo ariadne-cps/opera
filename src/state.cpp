@@ -70,6 +70,16 @@ HumanStateInstance const& HumanStateHistory::latest_within(TimestampType const& 
     OPERA_FAIL_MSG("No human instance could be found for timestamp " << timestamp)
 }
 
+HumanStateInstance const& HumanStateHistory::latest() const {
+    OPERA_PRECONDITION(not _instances.empty())
+    return _instances.back();
+}
+
+HumanStateInstance const& HumanStateHistory::oldest() const {
+    OPERA_PRECONDITION(not _instances.empty())
+    return _instances.front();
+}
+
 bool HumanStateHistory::has_instances_within(TimestampType const& timestamp) const {
     for (auto const& instance : _instances) if (instance.timestamp() <= timestamp) return true;
     return false;
@@ -101,6 +111,12 @@ HumanStateInstance const& HumanStateHistory::at(SizeType const& idx) const {
 
 SizeType HumanStateHistory::size() const {
     return _instances.size();
+}
+
+void HumanStateHistory::remove_older_than(TimestampType const& timestamp) {
+    while(not _instances.empty() and oldest().timestamp() < timestamp) {
+        _instances.pop_front();
+    }
 }
 
 RobotModePresence::RobotModePresence(Mode const& mode, Mode const& exit_destination, TimestampType const& from, TimestampType const& to) :

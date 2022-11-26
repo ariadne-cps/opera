@@ -74,6 +74,12 @@ public:
         OPERA_TEST_EQUALS(history.instance_distance(1000,3000),2)
         OPERA_TEST_EQUALS(history.instance_number(2000),1)
         OPERA_TEST_EQUALS(history.instance_number(3000),2)
+        OPERA_TEST_EQUALS(history.oldest().timestamp(),1000)
+        OPERA_TEST_EQUALS(history.latest().timestamp(),3000)
+        history.remove_older_than(2000);
+        OPERA_TEST_EQUALS(history.oldest().timestamp(),2000)
+        history.remove_older_than(3001);
+        OPERA_TEST_EQUALS(history.size(),0)
     }
 
     void test_robot_state_history_basics() {
