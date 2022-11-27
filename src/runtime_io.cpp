@@ -94,18 +94,26 @@ SizeType RuntimeReceiver::num_pending_human_robot_pairs() const {
     return _pending_human_robot_pairs.size();
 }
 
+TimestampType RuntimeReceiver::oldest_history_time() const {
+    return _oldest_history_time;
+}
+
 void RuntimeReceiver::_remove_old_history(BodyRegistry& registry, HumanStateMessage const& msg) {
     for (auto const& bd : msg.bodies()) {
         auto& history = registry.human_history(bd.first);
-        if (msg.timestamp() - history.earliest_time() > _history_retention+_history_purge_period)
-            history.remove_older_than(msg.timestamp()-_history_retention);
+        if (msg.timestamp() - history.earliest_time() > 1000*(_history_retention+_history_purge_period)) {
+            history.remove_older_than(msg.timestamp()-_history_retention*1000);
+            _oldest_history_time = history.earliest_time();
+        }
     }
 }
 
 void RuntimeReceiver::_remove_old_history(BodyRegistry& registry, RobotStateMessage const& msg) {
     auto& history = registry.robot_history(msg.id());
-    if (msg.timestamp() - history.earliest_time() > _history_retention+_history_purge_period)
-        history.remove_older_than(msg.timestamp()-_history_retention);
+    if (msg.timestamp() - history.earliest_time() > 1000*(_history_retention+_history_purge_period)) {
+        history.remove_older_than(msg.timestamp()-_history_retention*1000);
+        _oldest_history_time = history.earliest_time();
+    }
 }
 
 void RuntimeReceiver::_promote_pairs_to_jobs(BodyRegistry const& registry, SynchronisedQueue<LookAheadJob>& sleeping_jobs, SynchronisedQueue<LookAheadJob>& waiting_jobs) {

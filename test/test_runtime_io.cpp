@@ -41,6 +41,7 @@ class TestRuntimeIO {
         OPERA_TEST_CALL(test_receiver_human())
         OPERA_TEST_CALL(test_receiver_robot())
         OPERA_TEST_CALL(test_receiver_both())
+        OPERA_TEST_CALL(test_receiver_remove_old())
     }
 
     void test_sender() {
@@ -148,6 +149,57 @@ class TestRuntimeIO {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         OPERA_TEST_EQUALS(waiting_jobs.size(),4)
+
+        delete bp_publisher;
+        delete hs_publisher;
+        delete rs_publisher;
+        MemoryBroker::instance().clear();
+    }
+
+    void test_receiver_remove_old() {
+        BrokerAccess access = MemoryBrokerAccess();
+        LookAheadJobFactory job_factory = DiscardLookAheadJobFactory();
+        BodyRegistry registry;
+        SynchronisedQueue<LookAheadJob> waiting_jobs, sleeping_jobs;
+        RuntimeReceiver receiver({access,BodyPresentationTopic::DEFAULT},{access,HumanStateTopic::DEFAULT},{access,RobotStateTopic::DEFAULT},
+                                 job_factory, 100, 20, registry, waiting_jobs, sleeping_jobs);
+        String rid = "r0";
+        String hid = "h0";
+        Mode waiting({"phase", "waiting"}), running({"phase","running"});
+        BodyPresentationMessage rp(rid,10,{{"0","1"},{"1","2"}},{1.0,0.5});
+        RobotStateMessage rs(rid, waiting, {{Point(0, 0, 0)}, {Point(0, 2, 0)}, {Point(0, 4, 0)}}, 3000);
+        BodyPresentationMessage hp(hid,{{"nose","neck"},{"neck","mid_hip"}},{1.0,0.5});
+        HumanStateMessage hs({{hid,{{{"nose",{Point(0,0,0)}},{"neck",{Point(0,2,0)}},{"mid_hip",{Point(0,4,0)}}}}}},3200);
+        auto bp_publisher = access.make_body_presentation_publisher();
+        auto hs_publisher = access.make_human_state_publisher();
+        auto rs_publisher = access.make_robot_state_publisher();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        bp_publisher->put(rp);
+        bp_publisher->put(hp);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        hs_publisher->put(hs);
+        rs_publisher->put(rs);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+        List<List<Point>> points = {{Point(0,0,0)},{Point(0,2,0)},{Point(0,4,0)}};
+
+        { RobotStateMessage msg(rid,running,points,4000); rs_publisher->put(msg); std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
+        { RobotStateMessage msg(rid,running,points,5000); rs_publisher->put(msg); std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
+        { RobotStateMessage msg(rid,waiting,points,30000); rs_publisher->put(msg); std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
+
+        OPERA_TEST_EQUALS(receiver.oldest_history_time(),0)
+
+        { RobotStateMessage msg(rid,running,points,100000); rs_publisher->put(msg); std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
+        { RobotStateMessage msg(rid,waiting,points,110000); rs_publisher->put(msg); std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
+        { RobotStateMessage msg(rid,running,points,123000); rs_publisher->put(msg); std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
+
+        OPERA_TEST_EQUALS(receiver.oldest_history_time(),0)
+        { RobotStateMessage msg(rid,running,points,123001); rs_publisher->put(msg); std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
+        OPERA_TEST_EQUALS(receiver.oldest_history_time(),4000)
+        { RobotStateMessage msg(rid,waiting,points,130000); rs_publisher->put(msg); std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
+        OPERA_TEST_EQUALS(receiver.oldest_history_time(),4000)
+        { RobotStateMessage msg(rid,waiting,points,130001); rs_publisher->put(msg); std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
+        OPERA_TEST_EQUALS(receiver.oldest_history_time(),30000)
 
         delete bp_publisher;
         delete hs_publisher;

@@ -69,6 +69,9 @@ class RuntimeReceiver {
     //! \brief The current number of created human-robot pairs, not yet put into the waiting jobs
     SizeType num_pending_human_robot_pairs() const;
 
+    //! \brief The oldest time in history across all humans and robots
+    TimestampType oldest_history_time() const;
+
     //! \brief Return the factory
     LookAheadJobFactory const& factory() const { return _factory; }
 
@@ -105,6 +108,7 @@ class RuntimeReceiver {
     SubscriberInterface<RobotStateMessage>* _rs_subscriber;
 
     std::atomic<SizeType> _num_state_messages_received = 0;
+    std::atomic<TimestampType> _oldest_history_time = 0;
 };
 
 //! \brief Utility class to send messages from the runtime
